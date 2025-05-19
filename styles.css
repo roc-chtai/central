@@ -282,6 +282,9 @@ footer {
     width: 100%; 
   }
 
+    .icon-menu-buttons > * {
+    grid-column: auto !important;
+
 
  .icon-btn {
   background-color: #00558c;      
