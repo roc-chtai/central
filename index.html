@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI教育學會 - 規劃師專區</title>
+  <!-- 引入 Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <!-- 自訂樣式 -->
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <!-- Header 導覽列 -->
+  <header class="site-header">
+    <!-- Logo 區塊 -->
+    <div class="logo-container">
+      <img class="logo-img-s" src="https://roc-central-ai-edu.org/uploads/tad_themes/school2022/logo/logo_1_5_ENr.png" alt="中華AI教育學會" />
+    </div>
+
+    <!-- 手機版漢堡選單 -->
+    <div class="menu-icon" id="menu-icon">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- 導覽按鈕 -->
+    <div class="nav-icons" id="nav-icons">
+      <a href="#"><img src="img/home.png" alt="Home" class="icon-nav" /> 首頁</a>
+      <a href="#"><img src="img/join.png" alt="Join Us" class="icon-nav" /> 加入會員</a>
+      <a href="#"><img src="img/trainingzone.png" alt="Training Zone" class="icon-nav" /> 培育園區</a>
+      <a href="#"><img src="img/news.png" alt="Latest News" class="icon-nav" /> 最新消息</a>
+    </div>
+  </header>
+
+ <!-- 按鈕圖示列 -->
+  <section class="icon-menu-bar py-2">
+    <div class="icon-menu-content w-100 px-4">
+      <!-- 左圖 -->
+      <div class="icon-menu-logo">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" alt="中華AI教育學會" style="width: 95%;" />
+      </div>
+
+      <!-- 改4個按鈕 -->
+      <div class="icon-menu-buttons">
+        <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15" class="text-center icon-btn">
+          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/exam.png" alt="學會簡介"/>
+          <div>學會簡介</div>
+        </a>
+        <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8" class="text-center icon-btn">
+          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/training.png" alt="講座活動"/>
+          <div>講座活動</div>
+        </a>
+        <a href="#" class="text-center icon-btn">
+          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/textbook.png" alt="著作書籍"/>
+          <div>著作書籍</div>
+        </a>
+        <a href="#" class="text-center icon-btn">
+          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/video.png" alt="活動影音"/>
+          <div>活動影音</div>
+        </a>
+
+      </div>
+    </div>
+  </section>  
+
+
+  <!-- 主圖區 -->
+  <section class="hero-image" style="background-color: #d4e7f5; padding: 1rem 0; margin: 0;">
+    <img src="https://roc-central-ai-edu.org/uploads/tad_themes/school2022/slide/slide01.jpg" alt="AI教育學會主圖" />
+  </section>
+
+  <!-- 主內容 -->
+  <main class="container py-4">
+    <h1 class="mb-3 blue-bold-text">AI應用規劃．推廣園區<br>AI規劃師</h1>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="text-center text-white">
+      <p>地址： XXXXXXXXXXXXX</p>
+    </div>
+  </footer>
+
+  <!-- 控制展開選單 + hover 切換圖片 -->
+ <script>
+  // 取得漢堡按鈕與導覽列的 DOM 元素
+const menuIcon = document.getElementById('menu-icon');
+const navIcons = document.getElementById('nav-icons');
+
+// 漢堡選單點擊時，切換顯示與動畫
+menuIcon.addEventListener('click', () => {
+  navIcons.classList.toggle('show');       // 切換導覽列的可見性
+  menuIcon.classList.toggle('active');     // 切換圖示變叉叉
+});
+
+// 僅當視窗寬度 > 760px 時（桌機+平板），才啟用滑入圖片更換功能
+if (window.innerWidth > 760) {
+  // 找到每個 icon 按鈕
+  document.querySelectorAll('.icon-btn').forEach(button => {
+    // 取得按鈕中的圖片元素
+    const img = button.querySelector('img');
+
+    // 儲存原始圖片路徑
+    const originalSrc = img.getAttribute('src');
+
+    // 確保是 .png 結尾的圖片才處理（安全）
+    if (originalSrc.endsWith('.png')) {
+      // 替換圖片路徑中的 .png 為 _b.png（例如 exam.png ➝ exam_b.png）
+      const hoverSrc = originalSrc.replace('.png', '_b.png');
+
+      // 滑鼠移入：切換圖片為 _b 版本
+      button.addEventListener('mouseenter', () => {
+        img.src = hoverSrc;
+      });
+
+      // 滑鼠移出：切回原圖
+      button.addEventListener('mouseleave', () => {
+        img.src = originalSrc;
+      });
+    }
+  });
+}
+  window.addEventListener('resize', () => {
+    location.reload(); // 強制重新整理頁面
+  });
+</script>
+
+</body>
+</html>

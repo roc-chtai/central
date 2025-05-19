@@ -1,0 +1,333 @@
+body {
+  margin: 0; /* 移除整體頁面預設邊距 */
+}
+
+/* 頁首設定 */
+.site-header {
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between; 
+  align-items: center; 
+  height:50px; 
+  background: linear-gradient(20deg, #00558c 33.33%, #d4e7f5 33.34%);
+}
+
+/* 導覽列 Logo 設定 */
+.logo-container {
+  width: 30%; 
+  display: flex; 
+  justify-content: center;
+}
+
+.logo-img-s {
+  display: none; 
+}
+
+/* 導覽列按鈕區 */
+.nav-icons {
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center; 
+  gap: 2rem;  
+  width: 70%;
+  padding-right: 2rem; 
+  padding-top: 0.5rem;  
+  padding-bottom: 0.5rem; 
+}
+
+.nav-icons a {
+  color: #00558c; 
+  text-decoration: none; 
+  display: flex; 
+  align-items: center;
+  font-weight: bold; 
+  font-size: 1.1rem; 
+}
+
+/* 導覽列圖示大小 */
+.icon-nav {
+  width: 20px; 
+  height: 20px; 
+  margin-right: 8px; 
+}
+
+/* 選單圖示設定 */
+.icon-menu-bar {
+  background-color: #00558c; 
+}
+
+.icon-menu-content {
+  display: flex; 
+  width: 100%; 
+}
+
+
+/* 左側 LOGO 區塊 */
+.icon-menu-logo {
+  width: 38%; /* 區塊寬度 */
+  display: flex; /* 使用 Flex */
+  justify-content: center; /* 水平置中 */
+  align-items: center; /* 垂直置中 */
+}
+
+
+/* 選單圖示區 */
+
+.icon-btn img {
+  width: 80%;
+  height: 80%; 
+  margin-bottom: 1em;
+}
+
+.icon-btn {
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  width: 80%; 
+  text-decoration: none; 
+  color: white; 
+  font-weight: bold; 
+  padding: 0.4em; 
+  border: 5px solid transparent; 
+  transition: 0.1s;
+}
+
+.icon-menu-buttons {
+  width: 62%; 
+  display: grid; 
+  grid-template-columns: repeat(6, 1fr); 
+  gap: 0;
+  align-items: center; 
+  justify-items: center; 
+}
+
+/* 主圖區 */
+.hero-image img {
+  width: 98%;
+  margin: 0 auto;
+  display: block;
+  border-radius: 8px; 
+}
+
+
+
+
+/* 頁尾區塊 */
+footer {
+  background-color: #00558c; 
+  color: #fff; 
+  padding: 1em 0; 
+}
+
+.footer-info p {
+  margin: 0; 
+}
+
+/* 主標題樣式 */
+.blue-bold-text {
+  color: #00558c;
+  font-weight: bold; 
+  text-align: center; 
+}
+
+/* ==========圖片按鈕動畫區============ */
+
+@media (min-width: 760px) {
+  @keyframes jump {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  .icon-btn:hover {
+    background-color: white;
+    color: #00558c;
+    animation: jump 0.5s ease-out forwards;
+    border-radius: 8px;
+
+  }
+
+  .icon-btn:hover img {
+    transform: scale(1.1);
+  }
+ .icon-menu-buttons:has(> *:nth-child(4)):not(:has(> *:nth-child(5))) > *:nth-child(1) { grid-column: 2; }
+  .icon-menu-buttons:has(> *:nth-child(4)):not(:has(> *:nth-child(5))) > *:nth-child(2) { grid-column: 3; }
+  .icon-menu-buttons:has(> *:nth-child(4)):not(:has(> *:nth-child(5))) > *:nth-child(3) { grid-column: 4; }
+  .icon-menu-buttons:has(> *:nth-child(4)):not(:has(> *:nth-child(5))) > *:nth-child(4) { grid-column: 5; }
+}
+
+/* ==========平板樣式：螢幕寬度 ≤ 1024px 時============ */
+@media (max-width: 1024px) {
+
+/* 頁首設定 */
+  .site-header {
+    display: flex; 
+    flex-direction: row; 
+    justify-content: space-between; 
+    align-items: center; 
+    height: 45px; 
+  }
+
+/* 導覽列 Logo 設定 */
+  .logo-container {
+    width: 30%; 
+    justify-content: center; 
+  }
+
+  .logo-img-s {
+    display: block; 
+    padding-top: 10px;
+    width: 70%; 
+    height: auto; 
+    object-fit: cover; 
+  }
+
+  .menu-icon {
+    display: none;
+  }
+
+/* 按鈕區寬度100*/
+  .icon-menu-buttons {
+    width: 100%; 
+  }
+
+
+  .hero-image img {
+    width: 90%; 
+  }
+
+/* 隱藏左側 logo 區 */
+  .icon-menu-logo {
+    display: none; 
+  }
+}
+
+
+
+/*========== 手機樣式：螢幕寬度 ≤ 760px============ */
+@media (max-width: 760px) {
+
+/* 頁首設定 */
+  .site-header {
+    flex-direction: row; 
+    justify-content: space-between; 
+    align-items: center; 
+    height: 50px; 
+    background: linear-gradient(20deg, #00558c 60%, #d4e7f5 40%); 
+  }
+
+/* 導覽列 Logo 設定 */
+  .logo-container {
+    width: 50%; 
+    justify-content: center; 
+  }
+
+  .logo-img-s {
+    display: block; 
+    padding-top: 10px;
+    width: 70%;
+    height: auto;
+    object-fit: cover;
+  }
+
+/* 顯示漢堡選單圖示 */
+  .menu-icon {
+    display: flex; 
+    flex-direction: column; 
+    gap: 5px; 
+    cursor: pointer; 
+    padding: 10px;
+    margin-left: auto; 
+  }
+
+  .bar {
+    width: 25px; 
+    height: 3px; 
+    background-color: #00558c; 
+    transition: 0.3s ease;
+  }
+
+ /* 預設隱藏導覽列 */
+  .nav-icons {
+    display: none; 
+  }
+
+/* 顯示導覽列 */
+.nav-icons.show {
+  position: absolute;
+  top: 53px;  /* 或比 header 高一點的位置 */
+  right: 0;
+  background-color: #d4e7f5;
+  width: 100%;
+  padding: 1rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 從左側展開 */
+  z-index: 9998;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+
+
+.icon-menu-bar {
+  background-color: #d4e7f5; 
+  border-top: 4px solid #00558c; 
+}
+
+/* 每列 2 按鈕 */
+  .icon-menu-buttons {
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 0.5rem; /* 間距 */
+    width: 100%; 
+  }
+
+
+ .icon-btn {
+  background-color: #00558c;      
+  color: white;                 
+  font-weight: bold;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  width: 95%;
+  display: flex;
+  flex-direction: row;              /* 圖文橫向 */
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: 0.8em 1em;
+  border-radius: 6px;
+
+  }
+
+
+  .hero-image img {
+    width: 90%;
+  }
+
+.icon-btn img {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 0;          /* 移除舊的垂直間距 */
+  }
+
+
+ /* 隱藏大 logo 區 */
+  .icon-menu-logo {
+    display: none;
+  }
+}
+
+
+
+/* === 漢堡選單點擊後的 X 變形效果 === */
+.menu-icon.active .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.menu-icon.active .bar:nth-child(2) {
+  opacity: 0;
+}
+.menu-icon.active .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+
