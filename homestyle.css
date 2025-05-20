@@ -1,114 +1,37 @@
+
 body { font-family: 'Noto Sans TC', sans-serif; background-color: #f9fbfc; }
 .blue-bold-text { color: #00558c; font-weight: bold; }
-
-.swiper {
-  width: 100%;
-  height: auto;
-  position: relative;
-  overflow: hidden;
+.swiper { padding: 2rem 0 4rem; overflow: visible; position: relative; }
+.swiper-slide { display: flex; justify-content: center; height: auto; }
+.swiper-button-prev, .swiper-button-next {
+  color: #00558c;
+  top: 45%; width: auto; height: auto;
+  font-size: 2rem; background: none; border: none;
+  box-shadow: none; z-index: 10;
 }
-
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
+.swiper-button-prev { left: -48px; }
+.swiper-button-next { right: -48px; }
 .card {
-  width: 90%;
-  max-width: 320px;
-  background: white;
-  border-radius: 1rem;
+  width: 90%; max-width: 320px;
+  background: white; border-radius: 1rem;
   box-shadow: 0 8px 16px rgba(0,0,0,0.08);
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  height: 100%; display: flex; flex-direction: column; justify-content: space-between;
 }
-
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-}
-
+.card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
 .card-body {
-  padding: 1.5rem;
-  text-align: center;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  padding: 1.5rem; text-align: center;
+  flex-grow: 1; display: flex;
+  flex-direction: column; justify-content: space-between;
 }
-
 .card-title {
-  color: #00558c;
-  font-weight: bold;
-  font-size: 1.2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #00558c; font-weight: bold;
+  font-size: 1.2rem; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
 }
-
 .card-text {
-  font-size: 0.95rem;
-  color: #444;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
-.card .btn {
-  margin-top: auto;
-}
-
-/* RWD設定：每個螢幕大小顯示的卡片數量 */
-
-/* 桌機 3 欄 */
-@media (min-width: 992px) {
-  .swiper-slide {
-    width: 30%; /* 每個卡片佔據 1/3 */
-  }
-}
-
-/* 平板 2 欄 */
-@media (max-width: 991px) {
-  .swiper-slide {
-    width: 45%; /* 每個卡片佔 1/2 */
-  }
-}
-
-/* 手機 1 欄 */
-@media (max-width: 768px) {
-  .swiper-slide {
-    width: 90%; /* 每個卡片佔 100% */
-  }
-}
-
-/* Swiper 兩側箭頭設置：固定寬度並隨畫面調整 */
-.swiper-button-prev, .swiper-button-next {
-  color: #00558c;
-  top: 45%; /* 讓箭頭在卡片中央 */
-  width: auto;
-  height: auto;
-  font-size: 2rem;
-  background: none;
-  border: none;
-  box-shadow: none;
-  z-index: 20;
-  position: absolute;
-}
-
-/* 桌機：箭頭距離邊緣 2% */
-@media (min-width: 992px) {
-  .swiper-button-prev { left: 2%; }
-  .swiper-button-next { right: 2%; }
-}
-
-/* 手機／平板：箭頭距離邊緣 8px */
-@media (max-width: 991px) {
-  .swiper-button-prev { left: 8px; }
-  .swiper-button-next { right: 8px; }
+  font-size: 0.95rem; color: #444;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 3; -webkit-box-orient: vertical;
 }
