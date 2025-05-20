@@ -551,30 +551,61 @@ if (window.innerWidth > 760) {
     }
   });
 }
-  window.addEventListener('resize', () => {
-    location.reload(); // 強制重新整理頁面
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    new Swiper('.mySwiper', {
+      navigation: {
+        nextEl: '.mySwiper .swiper-button-next',
+        prevEl: '.mySwiper .swiper-button-prev'
+      },
+      autoplay: {
+        delay: 8000,
+        disableOnInteraction: false
+      },
+      loop: true,
+      spaceBetween: 24,
+      grabCursor: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        992: { slidesPerView: 3 }
+      }
+    });
+
+    new Swiper('.techSwiper', {
+      navigation: {
+        nextEl: '.techSwiper .swiper-button-next',
+        prevEl: '.techSwiper .swiper-button-prev'
+      },
+      loop: false,
+      spaceBetween: 24,
+      grabCursor: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        992: { slidesPerView: 3 }
+      }
+    });
+
+    new Swiper('.promoSwiper', {
+      navigation: {
+        nextEl: '.promoSwiper .swiper-button-next',
+        prevEl: '.promoSwiper .swiper-button-prev'
+      },
+      loop: false,
+      spaceBetween: 24,
+      grabCursor: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        992: { slidesPerView: 3 }
+      }
+    });
   });
 </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-  <script>
-    new Swiper('.mySwiper', {
-      navigation: { nextEl: '.mySwiper .swiper-button-next', prevEl: '.mySwiper .swiper-button-prev' },
-      autoplay: { delay: 8000, disableOnInteraction: false },
-      loop: true, spaceBetween: 24, grabCursor: true,
-      breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
-    });
-    new Swiper('.techSwiper', {
-      navigation: { nextEl: '.techSwiper .swiper-button-next', prevEl: '.techSwiper .swiper-button-prev' },
-      loop: false, spaceBetween: 24, grabCursor: true,
-      breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
-    });
-    new Swiper('.promoSwiper', {
-      navigation: { nextEl: '.promoSwiper .swiper-button-next', prevEl: '.promoSwiper .swiper-button-prev' },
-      loop: false, spaceBetween: 24, grabCursor: true,
-      breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
-    });
-  </script>
 
 </body>
 </html>
