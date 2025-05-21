@@ -36,45 +36,27 @@ body {
   top: 50%;
   font-size: 2rem;
   z-index: 10;
-  background: white;
-  border-radius: 50%;
-  padding: 0.5em 0.65em;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   transform: translateY(-50%);
   transition: transform 0.2s ease;
 }
 
-.swiper-button-prev {
-  left: -1rem;
-}
+.swiper-button-prev { left: -1rem; right: auto; }
+.swiper-button-next { right: -1rem; left: auto; }
 
-.swiper-button-next {
-  right: -1rem;
-}
-
-.swiper-button-prev:hover,
-.swiper-button-next:hover {
-  transform: translateY(-50%) scale(1.15);
-}
-
-/* === 手機版：小一點、不要飛太邊 === */
 @media (max-width: 760px) {
-  .swiper-button-prev,
-  .swiper-button-next {
-    font-size: 1.4rem;
-    padding: 0.4em 0.55em;
-    left: 2% !important;
-    right: 2% !important;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-
   .swiper-button-prev {
     left: 2% !important;
+    right: auto !important;
+    font-size: 1.4rem;
   }
-
   .swiper-button-next {
     right: 2% !important;
+    left: auto !important;
+    font-size: 1.4rem;
   }
 }
 
