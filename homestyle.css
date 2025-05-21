@@ -23,6 +23,7 @@ body {
 /* === swiper 導覽箭頭：全裝置通用 === */
 .swiper-button-prev,
 .swiper-button-next {
+  position: absolute;  /* ← 關鍵！ */
   color: #00558c;
   top: 45%;
   font-size: 2rem;
@@ -34,12 +35,18 @@ body {
   z-index: 10;
 }
 
+.mySwiper,
+.promoSwiper,
+.techSwiper {
+  position: relative;
+}
+
 .swiper-button-prev {
-  left: 0.1%;
+  left: 1.5%;
 }
 
 .swiper-button-next {
-  right: 0.1%;
+  right: 1.5%;
 }
 
 .card {
