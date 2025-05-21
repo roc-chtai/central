@@ -12,27 +12,8 @@ body {
   padding: 2rem 0 4rem;
   overflow: visible;
   position: relative;
-}
-
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  height: auto;
-}
-
-/* === swiper 導覽箭頭：全裝置通用 === */
-.swiper-button-prev,
-.swiper-button-next {
-  position: absolute;  /* ← 關鍵！ */
-  color: #00558c;
-  top: 45%;
-  font-size: 2rem;
-  width: 5%;
-  height: auto;
-  background: none;
-  border: none;
-  box-shadow: none;
-  z-index: 10;
+  margin-left: -1.5%;   /* 讓箭頭有機會往外飛 */
+  margin-right: -1.5%;
 }
 
 .mySwiper,
@@ -41,14 +22,63 @@ body {
   position: relative;
 }
 
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  height: auto;
+}
+
+/* === swiper 導覽箭頭：通用設計（桌機＋平板） === */
+.swiper-button-prev,
+.swiper-button-next {
+  position: absolute;
+  color: #00558c;
+  top: 50%;
+  font-size: 2rem;
+  z-index: 10;
+  background: white;
+  border-radius: 50%;
+  padding: 0.5em 0.65em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%);
+  transition: transform 0.2s ease;
+}
+
 .swiper-button-prev {
-  left: -1.5%;
+  left: -1rem;
 }
 
 .swiper-button-next {
-  right: -1.5%;
+  right: -1rem;
 }
 
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  transform: translateY(-50%) scale(1.15);
+}
+
+/* === 手機版：小一點、不要飛太邊 === */
+@media (max-width: 760px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    font-size: 1.4rem;
+    padding: 0.4em 0.55em;
+    left: 2% !important;
+    right: 2% !important;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .swiper-button-prev {
+    left: 2% !important;
+  }
+
+  .swiper-button-next {
+    right: 2% !important;
+  }
+}
+
+/* === 卡片樣式 === */
 .card {
   width: 90%;
   max-width: 320px;
@@ -93,22 +123,4 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-}
-
-/* === 補強手機版箭頭位置與大小 === */
-@media (max-width: 760px) {
-  .swiper-button-prev,
-  .swiper-button-next {
-    font-size: 1.4rem;
-    width: 8%;
-    top: 42%;
-  }
-
-  .swiper-button-prev {
-    left: 2%;
-  }
-
-  .swiper-button-next {
-    right: 2%;
-  }
 }
