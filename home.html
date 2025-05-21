@@ -8,218 +8,213 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
 
   <style>
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: #f9fbfc;
-    }
-
-    .blue-bold-text {
-      color: #00558c;
-      font-weight: bold;
-    }
-
-    .swiper {
-      padding: 2rem 0 4rem;
-      overflow: visible;
-      position: relative;
-    }
-
-    .swiper-slide {
-      display: flex;
-      justify-content: center;
-      height: auto;
-    }
-
-    .swiper-button-prev,
-    .swiper-button-next {
-      position: absolute;
-      top: 50%;
-      font-size: 2rem;
-      color: #00558c;
-      background: none;
-      border: none;
-      z-index: 10;
-      transform: translateY(-50%);
-      transition: all 0.2s ease;
-    }
-
-    .swiper-button-prev {
-      left: 0;
-      transform: translateX(-100%) translateY(-50%);
-    }
-
-    .swiper-button-next {
-      right: 0;
-      transform: translateX(100%) translateY(-50%);
-    }
-
-    @media (max-width: 760px) {
-      .swiper-button-prev, .swiper-button-next {
-        transform: translateY(-50%) !important;
-        font-size: 1.4rem;
-      }
-
-      .swiper-button-prev { left: 2%; }
-      .swiper-button-next { right: 2%; }
-    }
-
-    .card {
-      width: 90%;
-      max-width: 320px;
-      background: white;
-      border-radius: 1rem;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .card-body {
-      padding: 1.5rem;
-      text-align: center;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .card-title {
-      color: #00558c;
-      font-weight: bold;
-      font-size: 1.2rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-text {
-      font-size: 0.95rem;
-      color: #444;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-    }
-
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+.featured-section {
+  margin: 40px 0;
+  padding: 30px 20px;
+  background: #f2f8fb;
+  border-radius: 12px;
+  border: 1px solid #d0e6f5;
 }
 
-.container, .row, .col-12, .mobile-menu-grid-custom {
+.featured-section h2 {
+  font-size: 1.8rem;
+  color: #00558c;
+  font-weight: bold;
+  border-left: 6px solid #0077b6;
+  padding-left: 16px;
+  margin-bottom: 24px;
+  background: linear-gradient(to right, #eaf5fb, transparent);
+  display: inline-block;
+}
+
+.featured-section h4 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #0077b6;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  position: relative;
+  padding-left: 28px;
+}
+.featured-section h4::before {
+  content: "📌";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Swiper 基礎 */
+.swiper {
+  padding-bottom: 2rem;
+}
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+}
+.swiper-button-prev,
+.swiper-button-next {
+  color: #0077b6;
+}
+.swiper-slide .card {
   width: 90%;
-  max-width: 90%;
-  box-sizing: border-box;
+  max-width: 320px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  text-align: center;
 }
-    
-  </style>
+.swiper-slide .card h5 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #00558c;
+  margin-bottom: 0.5rem;
+}
+.swiper-slide .card p {
+  font-size: 0.95rem;
+  color: #444;
+}
+.swiper-slide .card a {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 14px;
+  background: #0077b6;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+</style>
+
 </head>
 <body>
 
-  <main class="container py-5">
-    <section>
-      <h2 class="text-center blue-bold-text mb-4">🎓 各類講座活動</h2>
+<!-- 2. HTML 區 -->
+<section class="featured-section">
+  <h2>🎓 各類講座活動</h2>
 
-      <!-- 🆕 最新活動 -->
-      <h4 class="blue-bold-text mb-3">🆕 最新活動</h4>
-      <div class="swiper mySwiper">
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-wrapper">
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">OpenEDA Co-Design</h5><p class="card-text">AI 與 IC 協同設計，打造晶片創新的核心力量。</p><a href="#" class="btn btn-warning fw-bold mt-3">立即前往</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">中央一頁式推廣</h5><p class="card-text">從教育推廣開始，連結全台開源實戰場域。</p><a href="#" class="btn btn-primary fw-bold mt-3">了解更多</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">活動 3</h5><p class="card-text">這是第三個最新活動的內容示範。</p><a href="#" class="btn btn-info fw-bold mt-3">更多資訊</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">活動 4</h5><p class="card-text">新增活動，讓 loop 順利。</p><a href="#" class="btn btn-info fw-bold mt-3">詳細了解</a></div></div></div>
+  <!-- 最新活動 -->
+  <h4>🆕 最新活動</h4>
+  <div class="swiper mySwiper">
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="card">
+          <h5>OpenEDA Co-Design</h5>
+          <p>AI 與 IC 協同設計，打造晶片創新的核心力量。</p>
+          <a href="https://roc-central-ai-edu.org/uploads/page/Co-Design/" target="_blank">立即前往</a>
         </div>
       </div>
-
-      <!-- 📢 推廣活動 -->
-      <h4 class="blue-bold-text mb-3">📢 推廣活動</h4>
-      <div class="swiper promoSwiper">
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-wrapper">
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">推廣活動 1</h5><p class="card-text">推廣介紹說明，限三行文字顯示。</p><a href="#" class="btn btn-secondary fw-bold mt-3">立即報名</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">推廣活動 2</h5><p class="card-text">更多精彩推廣內容即將展開。</p><a href="#" class="btn btn-secondary fw-bold mt-3">敬請期待</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">推廣活動 3</h5><p class="card-text">第三則推廣活動卡片預設文字。</p><a href="#" class="btn btn-secondary fw-bold mt-3">深入了解</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">推廣活動 4</h5><p class="card-text">新增一張卡片，讓 loop 正常。</p><a href="#" class="btn btn-secondary fw-bold mt-3">進一步資訊</a></div></div></div>
+      <div class="swiper-slide">
+        <div class="card">
+          <h5>中央一頁式推廣</h5>
+          <p>從教育推廣開始，連結全台開源實戰場域。</p>
+          <a href="https://roc-chtai.github.io/central/#next-section" target="_blank">了解更多</a>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- 🛠 技術活動 -->
-      <h4 class="blue-bold-text mb-3">🛠 技術活動</h4>
-      <div class="swiper techSwiper">
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-wrapper">
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 1</h5><p class="card-text">這是技術活動的說明段落文字。</p><a href="#" class="btn btn-warning fw-bold mt-3">了解更多</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 2</h5><p class="card-text">這是另一個技術活動介紹。</p><a href="#" class="btn btn-warning fw-bold mt-3">查看詳情</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 3</h5><p class="card-text">記得補上連結與內容。</p><a href="#" class="btn btn-warning fw-bold mt-3">詳細資訊</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 4</h5><p class="card-text">這是補上來的第四個技術活動卡片。</p><a href="#" class="btn btn-warning fw-bold mt-3">深入說明</a></div></div></div>
+  <!-- 推廣活動 -->
+  <h4>📢 推廣活動</h4>
+  <div class="swiper promoSwiper">
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="card">
+          <h5>推廣活動 1</h5>
+          <p>推廣介紹說明，限三行文字顯示。</p>
+          <a href="#">立即報名</a>
         </div>
       </div>
-    </section>
-  </main>
+      <div class="swiper-slide">
+        <div class="card">
+          <h5>推廣活動 2</h5>
+          <p>更多精彩推廣內容即將展開。</p>
+          <a href="#">敬請期待</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-  <script>
-    new Swiper('.mySwiper', {
-      navigation: {
-        nextEl: '.mySwiper .swiper-button-next',
-        prevEl: '.mySwiper .swiper-button-prev'
-      },
-      autoplay: {
-        delay: 10000,
-        disableOnInteraction: false
-      },
-      loop: true,
-      spaceBetween: 24,
-      grabCursor: true,
-      breakpoints: {
-        0: { slidesPerView: 1 },
-        768: { slidesPerView: 2 },
-        992: { slidesPerView: 3 }
-      }
-    });
+  <!-- 技術活動 -->
+  <h4>🛠 技術活動</h4>
+  <div class="swiper techSwiper">
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="card">
+          <h5>技術活動 1</h5>
+          <p>這是技術活動的說明段落文字。</p>
+          <a href="#">了解更多</a>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div class="card">
+          <h5>技術活動 2</h5>
+          <p>這是另一個技術活動介紹。</p>
+          <a href="#">查看詳情</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    new Swiper('.promoSwiper', {
-      navigation: {
-        nextEl: '.promoSwiper .swiper-button-next',
-        prevEl: '.promoSwiper .swiper-button-prev'
-      },
-      loop: true,
-      spaceBetween: 24,
-      grabCursor: true,
-      breakpoints: {
-        0: { slidesPerView: 1 },
-        768: { slidesPerView: 2 },
-        992: { slidesPerView: 3 }
-      }
-    });
+<!-- 3. Swiper 套件載入 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
-    new Swiper('.techSwiper', {
-      navigation: {
-        nextEl: '.techSwiper .swiper-button-next',
-        prevEl: '.techSwiper .swiper-button-prev'
-      },
-      loop: true,
-      spaceBetween: 24,
-      grabCursor: true,
-      breakpoints: {
-        0: { slidesPerView: 1 },
-        768: { slidesPerView: 2 },
-        992: { slidesPerView: 3 }
-      }
-    });
-  </script>
+<!-- 4. 初始化 Swiper -->
+<script>
+new Swiper('.mySwiper', {
+  navigation: {
+    nextEl: '.mySwiper .swiper-button-next',
+    prevEl: '.mySwiper .swiper-button-prev'
+  },
+  loop: true,
+  autoplay: {
+    delay: 10000,
+    disableOnInteraction: false
+  },
+  spaceBetween: 24,
+  breakpoints: {
+    0: { slidesPerView: 1 },
+    768: { slidesPerView: 2 },
+    992: { slidesPerView: 3 }
+  }
+});
+
+new Swiper('.promoSwiper', {
+  navigation: {
+    nextEl: '.promoSwiper .swiper-button-next',
+    prevEl: '.promoSwiper .swiper-button-prev'
+  },
+  loop: true,
+  spaceBetween: 24,
+  breakpoints: {
+    0: { slidesPerView: 1 },
+    768: { slidesPerView: 2 },
+    992: { slidesPerView: 3 }
+  }
+});
+
+new Swiper('.techSwiper', {
+  navigation: {
+    nextEl: '.techSwiper .swiper-button-next',
+    prevEl: '.techSwiper .swiper-button-prev'
+  },
+  loop: true,
+  spaceBetween: 24,
+  breakpoints: {
+    0: { slidesPerView: 1 },
+    768: { slidesPerView: 2 },
+    992: { slidesPerView: 3 }
+  }
+});
+</script>
+
 </body>
 </html>
