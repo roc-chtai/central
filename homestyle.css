@@ -12,8 +12,8 @@ body {
   padding: 2rem 0 4rem;
   overflow: visible;
   position: relative;
-  margin-left: -1.5%;   /* 讓箭頭有機會往外飛 */
-  margin-right: -1.5%;
+  margin-left: -2%;   /* 讓箭頭有機會往外飛 */
+  margin-right: -2%;
 }
 
 .mySwiper,
