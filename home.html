@@ -3,409 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI教育學會 - 規劃師專區</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <title>各類講座活動</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
-  <link rel="stylesheet" href="homestyle.css"/>
+
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f9fbfc;
+    }
+
+    .blue-bold-text {
+      color: #00558c;
+      font-weight: bold;
+    }
+
+    .swiper {
+      padding: 2rem 0 4rem;
+      overflow: visible;
+      position: relative;
+      margin-left: -2%;
+      margin-right: -2%;
+    }
+
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      height: auto;
+    }
+
+    .swiper-button-prev,
+    .swiper-button-next {
+      position: absolute;
+      color: #00558c;
+      top: 50%;
+      font-size: 2rem;
+      z-index: 10;
+      background: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      transform: translateY(-50%);
+      transition: transform 0.2s ease;
+    }
+
+    .swiper-button-prev { left: -1rem; right: auto; }
+    .swiper-button-next { right: -1rem; left: auto; }
+
+    @media (max-width: 760px) {
+      .swiper-button-prev {
+        left: 2% !important;
+        font-size: 1.4rem;
+      }
+      .swiper-button-next {
+        right: 2% !important;
+        font-size: 1.4rem;
+      }
+    }
+
+    .card {
+      width: 90%;
+      max-width: 320px;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      color: #00558c;
+      font-weight: bold;
+      font-size: 1.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-text {
+      font-size: 0.95rem;
+      color: #444;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+  </style>
 </head>
-
-<style>
-
-body {
-  margin: 0; /* 移除整體頁面預設邊距 */
-}
-
-/* 頁首設定 */
-.site-header {
-  display: flex; 
-  flex-direction: row; 
-  justify-content: space-between; 
-  align-items: center; 
-  height:50px; 
-  background: linear-gradient(20deg, #00558c 33.33%, #d4e7f5 33.34%);
-}
-
-/* 導覽列 Logo 設定 */
-.logo-container {
-  width: 30%; 
-  display: flex; 
-  justify-content: center;
-}
-
-.logo-img-s {
-  display: none; 
-}
-
-/* 導覽列按鈕區 */
-.nav-icons {
-  display: flex;
-  justify-content: flex-end; 
-  align-items: center; 
-  gap: 2rem;  
-  width: 70%;
-  padding-right: 2rem; 
-  padding-top: 0.5rem;  
-  padding-bottom: 0.5rem; 
-}
-
-.nav-icons a {
-  color: #00558c; 
-  text-decoration: none; 
-  display: flex; 
-  align-items: center;
-  font-weight: bold; 
-  font-size: 1.1rem; 
-}
-
-/* 導覽列圖示大小 */
-.icon-nav {
-  width: 20px; 
-  height: 20px; 
-  margin-right: 8px; 
-}
-
-/* 選單圖示設定 */
-.icon-menu-bar {
-  background-color: #00558c; 
-}
-
-.icon-menu-content {
-  display: flex; 
-  width: 100%; 
-}
-
-
-/* 左側 LOGO 區塊 */
-.icon-menu-logo {
-  width: 38%; /* 區塊寬度 */
-  display: flex; /* 使用 Flex */
-  justify-content: center; /* 水平置中 */
-  align-items: center; /* 垂直置中 */
-}
-
-
-/* 選單圖示區 */
-
-.icon-btn img {
-  width: 80%;
-  height: 80%; 
-  margin-bottom: 1em;
-}
-
-.icon-btn {
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  width: 80%; 
-  text-decoration: none; 
-  color: white; 
-  font-weight: bold; 
-  padding: 0.4em; 
-  border: 5px solid transparent; 
-  transition: 0.1s;
-}
-
-.icon-menu-buttons {
-  width: 62%; 
-  display: grid; 
-  grid-template-columns: repeat(6, 1fr); 
-  gap: 0;
-  align-items: center; 
-  justify-items: center; 
-}
-
-/* 主圖區 */
-.hero-image img {
-  width: 98%;
-  margin: 0 auto;
-  display: block;
-  border-radius: 8px; 
-}
-
-
-
-
-/* 頁尾區塊 */
-footer {
-  background-color: #00558c; 
-  color: #fff; 
-  padding: 1em 0; 
-}
-
-.footer-info p {
-  margin: 0; 
-}
-
-/* 主標題樣式 */
-.blue-bold-text {
-  color: #00558c;
-  font-weight: bold; 
-  text-align: center; 
-}
-
-/* ==========圖片按鈕動畫區============ */
-
-@media (min-width: 760px) {
-  @keyframes jump {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-  }
-
-  .icon-btn:hover {
-    background-color: white;
-    color: #00558c;
-    animation: jump 0.5s ease-out forwards;
-    border-radius: 8px;
-
-  }
-
-  .icon-btn:hover img {
-    transform: scale(1.1);
-  }
-}
-
-/* ==========平板樣式：螢幕寬度 ≤ 1024px 時============ */
-@media (max-width: 1024px) {
-
-/* 頁首設定 */
-  .site-header {
-    display: flex; 
-    flex-direction: row; 
-    justify-content: space-between; 
-    align-items: center; 
-    height: 45px; 
-  }
-
-/* 導覽列 Logo 設定 */
-  .logo-container {
-    width: 30%; 
-    justify-content: center; 
-  }
-
-  .logo-img-s {
-    display: block; 
-    padding-top: 10px;
-    width: 70%; 
-    height: auto; 
-    object-fit: cover; 
-  }
-
-  .menu-icon {
-    display: none;
-  }
-
-/* 按鈕區寬度100*/
-  .icon-menu-buttons {
-    width: 100%; 
-  }
-
-
-  .hero-image img {
-    width: 90%; 
-  }
-
-/* 隱藏左側 logo 區 */
-  .icon-menu-logo {
-    display: none; 
-  }
-}
-
-
-
-/*========== 手機樣式：螢幕寬度 ≤ 760px============ */
-@media (max-width: 760px) {
-
-/* 頁首設定 */
-  .site-header {
-    flex-direction: row; 
-    justify-content: space-between; 
-    align-items: center; 
-    height: 50px; 
-    background: linear-gradient(20deg, #00558c 60%, #d4e7f5 40%); 
-  }
-
-/* 導覽列 Logo 設定 */
-  .logo-container {
-    width: 50%; 
-    justify-content: center; 
-  }
-
-  .logo-img-s {
-    display: block; 
-    padding-top: 10px;
-    width: 70%;
-    height: auto;
-    object-fit: cover;
-  }
-
-/* 顯示漢堡選單圖示 */
-  .menu-icon {
-    display: flex; 
-    flex-direction: column; 
-    gap: 5px; 
-    cursor: pointer; 
-    padding: 10px;
-    margin-left: auto; 
-  }
-
-  .bar {
-    width: 25px; 
-    height: 3px; 
-    background-color: #00558c; 
-    transition: 0.3s ease;
-  }
-
- /* 預設隱藏導覽列 */
-  .nav-icons {
-    display: none; 
-  }
-
-/* 顯示導覽列 */
-.nav-icons.show {
-  position: absolute;
-  top: 53px;  /* 或比 header 高一點的位置 */
-  right: 0;
-  background-color: #d4e7f5;
-  width: 100%;
-  padding: 1rem;
-  gap: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* 從左側展開 */
-  z-index: 9998;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-
-
-.icon-menu-bar {
-  background-color: #d4e7f5; 
-  border-top: 4px solid #00558c; 
-}
-
-/* 每列 2 按鈕 */
-  .icon-menu-buttons {
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 0.5rem; /* 間距 */
-    width: 100%; 
-  }
-
- .icon-btn {
-  background-color: #00558c;      
-  color: white;                 
-  font-weight: bold;
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  width: 95%;
-  display: flex;
-  flex-direction: row;              /* 圖文橫向 */
-  align-items: center;
-  justify-content: center;
-  gap: 0.6em;
-  padding: 0.8em 1em;
-  border-radius: 6px;
-
-  }
-
-
-  .hero-image img {
-    width: 90%;
-  }
-
-.icon-btn img {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 0;          /* 移除舊的垂直間距 */
-  }
-
-
- /* 隱藏大 logo 區 */
-  .icon-menu-logo {
-    display: none;
-  }
-}
-
-
-
-/* === 漢堡選單點擊後的 X 變形效果 === */
-.menu-icon.active .bar:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.menu-icon.active .bar:nth-child(2) {
-  opacity: 0;
-}
-.menu-icon.active .bar:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-
-
-
-</style>
-
 <body>
 
-  <!-- Header 導覽列 -->
-  <header class="site-header">
-    <!-- Logo 區塊 -->
-    <div class="logo-container">
-      <img class="logo-img-s" src="https://roc-central-ai-edu.org/uploads/tad_themes/school2022/logo/logo_1_5_ENr.png" alt="中華AI教育學會" />
-    </div>
-
-    <!-- 手機版漢堡選單 -->
-    <div class="menu-icon" id="menu-icon">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </div>
-
-    <!-- 導覽按鈕 -->
-    <div class="nav-icons" id="nav-icons">
-      <a href="#"><img src="img/home.png" alt="Home" class="icon-nav" /> 首頁</a>
-      <a href="#"><img src="img/join.png" alt="Join Us" class="icon-nav" /> 加入會員</a>
-      <a href="#"><img src="img/trainingzone.png" alt="Training Zone" class="icon-nav" /> 培育園區</a>
-      <a href="#"><img src="img/news.png" alt="Latest News" class="icon-nav" /> 最新消息</a>
-    </div>
-  </header>
-
- <!-- 按鈕圖示列 -->
-  <section class="icon-menu-bar py-2">
-    <div class="icon-menu-content w-100 px-4">
-      <!-- 左圖 -->
-      <div class="icon-menu-logo">
-        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" alt="中華AI教育學會" style="width: 95%;" />
-      </div>
-
-      <!-- 改4個按鈕 -->
-      <div class="icon-menu-buttons">
-        <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15" class="text-center icon-btn">
-          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/exam.png" alt="學會簡介"/>
-          <div>學會簡介</div>
-        </a>
-        <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8" class="text-center icon-btn">
-          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/training.png" alt="講座活動"/>
-          <div>講座活動</div>
-        </a>
-        <a href="#" class="text-center icon-btn">
-          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/textbook.png" alt="著作書籍"/>
-          <div>著作書籍</div>
-        </a>
-        <a href="#" class="text-center icon-btn">
-          <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/video.png" alt="活動影音"/>
-          <div>活動影音</div>
-        </a>
-
-      </div>
-    </div>
-  </section>  
-
-
-  <!-- 主圖區 -->
-  <section class="hero-image" style="background-color: #d4e7f5; padding: 1rem 0; margin: 0;">
-    <img src="https://roc-central-ai-edu.org/uploads/tad_themes/school2022/slide/slide01.jpg" alt="AI教育學會主圖" />
-  </section>
-
- <!-- 主內容 -->
   <main class="container py-5">
     <section>
       <h2 class="text-center blue-bold-text mb-4">🎓 各類講座活動</h2>
@@ -416,11 +120,9 @@ footer {
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-wrapper">
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">OpenEDA Co-Design</h5><p class="card-text">AI 與 IC 協同設計，打造晶片創新的核心力量。</p><a href="#" class="btn btn-warning fw-bold mt-3">立即前往</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">中央一頁式推廣</h5><p class="card-text">從教育推廣開始，連結全台開源實戰場域。</p><a href="#" class="btn btn-primary fw-bold mt-3">了解更多</a></div></div></div>
+          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">OpenEDA Co-Design</h5><p class="card-text">AI 與 IC 協同設計，打造晶片創新的核心力量。</p><a href="https://roc-central-ai-edu.org/uploads/page/Co-Design/" target="_blank" class="btn btn-warning fw-bold mt-3">立即前往</a></div></div></div>
+          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">中央一頁式推廣</h5><p class="card-text">從教育推廣開始，連結全台開源實戰場域。</p><a href="https://roc-chtai.github.io/central/#next-section" target="_blank" class="btn btn-primary fw-bold mt-3">了解更多</a></div></div></div>
           <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">最新活動 3</h5><p class="card-text">這是第三個最新活動的示範內容。</p><a href="#" class="btn btn-info fw-bold mt-3">更多資訊</a></div></div></div>
-       <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">最新活動 3</h5><p class="card-text">這是第三個最新活動的示範內容。</p><a href="#" class="btn btn-info fw-bold mt-3">更多資訊</a></div></div></div>
-       <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">最新活動 5</h5><p class="card-text">這是 <br> 第三個最新活動的<br>示範內容。</p><a href="#" class="btn btn-info fw-bold mt-3">更多資訊</a></div></div></div>
         </div>
       </div>
 
@@ -445,63 +147,64 @@ footer {
           <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 1</h5><p class="card-text">這是技術活動的說明段落文字。</p><a href="#" class="btn btn-warning fw-bold mt-3">了解更多</a></div></div></div>
           <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 2</h5><p class="card-text">這是另一個技術活動介紹。</p><a href="#" class="btn btn-warning fw-bold mt-3">查看詳情</a></div></div></div>
           <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 3</h5><p class="card-text">這是第三個技術活動示範，記得補上連結與內容。</p><a href="#" class="btn btn-warning fw-bold mt-3">詳細資訊</a></div></div></div>
-          <div class="swiper-slide"><div class="card"><div class="card-body"><h5 class="card-title">技術活動 4</h5><p class="card-text">這是第三個技<br>術活動示範<br>記得補上連結與內容。</p><a href="#" class="btn btn-warning fw-bold mt-3">詳細資訊</a></div></div></div>
         </div>
       </div>
     </section>
   </main>
 
-
-  <!-- Footer -->
-  <footer>
-    <div class="text-center text-white">
-      <p>地址： XXXXXXXXXXXXX</p>
-    </div>
-  </footer>
-
-  <!-- 控制展開選單 + hover 切換圖片 -->
- <script>
-  // 取得漢堡按鈕與導覽列的 DOM 元素
-const menuIcon = document.getElementById('menu-icon');
-const navIcons = document.getElementById('nav-icons');
-
-// 漢堡選單點擊時，切換顯示與動畫
-menuIcon.addEventListener('click', () => {
-  navIcons.classList.toggle('show');       // 切換導覽列的可見性
-  menuIcon.classList.toggle('active');     // 切換圖示變叉叉
-});
-
-// 僅當視窗寬度 > 760px 時（桌機+平板），才啟用滑入圖片更換功能
-if (window.innerWidth > 760) {
-  // 找到每個 icon 按鈕
-  document.querySelectorAll('.icon-btn').forEach(button => {
-    // 取得按鈕中的圖片元素
-    const img = button.querySelector('img');
-
-    // 儲存原始圖片路徑
-    const originalSrc = img.getAttribute('src');
-
-    // 確保是 .png 結尾的圖片才處理（安全）
-    if (originalSrc.endsWith('.png')) {
-      // 替換圖片路徑中的 .png 為 _b.png（例如 exam.png ➝ exam_b.png）
-      const hoverSrc = originalSrc.replace('.png', '_b.png');
-
-      // 滑鼠移入：切換圖片為 _b 版本
-      button.addEventListener('mouseenter', () => {
-        img.src = hoverSrc;
-      });
-
-      // 滑鼠移出：切回原圖
-      button.addEventListener('mouseleave', () => {
-        img.src = originalSrc;
-      });
-    }
-  });
-}
-
-</script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-  <script src="home.js"></script>
+  <script>
+    // 最新活動：自動播放＋loop
+    new Swiper('.mySwiper', {
+      navigation: {
+        nextEl: '.mySwiper .swiper-button-next',
+        prevEl: '.mySwiper .swiper-button-prev'
+      },
+      autoplay: {
+        delay: 10000,
+        disableOnInteraction: false
+      },
+      loop: true,
+      spaceBetween: 24,
+      grabCursor: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        992: { slidesPerView: 3 }
+      }
+    });
 
+    // 技術活動
+    new Swiper('.techSwiper', {
+      navigation: {
+        nextEl: '.techSwiper .swiper-button-next',
+        prevEl: '.techSwiper .swiper-button-prev'
+      },
+      loop: true,
+      spaceBetween: 24,
+      grabCursor: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        992: { slidesPerView: 3 }
+      }
+    });
+
+    // 推廣活動
+    new Swiper('.promoSwiper', {
+      navigation: {
+        nextEl: '.promoSwiper .swiper-button-next',
+        prevEl: '.promoSwiper .swiper-button-prev'
+      },
+      loop: true,
+      spaceBetween: 24,
+      grabCursor: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        992: { slidesPerView: 3 }
+      }
+    });
+  </script>
 </body>
 </html>
