@@ -35,11 +35,11 @@ body {
 }
 
 .swiper-button-prev {
-  left: 0.5%;
+  left: 0.1%;
 }
 
 .swiper-button-next {
-  right: 0.5%;
+  right: 0.1%;
 }
 
 .card {
