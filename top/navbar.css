@@ -1,0 +1,195 @@
+  /* ==== 導覽列外層 ==== */
+    body { background: #f6f8fa;}
+    .navbar-floating-container { /* 浮動導覽列外層 */
+      position: fixed;
+      top: 32px;
+      left: 0;
+      width: 100vw;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .navbar-floating-inner { /* 導覽列內容 */
+      display: flex;
+      width: 80vw;
+      min-width: 220px;
+      pointer-events: all;
+      align-items: center;
+      justify-content: center;
+    }
+    .navbar-main { /* 藍色主條 */
+      background: #0a5e95;
+      color: #fff;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      height: 52px;
+      flex: 1 1 auto;
+      box-shadow: 0 4px 16px 0 #0002;
+      margin-right: 12px;
+      min-width: 0;
+      position: relative;
+    }
+    .navbar-logo { /* LOGO 圖片 */
+      height: 32px;
+      margin-right: 10px;
+      cursor:pointer;
+    }
+    .navbar-links { /* 上方四個連結外層 */
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-left: auto;
+    }
+    .navbar-link { /* 上方四個連結 */
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1.02rem;
+    }
+    .navbar-join-btn { /* 加入會員按鈕 */
+      background: #252525;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      height: 52px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.08rem;
+      box-shadow: 0 2px 8px 0 #0001;
+      cursor:pointer;
+    }
+    .navbar-join-btn:active { background: #333; }
+    .mobile-menu-btn, .mobile-plus-btn { display: none !important; }
+
+    /* ==== 漢堡按鈕（手機用） ==== */
+    .mobile-menu-btn {
+      background: transparent;
+      border: none;
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      position: relative;
+      z-index: 20;
+      cursor: pointer;
+    }
+    .burger-bar {
+      display: block;
+      position: absolute;
+      left: 6px;
+      width: 24px;
+      height: 3.2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: all 0.33s cubic-bezier(.67,-0.39,.51,1.42);
+    }
+    .bar-top { top: 9px; }
+    .bar-middle { top: 16.5px; }
+    .bar-bottom { top: 24px; }
+    .mobile-menu-btn.active .bar-top {
+      top: 16.5px; transform: rotate(45deg);
+    }
+    .mobile-menu-btn.active .bar-middle {
+      opacity: 0; transform: scaleX(0.2);
+    }
+    .mobile-menu-btn.active .bar-bottom {
+      top: 16.5px; transform: rotate(-45deg);
+    }
+
+    /* ==== 響應式（900px以下變漢堡+隱藏桌機按鈕） ==== */
+    @media (max-width: 900px) {
+      .navbar-links, .navbar-join-btn { display: none !important; }
+      .mobile-menu-btn { display: flex !important; margin-left: auto;}
+      .mobile-plus-btn {
+        display: flex !important;
+        width: 36px; height: 36px;
+        background: #222;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        margin-left: 10px;
+        align-items: center; justify-content: center;
+        font-size: 2.1rem; font-weight: 700;
+        box-shadow: 0 2px 8px 0 #0001;
+        padding: 0;
+        cursor:pointer;
+      }
+    }
+
+    /* ==== 手機彈窗四宮格 ==== */
+    #mobileMenuPopup {
+      position: fixed;
+      top: 100px;
+      left: 0; right: 0;
+      margin: 0 auto;
+      z-index: 2001;
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 6px 32px 0 #0002;
+      width: 94vw;
+      max-width: 410px;
+      min-width: 0;
+      padding: 28px 16px 18px 16px;
+      display: none;
+      opacity: 0;
+    }
+    /* ==== 手機彈窗進場動畫 ==== */
+    @keyframes fadeInCustomMenu {
+      0% { opacity: 0; transform: translateY(-50px) scale(0.92);}
+      100% { opacity: 1; transform: translateY(0) scale(1);}
+    }
+    .fade-in-menu {
+      display: block !important;
+      opacity: 1 !important;
+      animation: fadeInCustomMenu 0.5s cubic-bezier(.46,1.48,.47,.97) both;
+    }
+    /* ==== 四宮格 Grid 布局 ==== */
+    .mobile-menu-grid-custom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 22px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .mobile-menu-btn-custom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f7fa;
+      border-radius: 20px;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 1.09rem;
+      text-decoration: none;
+      color: #144A72;
+      box-shadow: 0 2px 8px 0 #0001;
+      border: 3px solid #0a5e95;
+      min-width: 0;
+      margin: 0;
+      width: 98%;
+      max-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+      cursor:pointer;
+    }
+    .mobile-menu-btn-custom img {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      object-fit: contain;
+      display: block;
+    }
+    .mobile-menu-btn-custom span {
+      font-size: 1.13rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+    }
+
+
