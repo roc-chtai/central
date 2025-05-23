@@ -1,5 +1,4 @@
   /* ==== 導覽列外層 ==== */
-    body { background: #f6f8fa;}
     .navbar-floating-container { /* 浮動導覽列外層 */
       position: fixed;
       top: 32px;
