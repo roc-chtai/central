@@ -17,8 +17,192 @@
 <link rel="stylesheet" href="navbar.css">
 
 <style>
+  /* ========== 共用主題變數 ========== */
+  :root {
+    --main-blue: #00558c;
+    --main-green: #00bf72;
+    --main-yellow: #ffd600;
+    --main-radius: 1rem;
+    --main-shadow: 0 0 15px rgba(0, 85, 140, 0.15);
+  }
 
-/* MAINCSS放這 */
+  /* ========== 全站基本背景與字型 ========== */
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+    color: #212529;
+    overflow-x: hidden;
+  }
+
+  /* ========== 頁首 hero 區塊 ========== */
+  .hero {
+    position: relative;
+    background: radial-gradient(circle at top left, #2c3e50, #000000);
+    color: #fff;
+    padding: 8rem 1rem 4rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  /* hero 上方白色涵洞遮罩 */
+ .hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 20%;
+  background: #fff;
+  z-index: 1;
+  border-bottom-left-radius: 50% 40%;
+  border-bottom-right-radius: 50% 40%;
+  pointer-events: none;
+  animation: fadeInDown 1.2s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+  /* hero 區背景紋理（亞麻布質感） */
+  .wave-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/black-linen.png');
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* hero 內部的圓圈動畫容器 */
+  .rings {
+    position: absolute;
+    width: 300px; height: 300px;
+    border: 2px solid rgba(0,255,255,0.3);
+    border-radius: 50%;
+    animation: rotateRing 20s linear infinite;
+    z-index: 0;
+  }
+  .rings::before, .rings::after {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    border: 2px solid rgba(0,255,255,0.15);
+    border-radius: 50%;
+  }
+  .rings::before { transform: scale(1.2);}
+  .rings::after  { transform: scale(0.8);}
+
+  /* 左、右圓圈的位置 */
+  .left-ring { top: 5%; left: 2%; animation-delay: -5s;}
+  .right-ring { top: 60%; left: 80%;}
+
+  @keyframes rotateRing {
+    0% { transform: rotate(0deg);}
+    100%{ transform: rotate(360deg);}
+  }
+
+  /* hero 內的主標、副標、按鈕動態與層級 */
+  .hero h1, .hero p, .hero a {
+    position: relative;
+    z-index: 2; /* 保證文字在所有動畫之上 */
+    animation: fadeInUp 1s ease-in-out;
+  }
+  .hero h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .hero p {
+    font-size: 1.2rem;
+    color: #f0f0f0;
+  }
+
+  /* ========== 內容資訊卡區塊 ========== */
+  .section-dark {
+    background-color: #f4f7fa;
+    padding: 4rem 1rem;
+  }
+  .section-dark h2 {
+    color: var(--main-blue);
+  }
+
+  /* ========== 發光卡片設計 ========== */
+  .glow-card {
+    background: #fff;
+    border-radius: var(--main-radius);
+    padding: 2rem;
+    box-shadow: var(--main-shadow);
+    transition: transform 0.4s, box-shadow 0.4s;
+  }
+  .glow-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0,85,140,0.35);
+  }
+
+  /* ========== 通用主按鈕設計 ========== */
+  .cta-btn {
+    background: var(--main-green);
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    transition: background 0.3s;
+  }
+  .cta-btn:hover { background: #008793; }
+
+  /* ========== 藍色發光動畫圖示 ========== */
+  .animated-icon {
+    font-size: 3rem;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%{transform:scale(1);opacity:1;}
+    50%{transform:scale(1.1);opacity:.7;}
+    100%{transform:scale(1);opacity:1;}
+  }
+
+  /* ========== CTA 區塊（深色科技風） ========== */
+  .cta-dark {
+    background: radial-gradient(circle at top left, #25384A, #000000);
+    overflow: hidden;
+    position: relative;
+  }
+  /* CTA 區塊的 shimmer 動畫（左到右光暈） */
+  .cta-dark .shimmer-bar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at center, rgba(0,255,255,0.2), transparent 70%);
+    animation: shimmer 4s infinite linear;
+    z-index: 0;
+  }
+  @keyframes shimmer {
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(100%);}
+  }
+  /* 保證 CTA 文字/按鈕在 shimmer 上層 */
+  .cta-dark .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ========== 藍色發光字效果（.glow-blue） ========== */
+  .glow-blue {
+    color: #36c4e5;
+    text-shadow:
+      0 0 2px #46e2ffbb,
+      0 0 6px #2ec9ff66,
+      0 0 12px #1a5a7f44;
+  }
+
 
 
 /* 修正 AOS 對彈窗的干擾 */
