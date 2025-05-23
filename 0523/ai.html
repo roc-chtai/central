@@ -9,30 +9,55 @@
 <style>
   /* ========== 共用主題變數 ========== */
   :root {
-    --main-blue: #00558c;   /* 主要藍色：標題、按鈕 */
-    --main-green: #00bf72;  /* 主要綠色：CTA 按鈕 */
-    --main-yellow: #ffd600; /* 黃色點綴（未用） */
-    --main-radius: 1rem;    /* 全站圓角 */
-    --main-shadow: 0 0 15px rgba(0, 85, 140, 0.15); /* 卡片陰影 */
+    --main-blue: #00558c;
+    --main-green: #00bf72;
+    --main-yellow: #ffd600;
+    --main-radius: 1rem;
+    --main-shadow: 0 0 15px rgba(0, 85, 140, 0.15);
   }
 
   /* ========== 全站基本背景與字型 ========== */
   body {
     font-family: 'Noto Sans TC', sans-serif;
-    background: linear-gradient(to bottom, #e0f7fa, #ffffff); /* 頁面漸層底色 */
-    color: #212529; /* 主要深灰文字 */
+    background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+    color: #212529;
     overflow-x: hidden;
   }
 
   /* ========== 頁首 hero 區塊 ========== */
   .hero {
     position: relative;
-    background: radial-gradient(circle at top left, #2c3e50, #000000); /* 深藍黑科技背景 */
+    background: radial-gradient(circle at top left, #2c3e50, #000000);
     color: #fff;
     padding: 8rem 1rem 4rem;
     text-align: center;
     overflow: hidden;
   }
+
+  /* hero 上方白色涵洞遮罩 */
+ .hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 20%;
+  background: #fff;
+  z-index: 1;
+  border-bottom-left-radius: 50% 40%;
+  border-bottom-right-radius: 50% 40%;
+  pointer-events: none;
+  animation: fadeInDown 1.2s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-48px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
 
   /* hero 區背景紋理（亞麻布質感） */
   .wave-bg {
@@ -49,12 +74,11 @@
   .rings {
     position: absolute;
     width: 300px; height: 300px;
-    border: 2px solid rgba(0,255,255,0.3); /* 藍綠圓圈 */
+    border: 2px solid rgba(0,255,255,0.3);
     border-radius: 50%;
     animation: rotateRing 20s linear infinite;
     z-index: 0;
   }
-  /* 雙層圓環的邊框效果 */
   .rings::before, .rings::after {
     content: '';
     position: absolute;
@@ -62,14 +86,13 @@
     border: 2px solid rgba(0,255,255,0.15);
     border-radius: 50%;
   }
-  .rings::before { transform: scale(1.2);} /* 外圈放大 */
-  .rings::after  { transform: scale(0.8);} /* 內圈縮小 */
+  .rings::before { transform: scale(1.2);}
+  .rings::after  { transform: scale(0.8);}
 
   /* 左、右圓圈的位置 */
   .left-ring { top: 5%; left: 2%; animation-delay: -5s;}
   .right-ring { top: 60%; left: 80%;}
 
-  /* 光圈旋轉動畫 */
   @keyframes rotateRing {
     0% { transform: rotate(0deg);}
     100%{ transform: rotate(360deg);}
@@ -79,7 +102,7 @@
   .hero h1, .hero p, .hero a {
     position: relative;
     z-index: 2; /* 保證文字在所有動畫之上 */
-    animation: fadeInUp 1s ease-in-out; /* 進場動畫 */
+    animation: fadeInUp 1s ease-in-out;
   }
   .hero h1 {
     font-size: 2.8rem;
@@ -93,11 +116,11 @@
 
   /* ========== 內容資訊卡區塊 ========== */
   .section-dark {
-    background-color: #f4f7fa; /* 淺灰色卡片區背景 */
+    background-color: #f4f7fa;
     padding: 4rem 1rem;
   }
   .section-dark h2 {
-    color: var(--main-blue); /* 藍色標題 */
+    color: var(--main-blue);
   }
 
   /* ========== 發光卡片設計 ========== */
@@ -138,7 +161,7 @@
 
   /* ========== CTA 區塊（深色科技風） ========== */
   .cta-dark {
-    background: radial-gradient(circle at top left, #2c3e50, #000000); /* 跟 hero 一樣底色 */
+    background: radial-gradient(circle at top left, #2c3e50, #000000);
     overflow: hidden;
     position: relative;
   }
@@ -181,7 +204,6 @@
     <p>⏰ 講座時間：2024年6月4日（週三）19:00～20:30</p>
     <p>🎤 主講人：高煥堂 教授｜AI建模師俱樂部 會長</p>
     <p>🏢 主題：主權式 AI 與容器化晶創</p>
-    <a href="#signup" class="btn cta-btn mt-4">立即報名</a>
   </header>
   <section class="cta-dark">
     <div class="shimmer-bar"></div>
