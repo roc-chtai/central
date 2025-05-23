@@ -42,6 +42,14 @@
     padding: 8rem 1rem 4rem;
     text-align: center;
     overflow: hidden;
+    clip-path: polygon(
+      0 0,         /* 左上 */
+      100% 0,      /* 右上 */
+      100% 80%,    /* 右下前 */
+      95% 100%,    /* 右下角往上 */
+      5% 100%,     /* 左下角往上 */
+      0 80%        /* 左下前 */
+  );
   }
 
   /* hero 上方白色涵洞遮罩 */
