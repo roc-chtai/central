@@ -229,6 +229,16 @@
   list-style: none;
   margin-bottom: 0;
 }
+.animated-bullet-section {
+  background: #f4fbff;
+}
+.animated-bullet-list {
+  position: relative;
+  padding-left: 2.1rem;
+  border-left: 3px solid #b8e0f9;
+  list-style: none;
+  margin-bottom: 0;
+}
 .animated-bullet-list li {
   position: relative;
   margin-bottom: 12px;
@@ -252,7 +262,6 @@
   box-shadow: 0 1px 4px 0 #80d7ff60;
   z-index: 1;
 }
-
 
   </style>
 </head>
@@ -374,25 +383,30 @@
     </div>
   </section>
 
-  <!-- 高煥堂教授條列動畫版 -->
+<!-- 高煥堂教授條列動畫版 -->
 <section class="animated-bullet-section py-5">
   <div class="container">
-    <h2 class="fw-bold mb-4" style="color:#2177b1;">高煥堂 教授</h2>
-  <ul>
-  <li data-aos="fade-up" data-aos-delay="0"><b>現任：</b></li>
-  <li data-aos="fade-up" data-aos-delay="120">AI 建模師俱樂部 會長</li>
-  <li data-aos="fade-up" data-aos-delay="240">教於銘傳大學AI通識課程</li>
-  <li data-aos="fade-up" data-aos-delay="360">長庚智慧醫療研究所AI課程授課老師</li>
-  <li data-aos="fade-up" data-aos-delay="480"><b>專長／推廣：</b></li>
-  <li data-aos="fade-up" data-aos-delay="600">AI（人工智慧）、IC軟硬整合技術與大數據</li>
-  <li data-aos="fade-up" data-aos-delay="720">推廣 AI 建模方法與容器式邏輯應用</li>
-  <li data-aos="fade-up" data-aos-delay="840">擁有41年軟硬體整合設計經驗</li>
- <li data-aos="fade-up" data-aos-delay="960">專精Android終端平台、AI、Docker容器、VR技術等</li>
-</ul>
-
+    <div class="row align-items-center">
+      <div class="col-lg-7 mb-4 mb-lg-0">
+        <h2 class="fw-bold mb-4" style="color:#2177b1;">高煥堂 教授</h2>
+        <ul class="animated-bullet-list">
+          <li data-aos="fade-up" data-aos-delay="0"><b>現任：</b></li>
+          <li data-aos="fade-up" data-aos-delay="120">AI 建模師俱樂部 會長</li>
+          <li data-aos="fade-up" data-aos-delay="240">教於銘傳大學AI通識課程</li>
+          <li data-aos="fade-up" data-aos-delay="360">長庚智慧醫療研究所AI課程授課老師</li>
+          <li data-aos="fade-up" data-aos-delay="480"><b>專長／推廣：</b></li>
+          <li data-aos="fade-up" data-aos-delay="600">AI（人工智慧）、IC軟硬整合技術與大數據</li>
+          <li data-aos="fade-up" data-aos-delay="720">推廣 AI 建模方法與容器式邏輯應用</li>
+          <li data-aos="fade-up" data-aos-delay="840">擁有41年軟硬體整合設計經驗</li>
+          <li data-aos="fade-up" data-aos-delay="960">專精Android終端平台、AI、Docker容器、VR技術等</li>
+        </ul>
+      </div>
+      <div class="col-lg-5 text-center">
+        <img src="https://donhi.com.tw/uploads/ai/image/Kao.jpg" alt="高煥堂 教授" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover;">
+      </div>
+    </div>
   </div>
-  <img src="https://donhi.com.tw/uploads/ai/image/Kao.jpg" alt="高煥堂 教授" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
-      </section>
+</section>
 
 
   <!-- 講者語錄牆 -->
@@ -435,8 +449,8 @@
   </section>
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>AOS.init();</script>
-
+<script>
+  AOS.init();
 </script>
 
 </body>
