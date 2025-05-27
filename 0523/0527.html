@@ -8,6 +8,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+
   <style>
     :root {
       --main-blue: #00558c;
@@ -220,35 +222,24 @@
       border-left: 7px solid #ffd600;
     }
 
-.animated-bullet-section {
-  background: #f4fbff;
-}
-
 .animated-bullet-list {
   position: relative;
   padding-left: 2.1rem;
-  margin-bottom: 0;
   border-left: 3px solid #b8e0f9;
   list-style: none;
+  margin-bottom: 0;
 }
-
 .animated-bullet-list li {
   position: relative;
-  opacity: 0;
-  transform: translateY(16px);
   margin-bottom: 12px;
   font-size: 1.08rem;
   line-height: 1.7;
-  transition: opacity 0.6s cubic-bezier(.29,.6,.62,1.19), transform 0.7s cubic-bezier(.29,.6,.62,1.19);
   color: #15507c;
-  font-weight: 400;
 }
-
 .animated-bullet-list li b {
   color: #074074;
   font-size: 1.11rem;
 }
-
 .animated-bullet-list li::before {
   content: '';
   position: absolute;
@@ -261,6 +252,7 @@
   box-shadow: 0 1px 4px 0 #80d7ff60;
   z-index: 1;
 }
+
 
   </style>
 </head>
@@ -386,16 +378,18 @@
 <section class="animated-bullet-section py-5">
   <div class="container">
     <h2 class="fw-bold mb-4" style="color:#2177b1;">高煥堂 教授</h2>
-    <ul class="animated-bullet-list" id="kao-facts">
-      <li>現任：AI 建模師俱樂部 會長</li>
-      <li>現任：教於銘傳大學AI通識課程</li>
-      <li>現任：長庚智慧醫療研究所AI課程授課老師</li>
-      <li><b>專長／推廣：</b></li>
-      <li>AI（人工智慧）、IC軟硬整合技術與大數據</li>
-      <li>推廣 AI 建模方法與容器式邏輯應用</li>
-      <li>擁有41年軟硬體整合設計經驗</li>
-      <li>專精Android終端平台、AI、Docker容器、VR技術等</li>
-    </ul>
+  <ul>
+  <li data-aos="fade-up" data-aos-delay="0"><b>現任：</b></li>
+  <li data-aos="fade-up" data-aos-delay="120">AI 建模師俱樂部 會長</li>
+  <li data-aos="fade-up" data-aos-delay="240">教於銘傳大學AI通識課程</li>
+  <li data-aos="fade-up" data-aos-delay="360">長庚智慧醫療研究所AI課程授課老師</li>
+  <li data-aos="fade-up" data-aos-delay="480"><b>專長／推廣：</b></li>
+  <li data-aos="fade-up" data-aos-delay="600">AI（人工智慧）、IC軟硬整合技術與大數據</li>
+  <li data-aos="fade-up" data-aos-delay="720">推廣 AI 建模方法與容器式邏輯應用</li>
+  <li data-aos="fade-up" data-aos-delay="840">擁有41年軟硬體整合設計經驗</li>
+ <li data-aos="fade-up" data-aos-delay="960">專精Android終端平台、AI、Docker容器、VR技術等</li>
+</ul>
+
   </div>
   <img src="https://donhi.com.tw/uploads/ai/image/Kao.jpg" alt="高煥堂 教授" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
       </section>
@@ -441,32 +435,7 @@
   </section>
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  // 啟用 AOS
-  AOS.init();
-  // 條列動畫逐行顯示
-  document.addEventListener('DOMContentLoaded', function(){
-    const items = document.querySelectorAll('#kao-list li');
-    let delay = 0;
-    items.forEach((item) => {
-      item.style.opacity = 0;
-      setTimeout(()=>{
-        item.style.opacity = 1;
-        item.classList.add('animate__fadeInLeft');
-      }, delay);
-      delay += 220;
-    });
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-  const items = document.querySelectorAll('#kao-facts li');
-  items.forEach((item, i) => {
-    setTimeout(() => {
-      item.style.opacity = 1;
-      item.style.transform = "translateY(0)";
-    }, 300 + 160 * i);
-  });
-});
+<script>AOS.init();</script>
 
 </script>
 
