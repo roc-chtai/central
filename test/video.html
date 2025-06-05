@@ -28,9 +28,12 @@
       z-index: 1;
     }
     .main-video-card video {
-      width: 92%;
-      max-width: 560px;
-      min-width: 200px;
+      width: 100%;
+      max-width: 700px;
+      min-width: 220px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
       background: #e7f2fa;
       border-radius: 12px;
       margin-bottom: 18px;
@@ -84,11 +87,42 @@
       .main-video-card video {max-width: 95vw;}
     }
     @media (max-width: 600px) {
-      .arrow-prev, .arrow-next { position: static; transform:none; margin:0 7px; }
+      .arrow-prev, .arrow-next { display: none; }
       .video-nav-arrows { flex-direction: column; }
       .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; }
+      .main-video-card video { max-width: 99vw; }
+      .video-arrows-mobile { display: flex !important; }
     }
-    /* 卡片區縮圖樣式同前 */
+    .video-arrows-mobile {
+      display: none;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .video-arrow-btn-mobile {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(124,182,183,0.88);
+      color: #00558c;
+      border: none;
+      box-shadow: 0 2px 14px #00eaff33;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .18s, color .18s, opacity .18s;
+      opacity: 0.94;
+      outline: none;
+    }
+    .video-arrow-btn-mobile:active,
+    .video-arrow-btn-mobile:focus,
+    .video-arrow-btn-mobile:hover {
+      background: #00558c;
+      color: #fff;
+      opacity: 1;
+    }
     .video-thumb-card {
       background: #fff;
       border: 2px solid #e7f2fa;
@@ -149,6 +183,7 @@
   <div class="container py-4">
     <!-- 箭頭浮在卡片外側的專用容器 -->
     <div class="video-nav-arrows">
+      <!-- 桌機/平板箭頭 -->
       <button class="video-arrow-btn arrow-prev" id="prev-video" title="上一部" aria-label="上一部">
         <svg width="30" height="30" viewBox="0 0 30 30">
           <defs>
@@ -170,6 +205,19 @@
           <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
           您的瀏覽器不支援影片播放
         </video>
+        <!-- 手機專用箭頭 -->
+        <div class="video-arrows-mobile d-flex justify-content-center gap-4 mt-2">
+          <button class="video-arrow-btn-mobile" id="prev-video-mobile" aria-label="上一部">
+            <svg width="22" height="22" viewBox="0 0 22 22">
+              <polyline points="15,5 7,11 15,17" fill="none" stroke="#00b6ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="video-arrow-btn-mobile" id="next-video-mobile" aria-label="下一部">
+            <svg width="22" height="22" viewBox="0 0 22 22">
+              <polyline points="7,5 15,11 7,17" fill="none" stroke="#00b6ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
         <h5 id="main-title">活動一標題</h5>
         <p id="main-desc">這是第一支影片的說明，可以補充講者與主題亮點。</p>
       </div>
@@ -261,11 +309,22 @@
       }
     }
 
+    // 桌機/平板箭頭
     document.getElementById('prev-video').onclick = (e) => {
       e.preventDefault();
       setMainVideo((mainIndex-1+videoList.length)%videoList.length);
     };
     document.getElementById('next-video').onclick = (e) => {
+      e.preventDefault();
+      setMainVideo((mainIndex+1)%videoList.length);
+    };
+
+    // 手機專用箭頭
+    document.getElementById('prev-video-mobile').onclick = (e) => {
+      e.preventDefault();
+      setMainVideo((mainIndex-1+videoList.length)%videoList.length);
+    };
+    document.getElementById('next-video-mobile').onclick = (e) => {
       e.preventDefault();
       setMainVideo((mainIndex+1)%videoList.length);
     };
