@@ -17,18 +17,27 @@
       max-width: 800px;
       margin-left: auto;
       margin-right: auto;
-      position: relative;
       transition: box-shadow .15s;
       text-align: center;
+      overflow: visible;
     }
-    .main-video-card video {
-      width: 100%;
-      max-width: 100%;
-      border-radius: 12px;
-      background: #e7f2fa;
+    .main-video-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
       margin-bottom: 18px;
+    }
+    .main-video-flex video {
+      width: calc(100% - 140px);
+      max-width: 560px;
+      min-width: 220px;
+      background: #e7f2fa;
+      border-radius: 12px;
       box-shadow: 0 2px 12px #00558c22;
+      margin: 0 12px;
       transition: box-shadow .18s;
+      z-index: 1;
     }
     .main-video-card h5 {
       color: #00558c;
@@ -42,9 +51,6 @@
       font-size: 1.06rem;
     }
     .video-arrow-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
       width: 54px;
       height: 54px;
       border-radius: 50%;
@@ -61,6 +67,7 @@
       transition: background .18s, color .18s;
       opacity: 0.83;
       outline: none;
+      flex-shrink: 0;
     }
     .video-arrow-btn:active,
     .video-arrow-btn:focus,
@@ -69,18 +76,16 @@
       color: #fff;
       opacity: 1;
     }
-    .arrow-prev { left: -48px;}
-    .arrow-next { right: -48px;}
     @media (max-width: 900px){
-      .arrow-prev { left: 4px;}
-      .arrow-next { right: 4px;}
+      .main-video-flex video { max-width: 370px; min-width: 140px;}
       .main-video-card {padding: 10px;}
+      .video-arrow-btn { width: 38px; height: 38px;}
     }
     @media (max-width: 576px) {
+      .main-video-flex { margin-bottom: 14px;}
+      .main-video-flex video { max-width: 90vw; min-width: 0; width: 100%; margin:0 6px;}
       .main-video-card { padding: 3px; border-radius: 9px;}
       .video-arrow-btn { width: 38px;height: 38px;font-size:1.45rem; }
-      .arrow-prev { left: 0; }
-      .arrow-next { right: 0;}
     }
     .video-thumb-card {
       background: #fff;
@@ -121,6 +126,16 @@
       text-overflow: ellipsis;
       width: 100%;
     }
+    @media (max-width: 576px) {
+      #video-thumbs .col-lg-4,
+      #video-thumbs .col-md-6 {
+        max-width: 100%;
+        flex: 0 0 100%;
+      }
+      .video-thumb-card {
+        margin-bottom: 12px;
+      }
+    }
     @keyframes fadeInUp {
       0% {opacity: 0; transform: translateY(48px);}
       100% {opacity: 1; transform: translateY(0);}
@@ -132,53 +147,56 @@
   <div class="container py-4">
     <!-- 主影片 -->
     <div class="main-video-card fade-in" id="main-video-area">
-      <button class="video-arrow-btn arrow-prev" id="prev-video" title="上一部" aria-label="上一部">
-  <svg width="30" height="30" viewBox="0 0 30 30">
-    <defs>
-      <linearGradient id="arrow-grad-left" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#00eaff"/>
-        <stop offset="100%" stop-color="#00558c"/>
-      </linearGradient>
-      <filter id="arrow-glow-left" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
-      </filter>
-    </defs>
-    <polyline points="20,7 10,15 20,23"
-      fill="none" stroke="url(#arrow-grad-left)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
-      filter="url(#arrow-glow-left)"/>
-  </svg>
-</button>
-      <button class="video-arrow-btn arrow-next" id="next-video" title="下一部" aria-label="下一部">
-  <svg width="30" height="30" viewBox="0 0 30 30">
-    <defs>
-      <linearGradient id="arrow-grad-right" x1="1" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#00eaff"/>
-        <stop offset="100%" stop-color="#00558c"/>
-      </linearGradient>
-      <filter id="arrow-glow-right" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
-      </filter>
-    </defs>
-    <polyline points="10,7 20,15 10,23"
-      fill="none" stroke="url(#arrow-grad-right)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
-      filter="url(#arrow-glow-right)"/>
-  </svg>
-</button>
-      <video id="main-video" controls poster="https://fakeimg.pl/800x450/7cb6b7/fff?text=活動影音1" style="z-index: 1;">
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-        您的瀏覽器不支援影片播放
-      </video>
+      <div class="main-video-flex">
+        <!-- 左箭頭 -->
+        <button class="video-arrow-btn arrow-prev" id="prev-video" title="上一部" aria-label="上一部">
+          <svg width="30" height="30" viewBox="0 0 30 30">
+            <defs>
+              <linearGradient id="arrow-grad-left" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00eaff"/>
+                <stop offset="100%" stop-color="#00558c"/>
+              </linearGradient>
+              <filter id="arrow-glow-left" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
+              </filter>
+            </defs>
+            <polyline points="20,7 10,15 20,23"
+              fill="none" stroke="url(#arrow-grad-left)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+              filter="url(#arrow-glow-left)"/>
+          </svg>
+        </button>
+        <!-- 影片 -->
+        <video id="main-video" controls poster="https://fakeimg.pl/800x450/7cb6b7/fff?text=活動影音1">
+          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          您的瀏覽器不支援影片播放
+        </video>
+        <!-- 右箭頭 -->
+        <button class="video-arrow-btn arrow-next" id="next-video" title="下一部" aria-label="下一部">
+          <svg width="30" height="30" viewBox="0 0 30 30">
+            <defs>
+              <linearGradient id="arrow-grad-right" x1="1" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00eaff"/>
+                <stop offset="100%" stop-color="#00558c"/>
+              </linearGradient>
+              <filter id="arrow-glow-right" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
+              </filter>
+            </defs>
+            <polyline points="10,7 20,15 10,23"
+              fill="none" stroke="url(#arrow-grad-right)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+              filter="url(#arrow-glow-right)"/>
+          </svg>
+        </button>
+      </div>
       <h5 id="main-title">活動一標題</h5>
       <p id="main-desc">這是第一支影片的說明，可以補充講者與主題亮點。</p>
     </div>
     <!-- 小影片縮圖區 -->
-    <div class="row" id="video-thumbs">
-      <!-- 動態生成 -->
-    </div>
+    <div class="row" id="video-thumbs"></div>
   </div>
 
   <script>
-    // 影片資料（4支，假資料）
+    // 假資料，換成你的影片/縮圖即可
     const videoList = [
       {
         title: "活動一標題",
