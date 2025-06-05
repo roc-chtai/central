@@ -202,6 +202,19 @@
       100% {opacity: 1; transform: translateY(0);}
     }
     .fade-in { animation: fadeInUp 1s .2s both;}
+
+    /* 修正 AOS 對彈窗的干擾 */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.col-12, .col-md-*, .mobile-menu-grid-custom {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
   </style>
 </head>
 <body>
