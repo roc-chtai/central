@@ -112,11 +112,17 @@
   /* 區塊1：主影片卡片和箭頭區 */
   .main-video-card,
   .video-nav-arrows {
-    max-width: 600px;    /* 你可以調成 600～700px，看平板舒適感 */
-    width: 90%;          /* 讓區塊本身左右有留白 */
+    max-width: 600px;   
+    width: 90%;         
     margin-left: auto;
     margin-right: auto;
   }
+
+ #video-thumbs {
+    width: 80% !important;    
+    margin-left: auto;
+    margin-right: auto;
+
   /* 調整箭頭靠外一點，避免卡在影片上 */
   .arrow-prev { left: -38px; }
   .arrow-next { right: -38px; }
@@ -124,9 +130,9 @@
 
 
 .video-arrows-mobile {
-  display: none; /* 預設隱藏 */
-  justify-content: center; /* 水平置中 */
-  gap: 24px; /* 按鈕間距 */
+  display: none;
+  justify-content: center;
+  gap: 24px;
   margin-top: 8px;
   margin-bottom: 4px;
 }
