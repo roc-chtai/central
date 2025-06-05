@@ -94,18 +94,14 @@
 .arrow-prev { left: -70px; } /* 左側箭頭向左偏移 */
 .arrow-next { right: -70px; } /* 右側箭頭向右偏移 */
 
-@media (max-width: 1200px){
-  .main-video-card {max-width: 100vw;} /* 當小於1200px，主影片滿寬 */
-  .video-nav-arrows {max-width: 100vw;} /* 同上，箭頭區也拉滿寬度 */
-}
 
 @media (max-width: 760px) {
   .arrow-prev, .arrow-next { display: none; } /* 手機上不顯示桌機箭頭 */
   .video-nav-arrows { flex-direction: column; } /* 手機上改為垂直排列 */
   .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; } /* 陰影變小、內距縮小 */
-  .main-video-card video { max-width: 99vw; } /* 手機上影片寬度滿版 */
+  .main-video-card video { max-width: 95%; } /* 手機上影片寬度滿版 */
   .video-arrows-mobile { display: flex !important; } /* 顯示手機箭頭 */
-  #video-thumbs .col-4 { max-width: 100%; flex: 0 0 100%; } /* 清單滿寬 */
+  #video-thumbs .col-4 { max-width: 95%; flex: 0 0 95%; } /* 清單滿寬 */
   .video-thumb-card, .list-thumb-card { margin-bottom: 12px; } /* 間距 */
   .list-thumb-card img { width: 70px; height: 40px; } /* 縮小預覽圖 */
 }
