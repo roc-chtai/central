@@ -6,104 +6,105 @@
   <title>活動影音專區</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
- body { background: #f8fafc; } /* 設定整體網頁背景色為淡灰藍色 */
+ body { background: #f8fafc; } 
 
 .container.custom-max {
-  max-width: 1200px; /* 最大寬度限制為 1200px */
-  margin: 0 auto; /* 左右置中 */
-  padding: 20px 24px; /* 上下20px、左右24px 的內距 */
+  max-width: 1200px; 
+  margin: 0 auto;
+  padding: 20px 24px;
 }
-
+    
+/* 在平板或桌機上隱藏手機用的箭頭 */
 @media (min-width: 761px) {
-  .video-arrows-mobile { display: none !important; } /* 在平板或桌機上隱藏手機用的箭頭 */
+  .video-arrows-mobile { display: none !important; } 
 }
 
 .video-nav-arrows {
-  position: relative; /* 設定相對定位，方便絕對定位箭頭 */
-  max-width: 760px; /* 最大寬度 760px */
-  margin: 0 auto 32px auto; /* 上下自動置中，底部間距32px */
-  display: flex; /* 使用 Flexbox 排列 */
-  align-items: center; /* 垂直置中 */
-  justify-content: center; /* 水平置中 */
+  position: relative; 
+  max-width: 760px;
+  margin: 0 auto 32px auto;
+  display: flex; 
+  align-items: center;
+  justify-content: center; 
 }
 
 .main-video-card {
-  background: #fff; /* 白色背景 */
-  border-radius: 18px; /* 圓角 */
-  border: 2px solid #7cb6b7; /* 藍綠邊框 */
-  box-shadow: 0 4px 18px #00558c22; /* 淡藍陰影 */
-  padding: 24px 0; /* 上下24px 內距，左右0 */
-  max-width: 760px; /* 最大寬度 760px */
-  width: 100%; /* 滿寬 */
+  background: #fff; 
+  border-radius: 18px; 
+  border: 2px solid #7cb6b7; 
+  box-shadow: 0 4px 18px #00558c22;
+  padding: 24px 0; 
+  max-width: 760px; 
+  width: 90%; /* 滿寬 */
   text-align: center; /* 文字置中 */
-  transition: box-shadow .15s; /* 陰影過渡動畫 */
-  z-index: 1; /* 疊層優先 */
+  transition: box-shadow .15s; 
+  z-index: 1; 
 }
 
 .main-video-card video {
-  width: 95%; /* 滿寬 */
-  max-width: 700px; /* 最大寬度700px */
-  min-width: 220px; /* 最小寬度220px */
-  margin-left: auto; margin-right: auto; display: block; /* 水平置中 */
-  background: #e7f2fa; /* 淡藍底 */
-  border-radius: 12px; /* 圓角 */
-  margin-bottom: 18px; /* 底部間距 */
-  transition: box-shadow .18s; /* 陰影變化動畫 */
+  width: 90%; 
+  max-width: 700px; 
+  min-width: 220px; 
+  margin-left: auto; margin-right: auto; display: block; 
+  background: #e7f2fa;
+  border-radius: 12px; 
+  margin-bottom: 18px;
+  transition: box-shadow .18s; 
 }
 
 .main-video-card h5 {
-  color: #00558c; /* 深藍色字 */
-  margin-bottom: .5rem; /* 底部間距 */
-  font-weight: 700; /* 字體加粗 */
-  letter-spacing: .5px; /* 字距微調 */
-  text-shadow: 0 1px 1px #eaf7ff; /* 微淡藍陰影字 */
+  color: #00558c;
+  margin-bottom: .5rem; 
+  font-weight: 700; 
+  letter-spacing: .5px;
+  text-shadow: 0 1px 1px #eaf7ff;
 }
 
 .main-video-card p {
-  color: #425466; /* 深灰藍字 */
-  font-size: 1.06rem; /* 字體大小 */
+  color: #425466; 
+  font-size: 1.06rem; 
 }
 
 .video-arrow-btn {
-  position: absolute; /* 絕對定位 */
-  top: 50%; /* 垂直置中 */
-  transform: translateY(-50%); /* 使垂直中心準確 */
-  width: 54px; height: 54px; /* 圓形按鈕尺寸 */
-  border-radius: 50%; /* 圓形按鈕 */
-  background: rgba(124,182,183,0.88); /* 半透明背景 */
-  color: #fff; /* 白字 */
-  border: none; /* 無邊框 */
-  box-shadow: 0 2px 14px #00eaff55; /* 藍色陰影 */
-  display: flex; align-items: center; justify-content: center; /* 置中 SVG */
-  font-size: 2.2rem; /* 字體大小 */
-  z-index: 2; /* 疊層優先 */
-  cursor: pointer; /* 滑鼠指標 */
-  transition: background .18s, color .18s, opacity .18s; /* 過渡動畫 */
-  opacity: 0.88; /* 半透明 */
-  outline: none; /* 去除點擊框線 */
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  width: 54px; height: 54px; 
+  border-radius: 50%; 
+  background: rgba(124,182,183,0.88);
+  color: #fff;
+  border: none; 
+  box-shadow: 0 2px 14px #00eaff55;
+  display: flex; align-items: center; justify-content: center; 
+  font-size: 2.2rem; 
+  z-index: 2; 
+  cursor: pointer;
+  transition: background .18s, color .18s, opacity .18s; 
+  opacity: 0.88;
+  outline: none; 
 }
 
 .video-arrow-btn:active,
 .video-arrow-btn:focus,
 .video-arrow-btn:hover {
-  background: #00558c; /* 深藍底 */
-  color: #fff; /* 白字 */
-  opacity: 1; /* 不透明 */
+  background: #00558c; 
+  color: #fff;
+  opacity: 1; 
 }
 
-.arrow-prev { left: -70px; } /* 左側箭頭向左偏移 */
-.arrow-next { right: -70px; } /* 右側箭頭向右偏移 */
+.arrow-prev { left: -70px; }
+.arrow-next { right: -70px; }
 
 
 @media (max-width: 760px) {
-  .arrow-prev, .arrow-next { display: none; } /* 手機上不顯示桌機箭頭 */
-  .video-nav-arrows { flex-direction: column; } /* 手機上改為垂直排列 */
-  .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; } /* 陰影變小、內距縮小 */
-  .main-video-card video { max-width: 95%; } /* 手機上影片寬度滿版 */
-  .video-arrows-mobile { display: flex !important; } /* 顯示手機箭頭 */
-  #video-thumbs .col-4 { max-width: 95%; flex: 0 0 95%; } /* 清單滿寬 */
-  .video-thumb-card, .list-thumb-card { margin-bottom: 12px; } /* 間距 */
-  .list-thumb-card img { width: 70px; height: 40px; } /* 縮小預覽圖 */
+  .arrow-prev, .arrow-next { display: none; } 
+  .video-nav-arrows { flex-direction: column; }
+  .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; } 
+  .main-video-card video { max-width: 90%; } 
+  .video-arrows-mobile { display: flex !important; }
+  #video-thumbs .col-4 { max-width: 90%; flex: 0 0 90%; } 
+  .video-thumb-card, .list-thumb-card { margin-bottom: 12px; } 
+  .list-thumb-card img { width: 70px; height: 40px; } 
   
 }
 
