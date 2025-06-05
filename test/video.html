@@ -6,219 +6,230 @@
   <title>活動影音專區</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { background: #f8fafc; }
-    .container.custom-max { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
-    @media (max-width: 1200px) {
-      .container.custom-max { max-width: 100vw; }
-      .main-video-card, .video-nav-arrows {   max-width: 800px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box; }
-    }
-    @media (min-width: 761px) {
-  .video-arrows-mobile { display: none !important; }
-}
-    @media (max-width: 760px) {
-      .container.custom-max { padding: 18px 6px; }
-    }
-    .video-nav-arrows {
-      position: relative;
-      max-width: 800px;
-      margin: 0 auto 32px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .main-video-card {
-      background: #fff;
-      border-radius: 18px;
-      border: 2px solid #7cb6b7;
-      box-shadow: 0 4px 18px #00558c22;
-      padding: 24px 0 24px 0;
-      max-width: 800px;
-      width: 100%;
-      text-align: center;
-      transition: box-shadow .15s;
-      z-index: 1;
-    }
-    .main-video-card video {
-      width: 100%;
-      max-width: 700px;
-      min-width: 220px;
-      margin-left: auto;
-      margin-right: auto;
-      display: block;
-      background: #e7f2fa;
-      border-radius: 12px;
-      margin-bottom: 18px;
-      transition: box-shadow .18s;
-    }
-    .main-video-card h5 {
-      color: #00558c;
-      margin-bottom: .5rem;
-      font-weight: 700;
-      letter-spacing: .5px;
-      text-shadow: 0 1px 1px #eaf7ff;
-    }
-    .main-video-card p {
-      color: #425466;
-      font-size: 1.06rem;
-    }
-    .video-arrow-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background: rgba(124,182,183,0.88);
-      color: #fff;
-      border: none;
-      box-shadow: 0 2px 14px #00eaff55;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      z-index: 2;
-      cursor: pointer;
-      transition: background .18s, color .18s, opacity .18s;
-      opacity: 0.88;
-      outline: none;
-    }
-    .video-arrow-btn:active,
-    .video-arrow-btn:focus,
-    .video-arrow-btn:hover {
-      background: #00558c;
-      color: #fff;
-      opacity: 1;
-    }
-    .arrow-prev { left: -70px;}
-    .arrow-next { right: -70px;}
-    @media (max-width: 1200px){
-      .main-video-card {max-width: 995%;}
-      .video-nav-arrows {max-width: 995%;}
-    }
-    @media (max-width: 760px) {
-      .arrow-prev, .arrow-next { display: none; }
-      .video-nav-arrows { flex-direction: column; }
-      .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; }
-      .main-video-card video { max-width: 99vw; }
-      .video-arrows-mobile { display: flex !important; }
-      #video-thumbs .col-4 { max-width: 95%; flex: 0 0 100%; }
-      .video-thumb-card, .list-thumb-card { margin-bottom: 12px; }
-      .list-thumb-card img { width: 70px; height: 40px; }
-    }
-    .video-arrows-mobile {
-      display: none;
-      justify-content: center;
-      gap: 24px;
-      margin-top: 8px;
-      margin-bottom: 4px;
-    }
-    .video-arrow-btn-mobile {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(124,182,183,0.88);
-      color: #00558c;
-      border: none;
-      box-shadow: 0 2px 14px #00eaff33;
-      font-size: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .18s, color .18s, opacity .18s;
-      opacity: 0.94;
-      outline: none;
-    }
-    .video-arrow-btn-mobile:active,
-    .video-arrow-btn-mobile:focus,
-    .video-arrow-btn-mobile:hover {
-      background: #00558c;
-      color: #fff;
-      opacity: 1;
-    }
-    .video-thumb-card {
-      background: #fff;
-      border: 2px solid #e7f2fa;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px #00558c18;
-      cursor: pointer;
-      transition: box-shadow .16s, border-color .16s;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    .video-thumb-card.active,
-    .video-thumb-card:hover {
-      border-color: #7cb6b7;
-      box-shadow: 0 4px 24px #00558c30;
-    }
-    .video-thumb-card img {
-      width: 100%;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-      border-radius: 10px 10px 0 0;
-    }
-    .video-thumb-card .card-body {
-      padding: 10px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .video-thumb-card .card-title {
-      color: #00558c;
-      font-size: 1rem;
-      font-weight: 600;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-    }
-    .list-thumb-card {
-      border-radius: 12px;
-      border: 2px solid #e7f2fa;
-      background: #fff;
-      box-shadow: 0 2px 10px #00558c10;
-      transition: box-shadow .16s, border-color .16s;
-      cursor: pointer;
-    }
-    .list-thumb-card.active,
-    .list-thumb-card:hover {
-      border-color: #7cb6b7;
-      box-shadow: 0 6px 18px #00558c22;
-    }
-    .list-thumb-card img {
-      width: 120px; height: 67px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    @media (max-width: 760px) {
-      .list-thumb-card img {
-        width: 70px; height: 40px;
-      }
-    }
-    @keyframes fadeInUp {
-      0% {opacity: 0; transform: translateY(48px);}
-      100% {opacity: 1; transform: translateY(0);}
-    }
-    .fade-in { animation: fadeInUp 1s .2s both;}
+ body { background: #f8fafc; } /* 設定整體網頁背景色為淡灰藍色 */
 
-    /* 修正 AOS 對彈窗的干擾 */
+.container.custom-max {
+  max-width: 1200px; /* 最大寬度限制為 1200px */
+  margin: 0 auto; /* 左右置中 */
+  padding: 20px 24px; /* 上下20px、左右24px 的內距 */
+}
+
+@media (min-width: 761px) {
+  .video-arrows-mobile { display: none !important; } /* 在平板或桌機上隱藏手機用的箭頭 */
+}
+
+.video-nav-arrows {
+  position: relative; /* 設定相對定位，方便絕對定位箭頭 */
+  max-width: 760px; /* 最大寬度 760px */
+  margin: 0 auto 32px auto; /* 上下自動置中，底部間距32px */
+  display: flex; /* 使用 Flexbox 排列 */
+  align-items: center; /* 垂直置中 */
+  justify-content: center; /* 水平置中 */
+}
+
+.main-video-card {
+  background: #fff; /* 白色背景 */
+  border-radius: 18px; /* 圓角 */
+  border: 2px solid #7cb6b7; /* 藍綠邊框 */
+  box-shadow: 0 4px 18px #00558c22; /* 淡藍陰影 */
+  padding: 24px 0; /* 上下24px 內距，左右0 */
+  max-width: 760px; /* 最大寬度 760px */
+  width: 100%; /* 滿寬 */
+  text-align: center; /* 文字置中 */
+  transition: box-shadow .15s; /* 陰影過渡動畫 */
+  z-index: 1; /* 疊層優先 */
+}
+
+.main-video-card video {
+  width: 95%; /* 滿寬 */
+  max-width: 700px; /* 最大寬度700px */
+  min-width: 220px; /* 最小寬度220px */
+  margin-left: auto; margin-right: auto; display: block; /* 水平置中 */
+  background: #e7f2fa; /* 淡藍底 */
+  border-radius: 12px; /* 圓角 */
+  margin-bottom: 18px; /* 底部間距 */
+  transition: box-shadow .18s; /* 陰影變化動畫 */
+}
+
+.main-video-card h5 {
+  color: #00558c; /* 深藍色字 */
+  margin-bottom: .5rem; /* 底部間距 */
+  font-weight: 700; /* 字體加粗 */
+  letter-spacing: .5px; /* 字距微調 */
+  text-shadow: 0 1px 1px #eaf7ff; /* 微淡藍陰影字 */
+}
+
+.main-video-card p {
+  color: #425466; /* 深灰藍字 */
+  font-size: 1.06rem; /* 字體大小 */
+}
+
+.video-arrow-btn {
+  position: absolute; /* 絕對定位 */
+  top: 50%; /* 垂直置中 */
+  transform: translateY(-50%); /* 使垂直中心準確 */
+  width: 54px; height: 54px; /* 圓形按鈕尺寸 */
+  border-radius: 50%; /* 圓形按鈕 */
+  background: rgba(124,182,183,0.88); /* 半透明背景 */
+  color: #fff; /* 白字 */
+  border: none; /* 無邊框 */
+  box-shadow: 0 2px 14px #00eaff55; /* 藍色陰影 */
+  display: flex; align-items: center; justify-content: center; /* 置中 SVG */
+  font-size: 2.2rem; /* 字體大小 */
+  z-index: 2; /* 疊層優先 */
+  cursor: pointer; /* 滑鼠指標 */
+  transition: background .18s, color .18s, opacity .18s; /* 過渡動畫 */
+  opacity: 0.88; /* 半透明 */
+  outline: none; /* 去除點擊框線 */
+}
+
+.video-arrow-btn:active,
+.video-arrow-btn:focus,
+.video-arrow-btn:hover {
+  background: #00558c; /* 深藍底 */
+  color: #fff; /* 白字 */
+  opacity: 1; /* 不透明 */
+}
+
+.arrow-prev { left: -70px; } /* 左側箭頭向左偏移 */
+.arrow-next { right: -70px; } /* 右側箭頭向右偏移 */
+
+@media (max-width: 1200px){
+  .main-video-card {max-width: 100vw;} /* 當小於1200px，主影片滿寬 */
+  .video-nav-arrows {max-width: 100vw;} /* 同上，箭頭區也拉滿寬度 */
+}
+
+@media (max-width: 760px) {
+  .arrow-prev, .arrow-next { display: none; } /* 手機上不顯示桌機箭頭 */
+  .video-nav-arrows { flex-direction: column; } /* 手機上改為垂直排列 */
+  .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; } /* 陰影變小、內距縮小 */
+  .main-video-card video { max-width: 99vw; } /* 手機上影片寬度滿版 */
+  .video-arrows-mobile { display: flex !important; } /* 顯示手機箭頭 */
+  #video-thumbs .col-4 { max-width: 100%; flex: 0 0 100%; } /* 清單滿寬 */
+  .video-thumb-card, .list-thumb-card { margin-bottom: 12px; } /* 間距 */
+  .list-thumb-card img { width: 70px; height: 40px; } /* 縮小預覽圖 */
+}
+
+.video-arrows-mobile {
+  display: none; /* 預設隱藏 */
+  justify-content: center; /* 水平置中 */
+  gap: 24px; /* 按鈕間距 */
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.video-arrow-btn-mobile {
+  width: 44px; height: 44px; /* 按鈕尺寸 */
+  border-radius: 50%; /* 圓形 */
+  background: rgba(124,182,183,0.88); /* 半透明藍綠底 */
+  color: #00558c; /* 深藍文字 */
+  border: none;
+  box-shadow: 0 2px 14px #00eaff33; /* 陰影 */
+  font-size: 2rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .18s, color .18s, opacity .18s;
+  opacity: 0.94;
+  outline: none;
+}
+
+.video-arrow-btn-mobile:active,
+.video-arrow-btn-mobile:focus,
+.video-arrow-btn-mobile:hover {
+  background: #00558c;
+  color: #fff;
+  opacity: 1;
+}
+
+.video-thumb-card {
+  background: #fff;
+  border: 2px solid #e7f2fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #00558c18;
+  cursor: pointer;
+  transition: box-shadow .16s, border-color .16s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-thumb-card.active,
+.video-thumb-card:hover {
+  border-color: #7cb6b7;
+  box-shadow: 0 4px 24px #00558c30;
+}
+
+.video-thumb-card img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.video-thumb-card .card-body {
+  padding: 10px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-thumb-card .card-title {
+  color: #00558c;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.list-thumb-card {
+  border-radius: 12px;
+  border: 2px solid #e7f2fa;
+  background: #fff;
+  box-shadow: 0 2px 10px #00558c10;
+  transition: box-shadow .16s, border-color .16s;
+  cursor: pointer;
+}
+
+.list-thumb-card.active,
+.list-thumb-card:hover {
+  border-color: #7cb6b7;
+  box-shadow: 0 6px 18px #00558c22;
+}
+
+.list-thumb-card img {
+  width: 120px; height: 67px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+  .list-thumb-card img {
+    width: 70px; height: 40px;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {opacity: 0; transform: translateY(48px);} /* 初始：淡出、下移 */
+  100% {opacity: 1; transform: translateY(0);} /* 最終：顯示、位置回正 */
+}
+
+.fade-in { animation: fadeInUp 1s .2s both; } /* 應用進場動畫 */
+
 html, body {
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: hidden !important;
-}
+} /* 防止 AOS 類動畫系統影響版面：鎖定橫向寬度，禁止橫向捲軸 */
 
 .col-12, .col-md-*, .mobile-menu-grid-custom {
   max-width: 100% !important;
   width: 100% !important;
   box-sizing: border-box;
-}
+} /* 保持各欄位最大寬度一致，修正因框架套件可能出現的寬度問題 */
+
   </style>
 </head>
 <body>
