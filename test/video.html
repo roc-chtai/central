@@ -1,1 +1,269 @@
-0-0
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活動影音專區</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f8fafc; }
+    .main-video-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 2px solid #7cb6b7;
+      box-shadow: 0 4px 18px #00558c22;
+      padding: 24px;
+      margin-bottom: 32px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      transition: box-shadow .15s;
+      text-align: center;
+    }
+    .main-video-card video {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 12px;
+      background: #e7f2fa;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 12px #00558c22;
+      transition: box-shadow .18s;
+    }
+    .main-video-card h5 {
+      color: #00558c;
+      margin-bottom: .5rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-shadow: 0 1px 1px #eaf7ff;
+    }
+    .main-video-card p {
+      color: #425466;
+      font-size: 1.06rem;
+    }
+    .video-arrow-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(124,182,183,0.77);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 10px #00558c33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      z-index: 10;
+      cursor: pointer;
+      transition: background .18s, color .18s;
+      opacity: 0.83;
+      outline: none;
+    }
+    .video-arrow-btn:active,
+    .video-arrow-btn:focus,
+    .video-arrow-btn:hover {
+      background: #00558c;
+      color: #fff;
+      opacity: 1;
+    }
+    .arrow-prev { left: -48px;}
+    .arrow-next { right: -48px;}
+    @media (max-width: 900px){
+      .arrow-prev { left: 4px;}
+      .arrow-next { right: 4px;}
+      .main-video-card {padding: 10px;}
+    }
+    @media (max-width: 576px) {
+      .main-video-card { padding: 3px; border-radius: 9px;}
+      .video-arrow-btn { width: 38px;height: 38px;font-size:1.45rem; }
+      .arrow-prev { left: 0; }
+      .arrow-next { right: 0;}
+    }
+    .video-thumb-card {
+      background: #fff;
+      border: 2px solid #e7f2fa;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #00558c18;
+      cursor: pointer;
+      transition: box-shadow .16s, border-color .16s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .video-thumb-card.active,
+    .video-thumb-card:hover {
+      border-color: #7cb6b7;
+      box-shadow: 0 4px 24px #00558c30;
+    }
+    .video-thumb-card img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 10px 10px 0 0;
+    }
+    .video-thumb-card .card-body {
+      padding: 10px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-thumb-card .card-title {
+      color: #00558c;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+    @keyframes fadeInUp {
+      0% {opacity: 0; transform: translateY(48px);}
+      100% {opacity: 1; transform: translateY(0);}
+    }
+    .fade-in { animation: fadeInUp 1s .2s both;}
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <!-- 主影片 -->
+    <div class="main-video-card fade-in" id="main-video-area">
+      <button class="video-arrow-btn arrow-prev" id="prev-video" title="上一部" aria-label="上一部">
+  <svg width="30" height="30" viewBox="0 0 30 30">
+    <defs>
+      <linearGradient id="arrow-grad-left" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#00eaff"/>
+        <stop offset="100%" stop-color="#00558c"/>
+      </linearGradient>
+      <filter id="arrow-glow-left" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <polyline points="20,7 10,15 20,23"
+      fill="none" stroke="url(#arrow-grad-left)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+      filter="url(#arrow-glow-left)"/>
+  </svg>
+</button>
+      <button class="video-arrow-btn arrow-next" id="next-video" title="下一部" aria-label="下一部">
+  <svg width="30" height="30" viewBox="0 0 30 30">
+    <defs>
+      <linearGradient id="arrow-grad-right" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#00eaff"/>
+        <stop offset="100%" stop-color="#00558c"/>
+      </linearGradient>
+      <filter id="arrow-glow-right" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <polyline points="10,7 20,15 10,23"
+      fill="none" stroke="url(#arrow-grad-right)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+      filter="url(#arrow-glow-right)"/>
+  </svg>
+</button>
+      <video id="main-video" controls poster="https://fakeimg.pl/800x450/7cb6b7/fff?text=活動影音1" style="z-index: 1;">
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        您的瀏覽器不支援影片播放
+      </video>
+      <h5 id="main-title">活動一標題</h5>
+      <p id="main-desc">這是第一支影片的說明，可以補充講者與主題亮點。</p>
+    </div>
+    <!-- 小影片縮圖區 -->
+    <div class="row" id="video-thumbs">
+      <!-- 動態生成 -->
+    </div>
+  </div>
+
+  <script>
+    // 影片資料（4支，假資料，記得換成你自己的網址與縮圖）
+    const videoList = [
+      {
+        title: "活動一標題",
+        desc: "這是第一支影片的說明，可以補充講者與主題亮點。",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        poster: "https://fakeimg.pl/800x450/7cb6b7/fff?text=活動影音1"
+      },
+      {
+        title: "活動二標題",
+        desc: "第二支影片內容簡述，主題、重點。",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        poster: "https://fakeimg.pl/800x450/99cc33/fff?text=活動影音2"
+      },
+      {
+        title: "活動三標題",
+        desc: "第三支影片說明，內容介紹。",
+        video: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        poster: "https://fakeimg.pl/800x450/993333/fff?text=活動影音3"
+      },
+      {
+        title: "活動四標題",
+        desc: "第四支影片說明，講座主題與活動特色。",
+        video: "https://media.w3.org/2010/05/sintel/trailer.mp4",
+        poster: "https://fakeimg.pl/800x450/425466/fff?text=活動影音4"
+      }
+    ];
+
+    let mainIndex = 0;
+
+    // 動態產生縮圖
+    function renderThumbs() {
+      const container = document.getElementById('video-thumbs');
+      container.innerHTML = '';
+      videoList.forEach((item, idx) => {
+        const col = document.createElement('div');
+        col.className = 'col-lg-4 col-md-6 col-12 mb-4';
+        col.innerHTML = `
+          <div class="card video-thumb-card${idx===mainIndex?' active':''}" data-vid="${idx}">
+            <img src="${item.poster}" class="card-img-top" alt="${item.title}">
+            <div class="card-body">
+              <div class="card-title">${item.title}</div>
+            </div>
+          </div>
+        `;
+        col.querySelector('.video-thumb-card').onclick = () => setMainVideo(idx);
+        container.appendChild(col);
+      });
+    }
+
+    // 切換主影片
+    function setMainVideo(idx) {
+      mainIndex = idx;
+      const vid = videoList[idx];
+      const video = document.getElementById('main-video');
+      video.src = vid.video;
+      video.poster = vid.poster;
+      document.getElementById('main-title').textContent = vid.title;
+      document.getElementById('main-desc').textContent = vid.desc;
+
+      // 清除 active 樣式
+      document.querySelectorAll('.video-thumb-card').forEach(card => card.classList.remove('active'));
+      // 設定新的 active
+      setTimeout(()=>{
+        const newCard = document.querySelector(`.video-thumb-card[data-vid="${idx}"]`);
+        if(newCard) newCard.classList.add('active');
+      },50);
+      // 自動捲動到主影片（手機時體驗好）
+      if(window.innerWidth < 768){
+        document.getElementById('main-video-area').scrollIntoView({behavior:'smooth'});
+      }
+    }
+
+    // 左右切換
+    document.getElementById('prev-video').onclick = (e) => {
+      e.preventDefault();
+      setMainVideo((mainIndex-1+videoList.length)%videoList.length);
+    };
+    document.getElementById('next-video').onclick = (e) => {
+      e.preventDefault();
+      setMainVideo((mainIndex+1)%videoList.length);
+    };
+
+    // 頁面初始
+    renderThumbs();
+    setMainVideo(0);
+  </script>
+</body>
+</html>
