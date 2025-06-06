@@ -6,252 +6,236 @@
   <title>活動影音專區</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
- body { background: #f8fafc; } 
+    body { background: #f8fafc; }
 
-.container.custom-max {
-  max-width: 1200px; 
-  margin: 0 auto;
-  padding: 20px 24px;
-}
-    
-/* 在平板或桌機上隱藏手機用的箭頭 */
-@media (min-width: 761px) {
-  .video-arrows-mobile { display: none !important; } 
-}
+    .container.custom-max {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
 
-.video-nav-arrows {
-  position: relative; 
-  max-width: 760px;
-  margin: 0 auto 32px auto;
-  display: flex; 
-  align-items: center;
-  justify-content: center; 
-}
+    /* 桌機/平板箭頭區塊 */
+    @media (min-width: 761px) {
+      .video-arrows-mobile { display: none !important; }
+    }
 
-.main-video-card {
-  background: #fff; 
-  border-radius: 18px; 
-  border: 2px solid #7cb6b7; 
-  box-shadow: 0 4px 18px #00558c22;
-  padding: 24px 0; 
-  max-width: 760px; 
-  width: 90%; /* 滿寬 */
-  text-align: center; /* 文字置中 */
-  transition: box-shadow .15s; 
-  z-index: 1; 
-}
+    .video-nav-arrows {
+      position: relative;
+      max-width: 760px;
+      margin: 0 auto 32px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.main-video-card video {
-  width: 90%; 
-  max-width: 700px; 
-  min-width: 220px; 
-  margin-left: auto; margin-right: auto; display: block; 
-  background: #e7f2fa;
-  border-radius: 12px; 
-  margin-bottom: 18px;
-  transition: box-shadow .18s; 
-}
+    .main-video-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 2px solid #7cb6b7;
+      box-shadow: 0 4px 18px #00558c22;
+      padding: 24px 0;
+      max-width: 760px;
+      width: 90%;
+      text-align: center;
+      transition: box-shadow .15s;
+    }
 
-.main-video-card h5 {
-  color: #00558c;
-  margin-bottom: .5rem; 
-  font-weight: 700; 
-  letter-spacing: .5px;
-  text-shadow: 0 1px 1px #eaf7ff;
-}
+    .main-video-card video {
+      width: 90%;
+      max-width: 700px;
+      min-width: 220px;
+      margin: 0 auto 18px auto;
+      display: block;
+      background: #e7f2fa;
+      border-radius: 12px;
+    }
 
-.main-video-card p {
-  color: #425466; 
-  font-size: 1.06rem; 
-}
+    .main-video-card h5 {
+      color: #00558c;
+      margin-bottom: .5rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-shadow: 0 1px 1px #eaf7ff;
+    }
 
-.video-arrow-btn {
-  position: absolute; 
-  top: 50%; 
-  transform: translateY(-50%); 
-  width: 54px; height: 54px; 
-  border-radius: 50%; 
-  background: rgba(124,182,183,0.88);
-  color: #fff;
-  border: none; 
-  box-shadow: 0 2px 14px #00eaff55;
-  display: flex; align-items: center; justify-content: center; 
-  font-size: 2.2rem; 
-  z-index: 2; 
-  cursor: pointer;
-  transition: background .18s, color .18s, opacity .18s; 
-  opacity: 0.88;
-  outline: none; 
-}
+    .main-video-card p {
+      color: #425466;
+      font-size: 1.06rem;
+    }
 
-.video-arrow-btn:active,
-.video-arrow-btn:focus,
-.video-arrow-btn:hover {
-  background: #00558c; 
-  color: #fff;
-  opacity: 1; 
-}
+    .video-arrow-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      background: rgba(124,182,183,0.88);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 14px #00eaff55;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      z-index: 2;
+      cursor: pointer;
+      transition: background .18s, color .18s, opacity .18s;
+      opacity: 0.88;
+      outline: none;
+    }
+    .video-arrow-btn:active,
+    .video-arrow-btn:focus,
+    .video-arrow-btn:hover {
+      background: #00558c;
+      color: #fff;
+      opacity: 1;
+    }
+    .arrow-prev { left: -70px; }
+    .arrow-next { right: -70px; }
 
-.arrow-prev { left: -70px; }
-.arrow-next { right: -70px; }
-
-
-@media (max-width: 760px) {
-  .arrow-prev, .arrow-next { display: none; } 
-  .video-nav-arrows { flex-direction: column; }
-  .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; } 
-  .main-video-card video { max-width: 90%; } 
-  .video-arrows-mobile { display: flex !important; }
-#video-thumbs .col-4 {
-    max-width: 88%;
-    flex: 0 0 88%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .video-thumb-card, .list-thumb-card { margin-bottom: 12px; } 
-  .list-thumb-card img { width: 70px; height: 40px; } 
-   #video-thumbs  {
-    width: 92% ;    
-    margin-left: auto;
-    margin-right: auto;}
-  
-}
+    /* 響應式設定 */
+    @media (max-width: 760px) {
+      .arrow-prev, .arrow-next { display: none; }
+      .video-nav-arrows { flex-direction: column; }
+      .main-video-card { box-shadow: 0 2px 8px #00558c22; padding: 3px 0 7px 0; }
+      .main-video-card video { max-width: 90%; }
+      .video-arrows-mobile { display: flex !important; }
+      #video-thumbs .col-4 {
+        max-width: 88%;
+        flex: 0 0 88%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .video-thumb-card, .list-thumb-card { margin-bottom: 12px; }
+      .list-thumb-card img { width: 70px; height: 40px; }
+    }
 
     @media (min-width: 761px) and (max-width: 1200px) {
-  /* 區塊1：主影片卡片和箭頭區 */
-  .main-video-card,
-  .video-nav-arrows {
-    max-width: 600px;   
-    width: 90%;         
-    margin-left: auto;
-    margin-right: auto;
-  }
+      .main-video-card,
+      .video-nav-arrows {
+        max-width: 600px;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .arrow-prev { left: -38px; }
+      .arrow-next { right: -38px; }
+    }
 
- #video-thumbs {
-    width: 92% ;    
-    margin-left: auto;
-    margin-right: auto;}
+    /* 下方縮圖/清單區（共用一組寬度） */
+    #video-thumbs {
+      width: 92%;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-  /* 調整箭頭靠外一點，避免卡在影片上 */
-  .arrow-prev { left: -38px; }
-  .arrow-next { right: -38px; }
-}
+    .video-arrows-mobile {
+      display: none;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    .video-arrow-btn-mobile {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(124,182,183,0.88);
+      color: #00558c;
+      border: none;
+      box-shadow: 0 2px 14px #00eaff33;
+      font-size: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .18s, color .18s, opacity .18s;
+      opacity: 0.94;
+      outline: none;
+    }
+    .video-arrow-btn-mobile:active,
+    .video-arrow-btn-mobile:focus,
+    .video-arrow-btn-mobile:hover {
+      background: #00558c;
+      color: #fff;
+      opacity: 1;
+    }
 
+    .video-thumb-card {
+      background: #fff;
+      border: 2px solid #e7f2fa;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #00558c18;
+      cursor: pointer;
+      transition: box-shadow .16s, border-color .16s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .video-thumb-card.active,
+    .video-thumb-card:hover {
+      border-color: #7cb6b7;
+      box-shadow: 0 4px 24px #00558c30;
+    }
+    .video-thumb-card img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 10px 10px 0 0;
+    }
+    .video-thumb-card .card-body {
+      padding: 10px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-thumb-card .card-title {
+      color: #00558c;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
 
-.video-arrows-mobile {
-  display: none;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 8px;
-  margin-bottom: 4px;
-}
+    .list-thumb-card {
+      border-radius: 12px;
+      border: 2px solid #e7f2fa;
+      background: #fff;
+      box-shadow: 0 2px 10px #00558c10;
+      transition: box-shadow .16s, border-color .16s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      margin-bottom: 12px;
+    }
+    .list-thumb-card.active,
+    .list-thumb-card:hover {
+      border-color: #7cb6b7;
+      box-shadow: 0 6px 18px #00558c22;
+    }
+    .list-thumb-card img {
+      width: 120px; height: 67px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 1rem;
+    }
 
-.video-arrow-btn-mobile {
-  width: 44px; height: 44px; /* 按鈕尺寸 */
-  border-radius: 50%; /* 圓形 */
-  background: rgba(124,182,183,0.88); /* 半透明藍綠底 */
-  color: #00558c; /* 深藍文字 */
-  border: none;
-  box-shadow: 0 2px 14px #00eaff33; /* 陰影 */
-  font-size: 2rem;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .18s, color .18s, opacity .18s;
-  opacity: 0.94;
-  outline: none;
-}
+    @keyframes fadeInUp {
+      0% {opacity: 0; transform: translateY(48px);}
+      100% {opacity: 1; transform: translateY(0);}
+    }
+    .fade-in { animation: fadeInUp 1s .2s both; }
 
-.video-arrow-btn-mobile:active,
-.video-arrow-btn-mobile:focus,
-.video-arrow-btn-mobile:hover {
-  background: #00558c;
-  color: #fff;
-  opacity: 1;
-}
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
 
-.video-thumb-card {
-  background: #fff;
-  border: 2px solid #e7f2fa;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px #00558c18;
-  cursor: pointer;
-  transition: box-shadow .16s, border-color .16s;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.video-thumb-card.active,
-.video-thumb-card:hover {
-  border-color: #7cb6b7;
-  box-shadow: 0 4px 24px #00558c30;
-}
-
-.video-thumb-card img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  border-radius: 10px 10px 0 0;
-}
-
-.video-thumb-card .card-body {
-  padding: 10px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.video-thumb-card .card-title {
-  color: #00558c;
-  font-size: 1rem;
-  font-weight: 600;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-}
-
-.list-thumb-card {
-  border-radius: 12px;
-  border: 2px solid #e7f2fa;
-  background: #fff;
-  box-shadow: 0 2px 10px #00558c10;
-  transition: box-shadow .16s, border-color .16s;
-  cursor: pointer;
-}
-
-.list-thumb-card.active,
-.list-thumb-card:hover {
-  border-color: #7cb6b7;
-  box-shadow: 0 6px 18px #00558c22;
-}
-
-.list-thumb-card img {
-  width: 120px; height: 67px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-@keyframes fadeInUp {
-  0% {opacity: 0; transform: translateY(48px);} /* 初始：淡出、下移 */
-  100% {opacity: 1; transform: translateY(0);} /* 最終：顯示、位置回正 */
-}
-
-.fade-in { animation: fadeInUp 1s .2s both; } /* 應用進場動畫 */
-
-html, body {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
-} /* 防止 AOS 類動畫系統影響版面：鎖定橫向寬度，禁止橫向捲軸 */
-
-.col-12, .col-md-*, .mobile-menu-grid-custom {
-  max-width: 100% !important;
-  width: 100% !important;
-  box-sizing: border-box;
-} /* 保持各欄位最大寬度一致，修正因框架套件可能出現的寬度問題 */
-
+    .col-12 {
+      max-width: 100% !important;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
@@ -280,7 +264,7 @@ html, body {
           您的瀏覽器不支援影片播放
         </video>
         <!-- 手機專用箭頭 -->
-        <div class="video-arrows-mobile d-flex justify-content-center gap-4 mt-2">
+        <div class="video-arrows-mobile">
           <button class="video-arrow-btn-mobile" id="prev-video-mobile" aria-label="上一部">
             <svg width="22" height="22" viewBox="0 0 22 22">
               <polyline points="15,5 7,11 15,17" fill="none" stroke="#00b6ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -314,7 +298,7 @@ html, body {
     </div>
     <!-- 切換模式按鈕 -->
     <div class="mb-3 d-flex justify-content-end">
-      <button class="btn btn-outline-secondary btn-sm me-2" id="switch-grid"><span>網格</span></button>
+      <button class="btn btn-outline-secondary btn-sm me-2" id="switch-grid"><span>大圖</span></button>
       <button class="btn btn-outline-secondary btn-sm" id="switch-list"><span>列表</span></button>
     </div>
     <!-- 下方清單區 -->
@@ -322,16 +306,17 @@ html, body {
   </div>
 
   <script>
+    // 更新影片區
     const videoList = [
       {
         title: "活動一標題",
-        desc: "這是第一支影片的說明，可以補充講者與主題亮點。",
+        desc: "說明文字",
         video: "#",
         poster: "#"
       },
       {
         title: "活動二標題",
-        desc: "第二支影片內容簡述，主題、重點。",
+        desc: "說明文字",
         video: "#",
         poster: "#"
       }
@@ -344,7 +329,6 @@ html, body {
       const container = document.getElementById('video-thumbs');
       container.innerHTML = '';
       if(listMode === 'grid') {
-        // 三欄網格（電腦＋平板都三欄）
         videoList.forEach((item, idx) => {
           const col = document.createElement('div');
           col.className = 'col-4 mb-4';
@@ -360,14 +344,12 @@ html, body {
           container.appendChild(col);
         });
       } else {
-        // 列表
         videoList.forEach((item, idx) => {
           const div = document.createElement('div');
-          div.className = `list-thumb-card d-flex align-items-center p-2 mb-2 ${idx===mainIndex?'active':''}`;
+          div.className = `list-thumb-card${idx===mainIndex?' active':''}`;
           div.setAttribute('data-vid', idx);
-          div.style.cursor = 'pointer';
           div.innerHTML = `
-            <img src="${item.poster}" class="me-3" style="">
+            <img src="${item.poster}">
             <div>
               <div style="font-weight:700; color:#00558c; font-size:1.07rem;">${item.title}</div>
               <div style="color:#425466; font-size:.92rem;">${item.desc}</div>
