@@ -105,7 +105,6 @@
         margin-right: auto;
       }
       .video-thumb-card, .list-thumb-card { margin-bottom: 12px; }
-      .list-thumb-card img { width: 70px; height: 40px; }
     }
 
     @media (min-width: 761px) and (max-width: 1200px) {
@@ -120,7 +119,6 @@
       .arrow-next { right: -38px; }
     }
 
-    /* 下方縮圖/清單區（共用一組寬度） */
     #video-thumbs {
       width: 92%;
       margin-left: auto;
@@ -153,6 +151,22 @@
       background: #00558c;
       color: #fff;
       opacity: 1;
+    }
+
+    /* 統一所有箭頭SVG polyline 顏色 */
+    .video-arrow-btn svg polyline,
+    .video-arrow-btn-mobile svg polyline {
+      stroke: #00558c !important;
+      transition: stroke .18s;
+    }
+    /* hover, focus, active: 改成白色 */
+    .video-arrow-btn:hover svg polyline,
+    .video-arrow-btn:focus svg polyline,
+    .video-arrow-btn:active svg polyline,
+    .video-arrow-btn-mobile:hover svg polyline,
+    .video-arrow-btn-mobile:focus svg polyline,
+    .video-arrow-btn-mobile:active svg polyline {
+      stroke: #fff !important;
     }
 
     .video-thumb-card {
@@ -213,10 +227,20 @@
       box-shadow: 0 6px 18px #00558c22;
     }
     .list-thumb-card img {
-      width: 120px; height: 67px;
+      width: 70px;
+      height: 40px;
       object-fit: cover;
       border-radius: 8px;
       margin-right: 1rem;
+    }
+    .list-thumb-title {
+      font-weight: 700;
+      color: #00558c;
+      font-size: 1.07rem;
+    }
+    .list-thumb-desc {
+      color: #425466;
+      font-size: .92rem;
     }
 
     @keyframes fadeInUp {
@@ -230,7 +254,6 @@
       max-width: 100%;
       overflow-x: hidden;
     }
-
     .col-12 {
       max-width: 100% !important;
       width: 100% !important;
@@ -244,18 +267,7 @@
       <!-- 桌機/平板箭頭 -->
       <button class="video-arrow-btn arrow-prev" id="prev-video" title="上一部" aria-label="上一部">
         <svg width="30" height="30" viewBox="0 0 30 30">
-          <defs>
-            <linearGradient id="arrow-grad-left" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#00eaff"/>
-              <stop offset="100%" stop-color="#00558c"/>
-            </linearGradient>
-            <filter id="arrow-glow-left" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
-            </filter>
-          </defs>
-          <polyline points="20,7 10,15 20,23"
-            fill="none" stroke="url(#arrow-grad-left)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
-            filter="url(#arrow-glow-left)"/>
+          <polyline points="20,7 10,15 20,23" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
       <div class="main-video-card fade-in" id="main-video-area">
@@ -267,12 +279,12 @@
         <div class="video-arrows-mobile">
           <button class="video-arrow-btn-mobile" id="prev-video-mobile" aria-label="上一部">
             <svg width="22" height="22" viewBox="0 0 22 22">
-              <polyline points="15,5 7,11 15,17" fill="none" stroke="#00b6ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="15,5 7,11 15,17" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <button class="video-arrow-btn-mobile" id="next-video-mobile" aria-label="下一部">
             <svg width="22" height="22" viewBox="0 0 22 22">
-              <polyline points="7,5 15,11 7,17" fill="none" stroke="#00b6ff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="7,5 15,11 7,17" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </div>
@@ -281,24 +293,13 @@
       </div>
       <button class="video-arrow-btn arrow-next" id="next-video" title="下一部" aria-label="下一部">
         <svg width="30" height="30" viewBox="0 0 30 30">
-          <defs>
-            <linearGradient id="arrow-grad-right" x1="1" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#00eaff"/>
-              <stop offset="100%" stop-color="#00558c"/>
-            </linearGradient>
-            <filter id="arrow-glow-right" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#00eaff" flood-opacity="0.5"/>
-            </filter>
-          </defs>
-          <polyline points="10,7 20,15 10,23"
-            fill="none" stroke="url(#arrow-grad-right)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
-            filter="url(#arrow-glow-right)"/>
+          <polyline points="10,7 20,15 10,23" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
     </div>
     <!-- 切換模式按鈕 -->
     <div class="mb-3 d-flex justify-content-end">
-      <button class="btn btn-outline-secondary btn-sm me-2" id="switch-grid"><span>大圖</span></button>
+      <button class="btn btn-outline-secondary btn-sm me-2" id="switch-grid"><span>網格</span></button>
       <button class="btn btn-outline-secondary btn-sm" id="switch-list"><span>列表</span></button>
     </div>
     <!-- 下方清單區 -->
@@ -306,29 +307,31 @@
   </div>
 
   <script>
-    // 更新影片區
+    // DEMO影片，請換成你的影片/縮圖網址
     const videoList = [
       {
         title: "活動一標題",
-        desc: "說明文字",
-        video: "#",
-        poster: "#"
+        desc: "這是第一支影片的說明，可以補充講者與主題亮點。",
+        video: "https://www.w3schools.com/html/mov_bbb.mp4",
+        poster: "https://fakeimg.pl/800x450/7cb6b7/fff?text=活動影音1"
       },
       {
         title: "活動二標題",
-        desc: "說明文字",
-        video: "#",
-        poster: "#"
+        desc: "第二支影片內容簡述，主題、重點。",
+        video: "https://www.w3schools.com/html/movie.mp4",
+        poster: "https://fakeimg.pl/800x450/00558c/fff?text=活動影音2"
       }
     ];
 
     let mainIndex = 0;
+    // 預設手機是列表，桌機是網格
     let listMode = (window.innerWidth <= 760) ? 'list' : 'grid';
 
     function renderThumbs() {
       const container = document.getElementById('video-thumbs');
       container.innerHTML = '';
       if(listMode === 'grid') {
+        // 三欄網格
         videoList.forEach((item, idx) => {
           const col = document.createElement('div');
           col.className = 'col-4 mb-4';
@@ -344,15 +347,16 @@
           container.appendChild(col);
         });
       } else {
+        // 列表模式
         videoList.forEach((item, idx) => {
           const div = document.createElement('div');
           div.className = `list-thumb-card${idx===mainIndex?' active':''}`;
           div.setAttribute('data-vid', idx);
           div.innerHTML = `
-            <img src="${item.poster}">
+            <img src="${item.poster}" alt="${item.title}">
             <div>
-              <div style="font-weight:700; color:#00558c; font-size:1.07rem;">${item.title}</div>
-              <div style="color:#425466; font-size:.92rem;">${item.desc}</div>
+              <div class="list-thumb-title">${item.title}</div>
+              <div class="list-thumb-desc">${item.desc}</div>
             </div>
           `;
           div.onclick = () => setMainVideo(idx);
@@ -375,6 +379,7 @@
       }
     }
 
+    // 四個箭頭功能
     document.getElementById('prev-video').onclick = (e) => {
       e.preventDefault();
       setMainVideo((mainIndex-1+videoList.length)%videoList.length);
@@ -391,6 +396,8 @@
       e.preventDefault();
       setMainVideo((mainIndex+1)%videoList.length);
     };
+
+    // 切換網格/列表
     document.getElementById('switch-grid').onclick = function(){
       listMode = 'grid';
       renderThumbs();
@@ -399,6 +406,7 @@
       listMode = 'list';
       renderThumbs();
     };
+
     // 初始化
     renderThumbs();
     setMainVideo(0);
