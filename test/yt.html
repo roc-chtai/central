@@ -213,13 +213,8 @@
         <h5 id="main-title">${vid.title}</h5>
         <p id="main-desc">由 ${vid.desc} 上傳</p>
       `;
-      document.getElementById('prev-video-mobile').onclick = (e) => {
-        e.preventDefault(); setMainVideo((mainIndex-1+videoList.length)%videoList.length);
-      };
-      document.getElementById('next-video-mobile').onclick = (e) => {
-        e.preventDefault(); setMainVideo((mainIndex+1)%videoList.length);
-      };
-      renderThumbs();
+    
+   renderThumbs();
       if(window.innerWidth < 760){
         area.scrollIntoView({behavior:'smooth'});
       }
