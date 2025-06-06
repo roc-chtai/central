@@ -275,7 +275,17 @@
           <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
           您的瀏覽器不支援影片播放
         </video>
-        <!-- 手機專用箭頭 -->
+      
+        <h5 id="main-title">標題</h5>
+        <p id="main-desc">說明</p>
+      </div>
+      <button class="video-arrow-btn arrow-next" id="next-video" title="下一部" aria-label="下一部">
+        <svg width="30" height="30" viewBox="0 0 30 30">
+          <polyline points="10,7 20,15 10,23" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+      <!-- 手機專用箭頭 -->
         <div class="video-arrows-mobile">
           <button class="video-arrow-btn-mobile" id="prev-video-mobile" aria-label="上一部">
             <svg width="22" height="22" viewBox="0 0 22 22">
@@ -288,15 +298,6 @@
             </svg>
           </button>
         </div>
-        <h5 id="main-title">標題</h5>
-        <p id="main-desc">說明</p>
-      </div>
-      <button class="video-arrow-btn arrow-next" id="next-video" title="下一部" aria-label="下一部">
-        <svg width="30" height="30" viewBox="0 0 30 30">
-          <polyline points="10,7 20,15 10,23" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </div>
     <!-- 切換模式按鈕 -->
     <div class="mb-3 d-flex justify-content-end">
       <button class="btn btn-outline-secondary btn-sm me-2" id="switch-grid"><span>大圖</span></button>
