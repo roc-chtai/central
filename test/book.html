@@ -2,16 +2,16 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>書籍輪播只顯示封面</title>
+  <title>書籍輪播無顯示限制</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body { background: #f3f5fa; }
     .carousel-outer {
-      width: 650px;
-      max-width: 98vw;
+      /* width: 650px; */
+      /* max-width: 98vw; */
       margin: 0 auto;
-      overflow: hidden;
+      /* overflow: hidden; */ /* 這行已移除 */
       padding-top: 60px;
       padding-bottom: 36px;
     }
@@ -111,7 +111,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 書籍輪播（封面 Only）</h2>
+  <h2>📚 書籍輪播（無顯示限制）</h2>
   <div class="carousel-outer">
     <div class="swiper book-swiper">
       <div class="swiper-wrapper">
@@ -140,7 +140,16 @@
           data-desc="短篇小說集，村上式奇妙與溫柔。">
           <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書5">
         </div>
-        <!-- 需要更多本書就再加 -->
+        <div class="swiper-slide" 
+          data-title="第六本書"
+          data-desc="這是第六本書的介紹。">
+          <img src="https://images.unsplash.com/photo-1455885662065-9f5c192b8b49?w=400" alt="書6">
+        </div>
+        <div class="swiper-slide" 
+          data-title="第七本書"
+          data-desc="這是第七本書的介紹。">
+          <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400" alt="書7">
+        </div>
       </div>
       <div class="swiper-button-prev"></div>
       <div class="swiper-button-next"></div>
@@ -165,7 +174,7 @@
       }
     }
     var swiper = new Swiper('.book-swiper', {
-      slidesPerView: 5, // 中間1本+左右各2本
+      slidesPerView: 5,
       centeredSlides: true,
       loop: true,
       spaceBetween: 18,
@@ -177,7 +186,6 @@
         slideChange: updateDesc
       }
     });
-    // 初始化
     updateDesc();
   </script>
 </body>
