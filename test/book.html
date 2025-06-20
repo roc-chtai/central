@@ -2,28 +2,34 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>書籍中心輪播 Center Book Demo</title>
+  <title>書籍中心5本平面輪播</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body { background: #f3f5fa; }
     .swiper {
-      max-width: 430px;
-      padding-top: 46px;
+      max-width: 650px;
+      padding-top: 60px;
       padding-bottom: 36px;
       margin: 0 auto;
+    }
+    .swiper-wrapper {
+      align-items: flex-end; /* 讓所有書卡底部對齊 */
     }
     .swiper-slide {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      transition: transform .32s, box-shadow .32s, opacity .32s;
+      justify-content: flex-end;
+      transition: 
+        transform .36s cubic-bezier(.55,1.5,.65,1),
+        box-shadow .32s,
+        opacity .32s;
       background: transparent;
       border-radius: 12px;
       width: 120px;
-      opacity: 0.6;
-      transform: scale(0.7);
+      opacity: 0.5;
+      transform: scale(0.6) translateY(0px);
       box-shadow: none;
       z-index: 1;
       pointer-events: none;
@@ -36,6 +42,7 @@
       background: #eee;
       margin-bottom: 10px;
       transition: width .32s, height .32s;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
     }
     .book-title {
       font-size: 1em;
@@ -43,39 +50,48 @@
       text-align: center;
       color: #444;
       margin-bottom: 0;
+      margin-top: 3px;
     }
+    /* 兩側第二本 */
+    .swiper-slide-prev, .swiper-slide-next {
+      opacity: 0.75;
+      transform: scale(0.75) translateY(-10px);
+      pointer-events: auto;
+      z-index: 2;
+    }
+    /* 兩側最外本 */
+    .swiper-slide-prev + .swiper-slide-prev, .swiper-slide-next + .swiper-slide-next {
+      opacity: 0.55;
+      transform: scale(0.62) translateY(0px);
+      pointer-events: auto;
+      z-index: 1;
+    }
+    /* 中間主書 */
     .swiper-slide-active {
       opacity: 1;
-      z-index: 2;
+      z-index: 5;
       pointer-events: auto;
       background: #fff;
-      box-shadow: 0 6px 32px rgba(0,0,0,0.13);
-      transform: scale(1.12);
+      box-shadow: 0 8px 34px rgba(0,0,0,0.14);
+      transform: scale(1.18) translateY(-38px); /* 往上放大 */
     }
     .swiper-slide-active img {
-      width: 140px;
-      height: 200px;
+      width: 150px;
+      height: 210px;
     }
-    /* 隱藏超出範圍的slide */
-    .swiper-slide-next,
-    .swiper-slide-prev {
-      opacity: 0.8;
-      transform: scale(0.86);
-      pointer-events: auto;
-    }
-    /* 讓其他slide隱形 */
-    .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev) {
+    /* 隱藏超出可見範圍的slide */
+    .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev):not(.swiper-slide-prev + .swiper-slide-prev):not(.swiper-slide-next + .swiper-slide-next) {
       opacity: 0;
       pointer-events: none;
-      transition: opacity .18s;
+      transition: opacity .16s;
     }
     .book-desc-area {
       min-height: 40px;
       color: #555;
       font-size: 1.05em;
       text-align: center;
-      margin-top: 10px;
-      max-width: 340px;
+      margin-top: 12px;
+      max-width: 420px;
       margin-left: auto;
       margin-right: auto;
       transition: opacity .26s;
@@ -86,7 +102,7 @@
     }
     .swiper-button-next, .swiper-button-prev {
       color: #888;
-      top: 50%;
+      top: 51%;
       width: 32px;
       height: 32px;
       margin-top: -16px;
@@ -98,7 +114,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 書籍中心輪播</h2>
+  <h2>📚 書籍中心5本平面輪播</h2>
   <div class="swiper book-swiper">
     <div class="swiper-wrapper">
       <div class="swiper-slide" data-desc="一封信，解開人生難題的雜貨店，溫暖人心的故事。">
@@ -121,8 +137,9 @@
         <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書名5">
         <div class="book-title">解體諸因</div>
       </div>
+      <!-- 可再增加更多本 -->
     </div>
-    <!-- 加入左右箭頭 -->
+    <!-- 左右箭頭 -->
     <div class="swiper-button-prev"></div>
     <div class="swiper-button-next"></div>
   </div>
@@ -132,10 +149,10 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     var swiper = new Swiper('.book-swiper', {
-      slidesPerView: 3,
+      slidesPerView: 5,
       centeredSlides: true,
       loop: true,
-      spaceBetween: 16,
+      spaceBetween: 18,
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
