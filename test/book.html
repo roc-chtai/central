@@ -2,16 +2,21 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>書籍中心5本平面輪播-修正版</title>
+  <title>書籍滑動9本顯示中間5本</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body { background: #f3f5fa; }
-    .swiper {
-      max-width: 650px;
+    .carousel-outer {
+      width: 650px;
+      max-width: 98vw;
+      margin: 0 auto;
+      overflow: hidden; /* 只顯示中間5本 */
       padding-top: 60px;
       padding-bottom: 36px;
-      margin: 0 auto;
+    }
+    .swiper {
+      width: 1170px; /* 9本書 * 130px 間隔 */
     }
     .swiper-wrapper {
       align-items: flex-end;
@@ -21,15 +26,15 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      transition: 
+      transition:
         transform .36s cubic-bezier(.55,1.5,.65,1),
         box-shadow .32s,
         opacity .32s;
       background: transparent;
       border-radius: 12px;
       width: 120px;
-      opacity: 0.35;
-      transform: scale(0.6) translateY(0px);
+      opacity: 0.7;
+      transform: scale(0.72) translateY(0px);
       box-shadow: none;
       z-index: 1;
       pointer-events: none;
@@ -42,7 +47,6 @@
       background: #eee;
       margin-bottom: 10px;
       transition: width .32s, height .32s;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
     }
     .book-title {
       font-size: 1em;
@@ -52,6 +56,20 @@
       margin-bottom: 0;
       margin-top: 3px;
     }
+    /* 兩側第二本 */
+    .swiper-slide-prev, .swiper-slide-next {
+      opacity: 0.85;
+      transform: scale(0.83) translateY(-10px);
+      pointer-events: auto;
+      z-index: 2;
+    }
+    /* 兩側第一本 */
+    .swiper-slide-prev + .swiper-slide-prev, .swiper-slide-next + .swiper-slide-next {
+      opacity: 0.75;
+      transform: scale(0.72) translateY(0px);
+      pointer-events: auto;
+      z-index: 1;
+    }
     /* 中間主書 */
     .swiper-slide-active {
       opacity: 1;
@@ -59,33 +77,12 @@
       pointer-events: auto;
       background: #fff;
       box-shadow: 0 8px 34px rgba(0,0,0,0.14);
-      transform: scale(1.18) translateY(-38px);
+      transform: scale(1.14) translateY(-38px);
     }
     .swiper-slide-active img {
       width: 150px;
       height: 210px;
     }
-    /* 兩側第二本 */
-    .swiper-slide-prev, .swiper-slide-next {
-      opacity: 0.75;
-      transform: scale(0.75) translateY(-10px);
-      pointer-events: auto;
-      z-index: 2;
-    }
-    /* 兩側最外本 */
-    .swiper-slide-prev ~ .swiper-slide-prev, 
-    .swiper-slide-next ~ .swiper-slide-next {
-      opacity: 0.45;
-      transform: scale(0.62) translateY(0px);
-      pointer-events: auto;
-      z-index: 1;
-    }
-    /* 不要讓其他slide完全消失，只縮小淡出 */
-    /* .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev):not(.swiper-slide-prev ~ .swiper-slide-prev):not(.swiper-slide-next ~ .swiper-slide-next) {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .16s;
-    } */
     .book-desc-area {
       min-height: 40px;
       color: #555;
@@ -115,40 +112,58 @@
   </style>
 </head>
 <body>
-  <h2>📚 書籍中心5本平面輪播（修正版）</h2>
-  <div class="swiper book-swiper">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" data-desc="一封信，解開人生難題的雜貨店，溫暖人心的故事。">
-        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書名1">
-        <div class="book-title">解憂雜貨店</div>
+  <h2>📚 書籍中心9本，只顯示中間5本</h2>
+  <div class="carousel-outer">
+    <div class="swiper book-swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" data-desc="書1介紹">
+          <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書1">
+          <div class="book-title">書1</div>
+        </div>
+        <div class="swiper-slide" data-desc="書2介紹">
+          <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書2">
+          <div class="book-title">書2</div>
+        </div>
+        <div class="swiper-slide" data-desc="書3介紹">
+          <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書3">
+          <div class="book-title">書3</div>
+        </div>
+        <div class="swiper-slide" data-desc="書4介紹">
+          <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書4">
+          <div class="book-title">書4</div>
+        </div>
+        <div class="swiper-slide" data-desc="書5介紹">
+          <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書5">
+          <div class="book-title">書5</div>
+        </div>
+        <div class="swiper-slide" data-desc="書6介紹">
+          <img src="https://images.unsplash.com/photo-1455885662065-9f5c192b8b49?w=400" alt="書6">
+          <div class="book-title">書6</div>
+        </div>
+        <div class="swiper-slide" data-desc="書7介紹">
+          <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400" alt="書7">
+          <div class="book-title">書7</div>
+        </div>
+        <div class="swiper-slide" data-desc="書8介紹">
+          <img src="https://images.unsplash.com/photo-1528747045269-390fe33c19d3?w=400" alt="書8">
+          <div class="book-title">書8</div>
+        </div>
+        <div class="swiper-slide" data-desc="書9介紹">
+          <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" alt="書9">
+          <div class="book-title">書9</div>
+        </div>
       </div>
-      <div class="swiper-slide" data-desc="經典童話，帶你看見大人世界的純真與愛。">
-        <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書名2">
-        <div class="book-title">小王子</div>
-      </div>
-      <div class="swiper-slide" data-desc="直視社會陰影，令人心痛卻無法移開目光的小說。">
-        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書名3">
-        <div class="book-title">房思琪的初戀樂園</div>
-      </div>
-      <div class="swiper-slide" data-desc="獻身愛情的天才數學家與偵探的心智對決。">
-        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書名4">
-        <div class="book-title">嫌疑犯X的獻身</div>
-      </div>
-      <div class="swiper-slide" data-desc="短篇小說集，村上式奇妙與溫柔。">
-        <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書名5">
-        <div class="book-title">解體諸因</div>
-      </div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
     </div>
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
   </div>
   <div class="book-desc-area" id="descArea">
-    一封信，解開人生難題的雜貨店，溫暖人心的故事。
+    書1介紹
   </div>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     var swiper = new Swiper('.book-swiper', {
-      slidesPerView: 5,
+      slidesPerView: 9, // 實際有9本
       centeredSlides: true,
       loop: true,
       spaceBetween: 18,
