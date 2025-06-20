@@ -2,149 +2,158 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>平面書櫃輪播</title>
+  <title>書籍中心輪播 Center Book Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body { background: #f3f5fa; }
-    .slider-outer {
-      max-width: 800px;
-      margin: 48px auto 0 auto;
-      overflow: visible;
-      text-align: center;
+    .swiper {
+      max-width: 430px;
+      padding-top: 46px;
+      padding-bottom: 36px;
+      margin: 0 auto;
     }
-    .slider-track {
+    .swiper-slide {
       display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      gap: 28px;
-      padding: 20px 0;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: transform .32s, box-shadow .32s, opacity .32s;
+      background: transparent;
+      border-radius: 12px;
+      width: 120px;
+      opacity: 0.6;
+      transform: scale(0.7);
+      box-shadow: none;
+      z-index: 1;
+      pointer-events: none;
     }
-    .slider-track::-webkit-scrollbar { display: none; }
-    .book-card {
-      flex: 0 0 130px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      text-align: center;
-      transition: transform .28s, box-shadow .28s;
-      scroll-snap-align: center;
-      position: relative;
-      padding: 12px 6px 12px 6px;
-      cursor: pointer;
-    }
-    .book-card.selected {
-      transform: scale(1.14);
-      box-shadow: 0 6px 32px rgba(0,0,0,0.18);
-      z-index: 2;
-    }
-    .book-img {
-      width: 100px;
-      height: 140px;
-      object-fit: cover;
+    .swiper-slide img {
+      width: 90px;
+      height: 130px;
       border-radius: 8px;
-      margin-bottom: 8px;
+      object-fit: cover;
       background: #eee;
+      margin-bottom: 10px;
+      transition: width .32s, height .32s;
     }
     .book-title {
       font-size: 1em;
       font-weight: bold;
-      margin: 0 0 8px 0;
+      text-align: center;
+      color: #444;
+      margin-bottom: 0;
     }
-    .arrow-btn {
+    .swiper-slide-active {
+      opacity: 1;
+      z-index: 2;
+      pointer-events: auto;
       background: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 1.5em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-      margin: 0 12px;
-      cursor: pointer;
-      vertical-align: middle;
-      transition: box-shadow .2s;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.13);
+      transform: scale(1.12);
     }
-    .arrow-btn:active {
-      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    .swiper-slide-active img {
+      width: 140px;
+      height: 200px;
+    }
+    /* 隱藏超出範圍的slide */
+    .swiper-slide-next,
+    .swiper-slide-prev {
+      opacity: 0.8;
+      transform: scale(0.86);
+      pointer-events: auto;
+    }
+    /* 讓其他slide隱形 */
+    .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev) {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s;
     }
     .book-desc-area {
-      margin-top: 22px;
       min-height: 40px;
-      color: #666;
+      color: #555;
       font-size: 1.05em;
-      max-width: 430px;
+      text-align: center;
+      margin-top: 10px;
+      max-width: 340px;
       margin-left: auto;
       margin-right: auto;
-      transition: opacity .25s;
+      transition: opacity .26s;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 18px 14px;
     }
+    .swiper-button-next, .swiper-button-prev {
+      color: #888;
+      top: 50%;
+      width: 32px;
+      height: 32px;
+      margin-top: -16px;
+    }
+    .swiper-button-next::after, .swiper-button-prev::after {
+      font-size: 24px;
+    }
+    h2 { margin-top: 48px; }
   </style>
 </head>
 <body>
-  <h2>📚 平面書籍區（可滑動）</h2>
-  <div class="slider-outer">
-    <button class="arrow-btn" id="leftBtn">&#8592;</button>
-    <div class="slider-track" id="sliderTrack">
-      <div class="book-card selected" data-desc="一封信，解開人生難題的雜貨店，溫暖人心的故事。">
-        <img class="book-img" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書1">
+  <h2>📚 書籍中心輪播</h2>
+  <div class="swiper book-swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" data-desc="一封信，解開人生難題的雜貨店，溫暖人心的故事。">
+        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書名1">
         <div class="book-title">解憂雜貨店</div>
       </div>
-      <div class="book-card" data-desc="經典童話，帶你看見大人世界的純真與愛。">
-        <img class="book-img" src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書2">
+      <div class="swiper-slide" data-desc="經典童話，帶你看見大人世界的純真與愛。">
+        <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書名2">
         <div class="book-title">小王子</div>
       </div>
-      <div class="book-card" data-desc="直視社會陰影，令人心痛卻無法移開目光的小說。">
-        <img class="book-img" src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書3">
+      <div class="swiper-slide" data-desc="直視社會陰影，令人心痛卻無法移開目光的小說。">
+        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書名3">
         <div class="book-title">房思琪的初戀樂園</div>
       </div>
-      <div class="book-card" data-desc="獻身愛情的天才數學家與偵探的心智對決。">
-        <img class="book-img" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書4">
+      <div class="swiper-slide" data-desc="獻身愛情的天才數學家與偵探的心智對決。">
+        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書名4">
         <div class="book-title">嫌疑犯X的獻身</div>
       </div>
-      <div class="book-card" data-desc="短篇小說集，村上式奇妙與溫柔。">
-        <img class="book-img" src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書5">
+      <div class="swiper-slide" data-desc="短篇小說集，村上式奇妙與溫柔。">
+        <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書名5">
         <div class="book-title">解體諸因</div>
       </div>
     </div>
-    <button class="arrow-btn" id="rightBtn">&#8594;</button>
-    <div class="book-desc-area" id="descArea">
-      一封信，解開人生難題的雜貨店，溫暖人心的故事。
-    </div>
+    <!-- 加入左右箭頭 -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
   </div>
+  <div class="book-desc-area" id="descArea">
+    一封信，解開人生難題的雜貨店，溫暖人心的故事。
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // 切換選中書（顯示簡介）
-    const cards = document.querySelectorAll('.book-card');
-    const descArea = document.getElementById('descArea');
-    const sliderTrack = document.getElementById('sliderTrack');
-    let selectedIdx = 0;
-    function selectBook(idx, smooth=true) {
-      cards.forEach(c => c.classList.remove('selected'));
-      cards[idx].classList.add('selected');
-      descArea.textContent = cards[idx].dataset.desc;
-      selectedIdx = idx;
-      // 捲動到選中書
-      cards[idx].scrollIntoView({behavior: smooth ? "smooth" : "auto", inline: "center", block: "nearest"});
-    }
-    cards.forEach((card, idx) => {
-      card.addEventListener('click', () => selectBook(idx));
+    var swiper = new Swiper('.book-swiper', {
+      slidesPerView: 3,
+      centeredSlides: true,
+      loop: true,
+      spaceBetween: 16,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      on: {
+        slideChange: function() {
+          // 取得中間slide
+          var slides = document.querySelectorAll('.swiper-slide');
+          var descArea = document.getElementById('descArea');
+          for(var i=0; i<slides.length; i++) {
+            if(slides[i].classList.contains('swiper-slide-active')) {
+              descArea.textContent = slides[i].dataset.desc;
+              break;
+            }
+          }
+        }
+      }
     });
-    // 左右按鈕
-    document.getElementById('leftBtn').onclick = () => {
-      let next = (selectedIdx - 1 + cards.length) % cards.length;
-      selectBook(next);
-    };
-    document.getElementById('rightBtn').onclick = () => {
-      let next = (selectedIdx + 1) % cards.length;
-      selectBook(next);
-    };
-    // 鍵盤左右鍵支持
-    document.addEventListener('keydown', e => {
-      if(document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
-      if(e.key === 'ArrowLeft') document.getElementById('leftBtn').click();
-      if(e.key === 'ArrowRight') document.getElementById('rightBtn').click();
-    });
-    // 頁面resize時自動居中
-    window.addEventListener('resize', () => selectBook(selectedIdx, false));
   </script>
 </body>
 </html>
