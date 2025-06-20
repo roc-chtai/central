@@ -2,129 +2,149 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>書籍區展示 Demo</title>
+  <title>平面書櫃輪播</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
-    .swiper {
-      width: 90vw;
-      max-width: 900px;
-      padding-top: 30px;
-      padding-bottom: 30px;
+    body { background: #f3f5fa; }
+    .slider-outer {
+      max-width: 800px;
+      margin: 48px auto 0 auto;
+      overflow: visible;
+      text-align: center;
     }
-    .swiper-wrapper {
-      gap: 36px;
-    }
-    .swiper-slide {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    .slider-track {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      width: 180px;
-      transition: box-shadow 0.3s, transform 0.3s;
-      margin: 0 12px;
-      transform: scale(0.8);
-      opacity: 0.7;
-      z-index: 1;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 28px;
+      padding: 20px 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
-    .swiper-slide img {
-      width: 120px;
-      height: 170px;
+    .slider-track::-webkit-scrollbar { display: none; }
+    .book-card {
+      flex: 0 0 130px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform .28s, box-shadow .28s;
+      scroll-snap-align: center;
+      position: relative;
+      padding: 12px 6px 12px 6px;
+      cursor: pointer;
+    }
+    .book-card.selected {
+      transform: scale(1.14);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.18);
+      z-index: 2;
+    }
+    .book-img {
+      width: 100px;
+      height: 140px;
       object-fit: cover;
       border-radius: 8px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
-      transition: width 0.3s, height 0.3s;
+      margin-bottom: 8px;
+      background: #eee;
     }
     .book-title {
-      font-size: 1.05em;
+      font-size: 1em;
       font-weight: bold;
-      margin: 0.5em 0 0.2em 0;
+      margin: 0 0 8px 0;
     }
-    .book-desc {
-      font-size: 0.88em;
-      color: #888;
-      text-align: center;
-      padding: 0 10px 15px 10px;
+    .arrow-btn {
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 1.5em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      margin: 0 12px;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: box-shadow .2s;
+    }
+    .arrow-btn:active {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    }
+    .book-desc-area {
+      margin-top: 22px;
       min-height: 40px;
-    }
-    .swiper-slide-active {
-      transform: scale(1.08);
-      z-index: 2;
-      opacity: 1;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    }
-    .swiper-slide-active img {
-      width: 168px;
-      height: 240px;
-    }
-    body {
-      background: #f3f5fa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    h2 {
-      margin-top: 48px;
-      margin-bottom: 12px;
-      font-family: 'Noto Sans TC', sans-serif;
+      color: #666;
+      font-size: 1.05em;
+      max-width: 430px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: opacity .25s;
     }
   </style>
 </head>
 <body>
-  <h2>📚 書籍區 Book Carousel</h2>
-  <div class="swiper book-swiper">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書名1">
+  <h2>📚 平面書籍區（可滑動）</h2>
+  <div class="slider-outer">
+    <button class="arrow-btn" id="leftBtn">&#8592;</button>
+    <div class="slider-track" id="sliderTrack">
+      <div class="book-card selected" data-desc="一封信，解開人生難題的雜貨店，溫暖人心的故事。">
+        <img class="book-img" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書1">
         <div class="book-title">解憂雜貨店</div>
-        <div class="book-desc">一封信，解開人生難題的雜貨店，溫暖人心的故事。</div>
       </div>
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書名2">
+      <div class="book-card" data-desc="經典童話，帶你看見大人世界的純真與愛。">
+        <img class="book-img" src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書2">
         <div class="book-title">小王子</div>
-        <div class="book-desc">經典童話，帶你看見大人世界的純真與愛。</div>
       </div>
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書名3">
+      <div class="book-card" data-desc="直視社會陰影，令人心痛卻無法移開目光的小說。">
+        <img class="book-img" src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書3">
         <div class="book-title">房思琪的初戀樂園</div>
-        <div class="book-desc">直視社會陰影，令人心痛卻無法移開目光的小說。</div>
       </div>
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書名4">
+      <div class="book-card" data-desc="獻身愛情的天才數學家與偵探的心智對決。">
+        <img class="book-img" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書4">
         <div class="book-title">嫌疑犯X的獻身</div>
-        <div class="book-desc">獻身愛情的天才數學家與偵探的心智對決。</div>
       </div>
-      <div class="swiper-slide">
-        <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書名5">
+      <div class="book-card" data-desc="短篇小說集，村上式奇妙與溫柔。">
+        <img class="book-img" src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書5">
         <div class="book-title">解體諸因</div>
-        <div class="book-desc">短篇小說集，村上式奇妙與溫柔。</div>
       </div>
     </div>
+    <button class="arrow-btn" id="rightBtn">&#8594;</button>
+    <div class="book-desc-area" id="descArea">
+      一封信，解開人生難題的雜貨店，溫暖人心的故事。
+    </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    var swiper = new Swiper('.book-swiper', {
-      effect: 'coverflow',
-      grabCursor: true,
-      centeredSlides: true,
-      slidesPerView: 'auto',
-      initialSlide: 2,
-      speed: 400,
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 180,
-        modifier: 2.8,
-        slideShadows: false,
-      },
-      loop: true,
+    // 切換選中書（顯示簡介）
+    const cards = document.querySelectorAll('.book-card');
+    const descArea = document.getElementById('descArea');
+    const sliderTrack = document.getElementById('sliderTrack');
+    let selectedIdx = 0;
+    function selectBook(idx, smooth=true) {
+      cards.forEach(c => c.classList.remove('selected'));
+      cards[idx].classList.add('selected');
+      descArea.textContent = cards[idx].dataset.desc;
+      selectedIdx = idx;
+      // 捲動到選中書
+      cards[idx].scrollIntoView({behavior: smooth ? "smooth" : "auto", inline: "center", block: "nearest"});
+    }
+    cards.forEach((card, idx) => {
+      card.addEventListener('click', () => selectBook(idx));
     });
+    // 左右按鈕
+    document.getElementById('leftBtn').onclick = () => {
+      let next = (selectedIdx - 1 + cards.length) % cards.length;
+      selectBook(next);
+    };
+    document.getElementById('rightBtn').onclick = () => {
+      let next = (selectedIdx + 1) % cards.length;
+      selectBook(next);
+    };
+    // 鍵盤左右鍵支持
+    document.addEventListener('keydown', e => {
+      if(document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+      if(e.key === 'ArrowLeft') document.getElementById('leftBtn').click();
+      if(e.key === 'ArrowRight') document.getElementById('rightBtn').click();
+    });
+    // 頁面resize時自動居中
+    window.addEventListener('resize', () => selectBook(selectedIdx, false));
   </script>
 </body>
 </html>
