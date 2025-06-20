@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>環狀 Flat Book Slider（9本只顯示中間5本，滑動動畫）</title>
+  <title>動畫恢復的環狀放大書本輪播</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -15,31 +15,30 @@
       height: 270px;
     }
     .book-track {
-      display: flex;
+      position: relative;
+      width: 100%;
       height: 100%;
-      justify-content: center;
-      transition: transform 0.45s cubic-bezier(.7,1.7,.6,1);
-      will-change: transform;
     }
     .book-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
       width: 120px;
-      margin: 0 14px;
-      flex-shrink: 0;
+      height: 180px;
+      margin: -90px 0 0 -60px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
       background: transparent;
       border-radius: 12px;
-      height: 100%;
-      opacity: 0.6;
-      transform: scale(0.8) translateY(0px);
       box-shadow: none;
       z-index: 1;
-      transition:
-        transform .36s cubic-bezier(.55,1.5,.65,1),
-        box-shadow .32s, opacity .32s;
+      opacity: 0.4;
       pointer-events: none;
+      transition:
+        transform 0.52s cubic-bezier(.7,1.7,.6,1),
+        box-shadow .32s, opacity .36s;
     }
     .book-card img {
       width: 90px;
@@ -50,29 +49,16 @@
       margin-bottom: 10px;
       transition: width .32s, height .32s;
     }
-    .book-card.active {
-      opacity: 1;
+    .book-card.center {
       z-index: 5;
+      opacity: 1;
       pointer-events: auto;
       background: #fff;
       box-shadow: 0 8px 34px rgba(0,0,0,0.14);
-      transform: scale(1.16) translateY(-38px);
     }
-    .book-card.active img {
-      width: 150px;
-      height: 210px;
-    }
-    .book-card.side1 {
-      opacity: 0.85;
-      transform: scale(0.95) translateY(-12px);
-      z-index: 2;
-      pointer-events: auto;
-    }
-    .book-card.side2 {
-      opacity: 0.7;
-      transform: scale(0.8) translateY(0px);
-      z-index: 1;
-      pointer-events: auto;
+    .book-card.center img {
+      width: 170px;
+      height: 240px;
     }
     .slider-arrow {
       position: absolute;
@@ -91,10 +77,6 @@
     }
     .slider-arrow.left { left: 6px; }
     .slider-arrow.right { right: 6px; }
-    .slider-arrow:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
     .book-desc-area {
       min-height: 40px;
       color: #222;
@@ -119,7 +101,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider（9本只顯示中間5本，滑動動畫）</h2>
+  <h2>📚 動畫恢復的環狀放大書本輪播</h2>
   <div class="carousel-outer">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack"></div>
@@ -142,96 +124,63 @@
       { title: "書8", desc: "書8介紹", img: "https://images.unsplash.com/photo-1528747045269-390fe33c19d3?w=400" },
       { title: "書9", desc: "書9介紹", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
     ];
-
     const track = document.getElementById('bookTrack');
-    let centerIdx = 4; // 初始正中間（0-based）
-    let lock = false; // 動畫期間鎖定按鈕
+    let centerIdx = 4; // 初始正中間
+    const bookCount = books.length;
+    const visibleCount = 5; // 固定只顯示5本(中心+左右各2)
+    let cards = [];
 
-    // 可見的5本，環狀
-    function getVisibleBooks(centerIdx) {
-      const n = books.length;
-      const res = [];
-      for(let i = -2; i <= 2; i++) {
-        let idx = (centerIdx + i + n) % n;
-        res.push({
-          ...books[idx],
-          idx: idx,
-          pos: i // 位置用於 class
-        });
-      }
-      return res;
-    }
-
-    // 畫面上只保留5本，左右按鈕時用動畫「滑動」過去
-    let currentDirection = 0; // -1: left, 1: right, 0: 靜止
-
-    function renderBooks() {
-      // 產生5本卡片
-      track.innerHTML = '';
-      const visible = getVisibleBooks(centerIdx);
-      visible.forEach(item => {
+    // 初始化不重建DOM，只是動style
+    function setupBooks() {
+      for(let i=0; i<bookCount; i++) {
         const card = document.createElement('div');
         card.className = "book-card";
-        if (item.pos === 0) card.classList.add('active');
-        else if (item.pos === -1 || item.pos === 1) card.classList.add('side1');
-        else if (item.pos === -2 || item.pos === 2) card.classList.add('side2');
-        card.innerHTML = `<img src="${item.img}" alt="cover">`;
+        card.innerHTML = `<img src="${books[i].img}" alt="cover">`;
         track.appendChild(card);
-      });
+        cards.push(card);
+      }
+    }
 
-      // 更新簡介區
-      document.getElementById('descTitle').textContent = books[centerIdx].title;
-      document.getElementById('descText').textContent = books[centerIdx].desc;
-
-      // 預設歸零（這一步很重要）
-      track.style.transition = "none";
-      track.style.transform = "translateX(0)";
-      setTimeout(() => {
-        track.style.transition = "transform 0.45s cubic-bezier(.7,1.7,.6,1)";
-        // 若有方向，先做滑動動畫
-        if (currentDirection === -1) {
-          // 向左滑（下一本進來）
-          track.style.transform = `translateX(${-(120+28)}px)`;
-        } else if (currentDirection === 1) {
-          // 向右滑（前一本進來）
-          track.style.transform = `${120+28}px` ? `translateX(${(120+28)}px)` : "";
-        }
-        // 下1 frame後（動畫結束），reset 回正中間並換內容
-        if (currentDirection !== 0) {
-          setTimeout(() => {
-            track.style.transition = "none";
-            track.style.transform = "translateX(0)";
-            currentDirection = 0;
-            lock = false;
-            // 強制刷新卡片內容（避免殘影）
-            renderBooks();
-          }, 450);
+    function updateBooks() {
+      for(let i=0; i<bookCount; i++) {
+        let dist = i - centerIdx;
+        if(dist > bookCount/2) dist -= bookCount;
+        if(dist < -bookCount/2) dist += bookCount;
+        if(Math.abs(dist) > (visibleCount-1)/2) {
+          cards[i].style.visibility = "hidden";
         } else {
-          lock = false;
+          cards[i].style.visibility = "visible";
+          const baseX = 150;
+          const tx = dist * baseX;
+          let scale = 1.35 - 0.33 * Math.abs(dist);
+          if(scale < 0.6) scale = 0.6;
+          let opacity = 1 - 0.23 * Math.abs(dist);
+          if(opacity < 0.35) opacity=0.35;
+          cards[i].style.transform = `translateX(${tx}px) scale(${scale}) translateY(${-24*Math.abs(dist)}px)`;
+          cards[i].style.opacity = opacity;
+          cards[i].classList.toggle('center', dist === 0);
         }
-      }, 16); // 下一個 event loop
+      }
+      // 下方顯示中心書本資訊
+      const centerBook = books[centerIdx];
+      document.getElementById('descTitle').textContent = centerBook.title;
+      document.getElementById('descText').textContent = centerBook.desc;
     }
 
     function moveLeft() {
-      if (lock) return;
-      lock = true;
-      currentDirection = -1;
-      // 這裡先渲染「滑動前」的內容，讓動畫往左
-      renderBooks();
-      // 實際資料移動在動畫結束後
-      centerIdx = (centerIdx - 1 + books.length) % books.length;
+      centerIdx = (centerIdx - 1 + bookCount) % bookCount;
+      updateBooks();
     }
     function moveRight() {
-      if (lock) return;
-      lock = true;
-      currentDirection = 1;
-      renderBooks();
-      centerIdx = (centerIdx + 1) % books.length;
+      centerIdx = (centerIdx + 1) % bookCount;
+      updateBooks();
     }
+
     document.getElementById('leftBtn').onclick = moveLeft;
     document.getElementById('rightBtn').onclick = moveRight;
-    // 初始化
-    renderBooks();
+
+    setupBooks();
+    updateBooks();
   </script>
 </body>
 </html>
