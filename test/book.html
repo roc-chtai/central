@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>動畫恢復的環狀放大書本輪播</title>
+  <title>動量拖曳放大書本輪播＋書籍一覽</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -12,71 +12,59 @@
       margin: 40px auto 0 auto;
       overflow: hidden;
       position: relative;
-      height: 270px;
+      height: 340px;
+      touch-action: pan-y;
+      cursor: grab;
     }
+    .carousel-outer.dragging { cursor: grabbing; }
     .book-track {
       position: relative;
       width: 100%;
       height: 100%;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    .book-card {
+    .carousel-book-card {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 120px;
-      height: 180px;
       margin: -90px 0 0 -60px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: center;
       background: transparent;
-      border-radius: 12px;
-      box-shadow: none;
       z-index: 1;
       opacity: 0.4;
       pointer-events: none;
       transition:
         transform 0.52s cubic-bezier(.7,1.7,.6,1),
         box-shadow .32s, opacity .36s;
+      overflow: visible;
+      box-shadow: 0 8px 34px 0 rgba(0,0,0,0.28);
     }
-    .book-card img {
-      width: 90px;
-      height: 130px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #eee;
-      margin-bottom: 10px;
-      transition: width .32s, height .32s;
+    .carousel-book-card img {
+      height: auto;
+      width: 120px;
+      object-fit: contain;
+      object-position: center;
+      background: transparent;
+      border-radius: 12px;
+      user-drag: none;
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
+      pointer-events: none;
+      display: block;
+      margin: 0 auto;
     }
-    .book-card.center {
+    .carousel-book-card.center {
       z-index: 5;
       opacity: 1;
       pointer-events: auto;
-      background: #fff;
-      box-shadow: 0 8px 34px rgba(0,0,0,0.14);
+      background: transparent;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     }
-    .book-card.center img {
-      width: 170px;
-      height: 240px;
-    }
-    .slider-arrow {
-      position: absolute;
-      top: 50%;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-      border: none;
-      font-size: 22px;
-      color: #888;
-      transform: translateY(-50%);
-      cursor: pointer;
-      z-index: 10;
-    }
-    .slider-arrow.left { left: 6px; }
-    .slider-arrow.right { right: 6px; }
+    .slider-arrow { display: none; }
     .book-desc-area {
       min-height: 40px;
       color: #222;
@@ -88,7 +76,6 @@
       margin-right: auto;
       background: #fff;
       border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
       padding: 18px 14px;
     }
     .book-desc-title {
@@ -98,89 +85,276 @@
       color: #2a4070;
       letter-spacing: 0.04em;
     }
+    .book-track, .carousel-outer {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    /* --- 區塊2 書籍一覽 --- */
+    .block-title {
+      font-weight: bold;
+      font-size: 1.35rem;
+      color: #174d88;
+      margin: 2.5rem auto 1.2rem auto;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem 3.5rem;
+      max-width: 1080px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .grid-book-card {
+      background: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .book-img-frame {
+      display: inline-block;
+      box-sizing: border-box;
+      width: fit-content;
+      max-width: 100%;
+      border: 1px solid #999;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .book-img-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      vertical-align: middle;
+    }
+    .book-info {
+      margin-top: 0.6rem;
+      padding: 0 0.2rem;
+      text-align: left;
+      width: 100%;
+    }
+    .book-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+      color: #222;
+    }
+    .book-desc {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.5;
+    }
+    @media (max-width: 991px) {
+      .book-grid { grid-template-columns: repeat(3, 1fr); }
+      .book-title { font-size: 1.3rem; }
+    }
+    @media (max-width: 767px) {
+      .book-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+      .book-title { font-size: 1.2rem; }
+    }
   </style>
 </head>
 <body>
-  <h2>📚 動畫恢復的環狀放大書本輪播</h2>
-  <div class="carousel-outer">
-    <button class="slider-arrow left" id="leftBtn">&#8592;</button>
+  <div class="carousel-outer" id="carouselOuter">
     <div class="book-track" id="bookTrack"></div>
-    <button class="slider-arrow right" id="rightBtn">&#8594;</button>
   </div>
   <div class="book-desc-area" id="descArea">
     <div class="book-desc-title" id="descTitle"></div>
     <div class="book-desc-text" id="descText"></div>
   </div>
-  <script>
-    // 書資料
-    const books = [
-      { title: "書1", desc: "書1介紹", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
-      { title: "書2", desc: "書2介紹", img: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" },
-      { title: "書3", desc: "書3介紹", img: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" },
-      { title: "書4", desc: "書4介紹", img: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" },
-      { title: "書5", desc: "書5介紹", img: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" },
-      { title: "書6", desc: "書6介紹", img: "https://images.unsplash.com/photo-1455885662065-9f5c192b8b49?w=400" },
-      { title: "書7", desc: "書7介紹", img: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400" },
-      { title: "書8", desc: "書8介紹", img: "https://images.unsplash.com/photo-1528747045269-390fe33c19d3?w=400" },
-      { title: "書9", desc: "書9介紹", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
-    ];
-    const track = document.getElementById('bookTrack');
-    let centerIdx = 4; // 初始正中間
-    const bookCount = books.length;
-    const visibleCount = 5; // 固定只顯示5本(中心+左右各2)
-    let cards = [];
 
-    // 初始化不重建DOM，只是動style
-    function setupBooks() {
-      for(let i=0; i<bookCount; i++) {
-        const card = document.createElement('div');
-        card.className = "book-card";
-        card.innerHTML = `<img src="${books[i].img}" alt="cover">`;
-        track.appendChild(card);
-        cards.push(card);
-      }
+  <!-- 區塊2：書籍一覽 -->
+  <div class="block-title"><i class="fa-solid fa-book"></i>書籍一覽</div>
+  <div style="max-width: 600px; margin: 2rem auto 1rem; padding: 0 1rem;">
+    <input type="text" id="bookSearch" placeholder="🔍 搜尋書名或介紹..." 
+           style="width: 100%; padding: 12px 16px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;">
+  </div>
+  <div class="book-grid" id="bookGrid"></div>
+
+<script>
+const books = [
+  { title: "AI素養DNA", desc: "建立您的AI素養DNA", img: "https://roc-chtai.github.io/central/test/img/book01.png" },
+  { title: "書2", desc: "書2介紹", img: "https://roc-chtai.github.io/central/test/img/book02.png" },
+  { title: "書3", desc: "書3介紹", img: "https://roc-chtai.github.io/central/test/img/book03.png" },
+  { title: "書4", desc: "書4介紹", img: "https://roc-chtai.github.io/central/test/img/book04.png" },
+  { title: "書5", desc: "書5介紹", img: "https://roc-chtai.github.io/central/test/img/book05.jpg" }
+];
+
+// ------ 輪播區塊 ------
+const track = document.getElementById('bookTrack');
+const carousel = document.getElementById('carouselOuter');
+const bookCount = books.length;
+const visibleCount = 7;
+let cards = [];
+let pos = 4; // 中心的浮點索引（可以不是整數，拖曳時用）
+let isDragging = false, lastX = 0, velocity = 0, dragStartX = 0, dragStartPos = 0, lastTime = 0, momentumId = null;
+
+function setupBooks() {
+  for(let i=0; i<bookCount; i++) {
+    const card = document.createElement('div');
+    card.className = "carousel-book-card";
+    const img = document.createElement('img');
+    img.src = books[i].img;
+    img.alt = "cover";
+    img.draggable = false;
+    img.addEventListener('dragstart', e => e.preventDefault());
+    card.appendChild(img);
+    track.appendChild(card);
+    cards.push(card);
+  }
+}
+function updateBooks(center=pos) {
+  for(let i=0; i<bookCount; i++) {
+    let dist = i - center;
+    if(dist > bookCount/2) dist -= bookCount;
+    if(dist < -bookCount/2) dist += bookCount;
+    if(Math.abs(dist) > (visibleCount-1)/2) {
+      cards[i].style.visibility = "hidden";
+    } else {
+      cards[i].style.visibility = "visible";
+      const baseX = 150;
+      const tx = dist * baseX;
+      let scale = (Math.abs(dist) < 0.4) ? 1.7 : 1;
+      if(scale < 0.6) scale = 0.6;
+      let opacity = 1 - 0.23 * Math.abs(dist);
+      if(opacity < 0.35) opacity=0.35;
+      cards[i].style.transform = `translateX(${tx}px) scale(${scale})`;
+      cards[i].style.opacity = opacity;
+      cards[i].classList.toggle('center', Math.abs(dist) < 0.4);
     }
-
-    function updateBooks() {
-      for(let i=0; i<bookCount; i++) {
-        let dist = i - centerIdx;
-        if(dist > bookCount/2) dist -= bookCount;
-        if(dist < -bookCount/2) dist += bookCount;
-        if(Math.abs(dist) > (visibleCount-1)/2) {
-          cards[i].style.visibility = "hidden";
-        } else {
-          cards[i].style.visibility = "visible";
-          const baseX = 150;
-          const tx = dist * baseX;
-          let scale = 1.35 - 0.33 * Math.abs(dist);
-          if(scale < 0.6) scale = 0.6;
-          let opacity = 1 - 0.23 * Math.abs(dist);
-          if(opacity < 0.35) opacity=0.35;
-          cards[i].style.transform = `translateX(${tx}px) scale(${scale}) translateY(${-24*Math.abs(dist)}px)`;
-          cards[i].style.opacity = opacity;
-          cards[i].classList.toggle('center', dist === 0);
-        }
-      }
-      // 下方顯示中心書本資訊
-      const centerBook = books[centerIdx];
-      document.getElementById('descTitle').textContent = centerBook.title;
-      document.getElementById('descText').textContent = centerBook.desc;
-    }
-
-    function moveLeft() {
-      centerIdx = (centerIdx - 1 + bookCount) % bookCount;
+  }
+  // 下方顯示中心那本資訊（四捨五入到最近的書）
+  const centerIdx = ((Math.round(center) % bookCount) + bookCount) % bookCount;
+  document.getElementById('descTitle').textContent = books[centerIdx].title;
+  document.getElementById('descText').textContent = books[centerIdx].desc;
+}
+function startMomentum() {
+  cancelMomentum();
+  function step() {
+    if(Math.abs(velocity) < 0.02) {
+      velocity = 0;
+      pos = Math.round(pos);
       updateBooks();
+      return;
     }
-    function moveRight() {
-      centerIdx = (centerIdx + 1) % bookCount;
-      updateBooks();
-    }
-
-    document.getElementById('leftBtn').onclick = moveLeft;
-    document.getElementById('rightBtn').onclick = moveRight;
-
-    setupBooks();
+    pos -= velocity;
+    if(pos < 0) pos += bookCount;
+    if(pos >= bookCount) pos -= bookCount;
     updateBooks();
-  </script>
+    velocity *= 0.92;
+    momentumId = requestAnimationFrame(step);
+  }
+  momentumId = requestAnimationFrame(step);
+}
+function cancelMomentum() {
+  if(momentumId) cancelAnimationFrame(momentumId);
+  momentumId = null;
+}
+
+carousel.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartPos = pos;
+  lastX = e.clientX;
+  lastTime = Date.now();
+  velocity = 0;
+  cancelMomentum();
+  carousel.classList.add('dragging');
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
+});
+function onMouseMove(e) {
+  if (!isDragging) return;
+  const dx = e.clientX - dragStartX;
+  pos = dragStartPos - dx / 150;
+  if(pos < 0) pos += bookCount;
+  if(pos >= bookCount) pos -= bookCount;
+  updateBooks();
+  const now = Date.now();
+  velocity = (e.clientX - lastX) / (now - lastTime);
+  lastX = e.clientX;
+  lastTime = now;
+}
+function onMouseUp(e) {
+  if (!isDragging) return;
+  isDragging = false;
+  carousel.classList.remove('dragging');
+  pos = Math.round(pos);
+  updateBooks();
+  window.removeEventListener('mousemove', onMouseMove);
+  window.removeEventListener('mouseup', onMouseUp);
+}
+// 觸控
+carousel.addEventListener('touchstart', e => {
+  if(e.touches.length > 1) return;
+  isDragging = true;
+  dragStartX = e.touches[0].clientX;
+  dragStartPos = pos;
+  lastX = e.touches[0].clientX;
+  lastTime = Date.now();
+  velocity = 0;
+  cancelMomentum();
+  carousel.classList.add('dragging');
+}, {passive:true});
+carousel.addEventListener('touchmove', e => {
+  if(!isDragging) return;
+  const dx = e.touches[0].clientX - dragStartX;
+  pos = dragStartPos - dx / 150;
+  if(pos < 0) pos += bookCount;
+  if(pos >= bookCount) pos -= bookCount;
+  updateBooks();
+  const now = Date.now();
+  velocity = (e.touches[0].clientX - lastX) / (now - lastTime);
+  lastX = e.touches[0].clientX;
+  lastTime = now;
+}, {passive:true});
+carousel.addEventListener('touchend', e => {
+  if(!isDragging) return;
+  isDragging = false;
+  carousel.classList.remove('dragging');
+  velocity = (e.changedTouches[0].clientX - lastX) / (Date.now() - lastTime);
+  if(Math.abs(velocity) > 0.01) startMomentum();
+  else {
+    pos = Math.round(pos);
+    updateBooks();
+  }
+}, {passive:true});
+
+setupBooks();
+updateBooks();
+
+// ------ 一覽區塊 ------
+function renderGridBooks(booksArr) {
+  const grid = document.getElementById('bookGrid');
+  grid.innerHTML = '';
+  booksArr.forEach(book => {
+    const card = document.createElement('div');
+    card.className = "grid-book-card";
+    card.innerHTML = `
+      <div class="book-img-frame">
+        <img src="${book.img}" alt="書封">
+      </div>
+      <div class="book-info">
+        <div class="book-title">${book.title}</div>
+        <div class="book-desc">${book.desc}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+// 搜尋功能
+document.getElementById('bookSearch').addEventListener('input', function () {
+  const keyword = this.value.toLowerCase().trim();
+  const filtered = books.filter(book =>
+    book.title.toLowerCase().includes(keyword) ||
+    book.desc.toLowerCase().includes(keyword)
+  );
+  renderGridBooks(filtered);
+});
+renderGridBooks(books);
+
+</script>
 </body>
 </html>
