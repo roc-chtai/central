@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>Flat Book Slider 拖曳滑動環狀</title>
+  <title>Flat Book Slider 慣性循環中間放大</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -121,7 +121,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider 拖曳滑動環狀</h2>
+  <h2>📚 Flat Book Slider（慣性循環中間放大）</h2>
   <div class="carousel-outer" id="carouselOuter">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack"></div>
@@ -151,11 +151,10 @@
     const cardWidth = 120 + 28; // width + margin
     let lock = false;
     let isDragging = false;
-    let startX = 0, dragDelta = 0, dragMoved = false;
+    let startX = 0, dragDelta = 0, dragMoved = false, prevTime = 0, velocities = [];
 
-    // 輪播時建立一個「補頭尾」陣列
+    // 頭尾補位
     function getLoopArr() {
-      // 把尾端補到頭、頭端補到尾
       const n = books.length;
       let arr = [];
       for(let i = -sideCount; i <= books.length + sideCount - 1; i++) {
@@ -181,13 +180,9 @@
         card.innerHTML = `<img src="${item.img}" alt="cover">`;
         track.appendChild(card);
       });
-      // 算定位：讓第 centerIdx 剛好在外框正中央
-      // arr[sideCount + centerIdx] 是中間那本
       let base = -(centerIdx + sideCount) * cardWidth + (visibleCount >> 1) * cardWidth;
-      // 拖曳時加上 offset
       track.style.transition = animate ? 'transform .45s cubic-bezier(.7,1.7,.6,1)' : 'none';
       track.style.transform = `translateX(${base + offset}px)`;
-      // 更新簡介區
       document.getElementById('descTitle').textContent = books[centerIdx].title;
       document.getElementById('descText').textContent = books[centerIdx].desc;
     }
@@ -208,55 +203,94 @@
     document.getElementById('leftBtn').onclick = moveLeft;
     document.getElementById('rightBtn').onclick = moveRight;
 
-    // 拖曳/觸控
+    // 拖曳/觸控+慣性
     const carouselOuter = document.getElementById('carouselOuter');
-    carouselOuter.addEventListener('mousedown', e => {
+    let lastX = 0, lastT = 0, inertiaFrame = null, movingOffset = 0;
+
+    function startDrag(clientX) {
       if (lock) return;
       isDragging = true;
       dragMoved = false;
-      startX = e.clientX;
+      startX = clientX;
       dragDelta = 0;
+      lastX = clientX;
+      lastT = Date.now();
+      velocities = [];
+      movingOffset = 0;
       renderBooks(false, 0);
-    });
-    window.addEventListener('mousemove', e => {
+    }
+    function moveDrag(clientX) {
       if (!isDragging) return;
-      dragDelta = e.clientX - startX;
+      dragDelta = clientX - startX;
       dragMoved = true;
+      let now = Date.now();
+      let v = (clientX - lastX) / (now - lastT + 1); // px/ms
+      velocities.push(v);
+      if (velocities.length > 5) velocities.shift();
+      lastX = clientX;
+      lastT = now;
+      movingOffset = dragDelta;
       renderBooks(false, dragDelta);
-    });
-    window.addEventListener('mouseup', e => {
+    }
+    function endDrag() {
       if (!isDragging) return;
       isDragging = false;
       if (!dragMoved) return;
-      if (dragDelta > 50) moveLeft();
-      else if (dragDelta < -50) moveRight();
-      else renderBooks(true, 0); // 彈回
-    });
+      // 慣性判斷
+      let avgV = velocities.length ? velocities.reduce((a,b)=>a+b,0)/velocities.length : 0;
+      let movePx = dragDelta + avgV * 400; // 將速度轉換成拖曳距離
+      // 決定要滑幾格
+      let moveBooks = Math.round(-movePx / cardWidth); // 左正右負
+      if (moveBooks === 0 && Math.abs(dragDelta) > cardWidth / 2) moveBooks = dragDelta > 0 ? -1 : 1;
+      // 限制一次最多滑3格
+      moveBooks = Math.max(Math.min(moveBooks, 3), -3);
+      if (moveBooks !== 0) {
+        inertiaSlide(moveBooks, avgV);
+      } else {
+        renderBooks(true, 0); // 彈回原位
+      }
+    }
+
+    function inertiaSlide(moveBooks, v) {
+      lock = true;
+      // 動畫效果
+      let targetIdx = (centerIdx + moveBooks + books.length) % books.length;
+      let inertiaOffset = -moveBooks * cardWidth;
+      // 慣性動畫
+      track.style.transition = `transform 0.55s cubic-bezier(.23,1.1,.32,1)`;
+      let arr = getLoopArr();
+      track.innerHTML = '';
+      arr.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = "book-card";
+        if (item.idx === centerIdx && item.pos === 0) card.classList.add('active');
+        else if (item.pos === -1 || item.pos === 1) card.classList.add('side1');
+        else if (item.pos === -2 || item.pos === 2) card.classList.add('side2');
+        card.innerHTML = `<img src="${item.img}" alt="cover">`;
+        track.appendChild(card);
+      });
+      let base = -(centerIdx + sideCount) * cardWidth + (visibleCount >> 1) * cardWidth;
+      track.style.transform = `translateX(${base + inertiaOffset}px)`;
+      setTimeout(()=>{
+        centerIdx = targetIdx;
+        renderBooks(true, 0);
+        lock = false;
+      }, 550);
+    }
+
+    carouselOuter.addEventListener('mousedown', e => startDrag(e.clientX));
+    window.addEventListener('mousemove', e => { if (isDragging) moveDrag(e.clientX); });
+    window.addEventListener('mouseup', endDrag);
 
     // 手機觸控
     carouselOuter.addEventListener('touchstart', e => {
-      if (lock) return;
-      if (e.touches.length !== 1) return;
-      isDragging = true;
-      dragMoved = false;
-      startX = e.touches[0].clientX;
-      dragDelta = 0;
-      renderBooks(false, 0);
+      if (e.touches.length === 1) startDrag(e.touches[0].clientX);
     });
     window.addEventListener('touchmove', e => {
-      if (!isDragging) return;
-      dragDelta = e.touches[0].clientX - startX;
-      dragMoved = true;
-      renderBooks(false, dragDelta);
-    });
-    window.addEventListener('touchend', e => {
-      if (!isDragging) return;
-      isDragging = false;
-      if (!dragMoved) return;
-      if (dragDelta > 50) moveLeft();
-      else if (dragDelta < -50) moveRight();
-      else renderBooks(true, 0); // 彈回
-    });
+      if (isDragging && e.touches && e.touches.length === 1) moveDrag(e.touches[0].clientX);
+    }, {passive:false});
+    window.addEventListener('touchend', endDrag);
+
     renderBooks(true, 0);
   </script>
 </body>
