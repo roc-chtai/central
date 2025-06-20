@@ -4,20 +4,16 @@
   <meta charset="UTF-8">
   <title>書籍區展示 Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Swiper CSS CDN -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
-      .swiper {
+    .swiper {
       width: 90vw;
       max-width: 900px;
       padding-top: 30px;
       padding-bottom: 30px;
     }
     .swiper-wrapper {
-      gap: 32px; /* 書本間距 */
+      gap: 36px;
     }
     .swiper-slide {
       background: #fff;
@@ -27,38 +23,44 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      width: 220px;
-      transition: box-shadow 0.3s;
-      margin: 0 16px; /* 兩側各16px間隔，書本間總共32px */
+      width: 180px;
+      transition: box-shadow 0.3s, transform 0.3s;
+      margin: 0 12px;
+      transform: scale(0.8);
+      opacity: 0.7;
+      z-index: 1;
     }
     .swiper-slide img {
-      width: 160px;
-      height: 220px;
+      width: 120px;
+      height: 170px;
       object-fit: cover;
       border-radius: 8px;
       margin-top: 10px;
       margin-bottom: 10px;
       box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+      transition: width 0.3s, height 0.3s;
     }
     .book-title {
-      font-size: 1.1em;
+      font-size: 1.05em;
       font-weight: bold;
       margin: 0.5em 0 0.2em 0;
     }
-    .book-author {
-      font-size: 0.95em;
-      color: #555;
-      margin-bottom: 0.5em;
-    }
     .book-desc {
-      font-size: 0.9em;
+      font-size: 0.88em;
       color: #888;
       text-align: center;
       padding: 0 10px 15px 10px;
       min-height: 40px;
     }
     .swiper-slide-active {
-      box-shadow: 0 6px 32px rgba(0,0,0,0.16);
+      transform: scale(1.08);
+      z-index: 2;
+      opacity: 1;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .swiper-slide-active img {
+      width: 168px;
+      height: 240px;
     }
     body {
       background: #f3f5fa;
@@ -76,42 +78,35 @@
 </head>
 <body>
   <h2>📚 書籍區 Book Carousel</h2>
-  <!-- Swiper -->
   <div class="swiper book-swiper">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
         <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="書名1">
         <div class="book-title">解憂雜貨店</div>
-        <div class="book-author">東野圭吾</div>
         <div class="book-desc">一封信，解開人生難題的雜貨店，溫暖人心的故事。</div>
       </div>
       <div class="swiper-slide">
         <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" alt="書名2">
         <div class="book-title">小王子</div>
-        <div class="book-author">聖修伯里</div>
         <div class="book-desc">經典童話，帶你看見大人世界的純真與愛。</div>
       </div>
       <div class="swiper-slide">
         <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=400" alt="書名3">
         <div class="book-title">房思琪的初戀樂園</div>
-        <div class="book-author">林奕含</div>
         <div class="book-desc">直視社會陰影，令人心痛卻無法移開目光的小說。</div>
       </div>
       <div class="swiper-slide">
         <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400" alt="書名4">
         <div class="book-title">嫌疑犯X的獻身</div>
-        <div class="book-author">東野圭吾</div>
         <div class="book-desc">獻身愛情的天才數學家與偵探的心智對決。</div>
       </div>
       <div class="swiper-slide">
         <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書名5">
         <div class="book-title">解體諸因</div>
-        <div class="book-author">村上春樹</div>
         <div class="book-desc">短篇小說集，村上式奇妙與溫柔。</div>
       </div>
     </div>
   </div>
-  <!-- Swiper JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     var swiper = new Swiper('.book-swiper', {
@@ -120,15 +115,15 @@
       centeredSlides: true,
       slidesPerView: 'auto',
       initialSlide: 2,
+      speed: 400,
       coverflowEffect: {
         rotate: 0,
         stretch: 0,
-        depth: 140,
-        modifier: 2.5,
+        depth: 180,
+        modifier: 2.8,
         slideShadows: false,
       },
       loop: true,
-      // 可加 navigation/pagination 若有需要
     });
   </script>
 </body>
