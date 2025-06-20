@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>動量拖曳放大書本輪播＋書籍一覽</title>
+  <title>book</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -128,6 +128,8 @@
       display: block;
       width: 100%;
       height: auto;
+max-height:240px;
+
       object-fit: cover;
       vertical-align: middle;
     }
@@ -148,13 +150,16 @@
       color: #555;
       line-height: 1.5;
     }
+
     @media (max-width: 991px) {
       .book-grid { grid-template-columns: repeat(3, 1fr); }
       .book-title { font-size: 1.3rem; }
-    }
+    .book-img-frame img {max-height:240px; }
+
     @media (max-width: 767px) {
       .book-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
       .book-title { font-size: 1.2rem; }
+    .book-img-frame img {max-height:195px; }
     }
   </style>
 </head>
@@ -181,10 +186,10 @@
 <script>
 const books = [
   { title: "AI概論：來來來，成為AI的良師益友", desc: "認識AI、理解AI", img: "https://roc-chtai.github.io/central/test/img/AIbook1.jpg" },
-  { title: "AI機器人、藍芽與Android整合開發技術", desc: "以為實際案例，來貫穿整本書的內容。從Android的應用程式(簡稱App)開發者角度出發，基於UBOT/BLE框架，設計插件程式", img: "https://roc-chtai.github.io/central/test/img/test/img/AIbook2.jpg" },
+  { title: "AI機器人、藍芽與Android整合開發技術", desc: "以為實際案例，來貫穿整本書的內容。從Android的應用程式(簡稱App)開發者角度出發，基於UBOT/BLE框架，設計插件程式", img: "https://roc-chtai.github.io/central/test/img/AIbook2.jpg" },
   { title: "iPAS 經濟部產業人才 AI應用規劃師(初級)", desc: " 經濟部產業人才 AI應用規劃師必備書籍", img: "https://roc-chtai.github.io/central/test/img/AIbook3.jpg" },
   { title: "可視化輕鬆學AI", desc: "學AI之路，從探索特徵出發。讓人人都能駕馭AI，掌握AI變化", img: "https://roc-chtai.github.io/central/test/img/AIbook4.jpg" },
-  { title: "不編程，而學AI", desc: "不懂程式學AI，好比不懂車而學開車", img: "https://roc-chtai.github.io/central/test/img/AIbook5.png" }
+  { title: "不編程，而學AI", desc: "不懂程式學AI，好比不懂車而學開車", img: "https://roc-chtai.github.io/central/test/img/AIbook5.jpg" }
 ];
 
 // ------ 輪播區塊 ------
