@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>Flat Book Slider 完美無限循環+慣性+放大</title>
+  <title>環狀 Flat Book Slider（9本只顯示中間5本，動畫版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -13,15 +13,13 @@
       overflow: hidden;
       position: relative;
       height: 270px;
-      user-select: none;
-      touch-action: pan-y;
     }
     .book-track {
       display: flex;
       transition: transform .45s cubic-bezier(.7,1.7,.6,1);
       will-change: transform;
       height: 100%;
-      justify-content: flex-start;
+      justify-content: center;
     }
     .book-card {
       width: 120px;
@@ -38,7 +36,7 @@
       transform: scale(0.8) translateY(0px);
       box-shadow: none;
       z-index: 1;
-      transition:
+      transition: 
         transform .36s cubic-bezier(.55,1.5,.65,1),
         box-shadow .32s, opacity .32s;
       pointer-events: none;
@@ -52,6 +50,7 @@
       margin-bottom: 10px;
       transition: width .32s, height .32s;
     }
+    /* 中間主書 */
     .book-card.active {
       opacity: 1;
       z-index: 5;
@@ -64,12 +63,14 @@
       width: 150px;
       height: 210px;
     }
+    /* 兩側第二本 */
     .book-card.side1 {
       opacity: 0.85;
       transform: scale(0.95) translateY(-12px);
       z-index: 2;
       pointer-events: auto;
     }
+    /* 兩側最外本 */
     .book-card.side2 {
       opacity: 0.7;
       transform: scale(0.8) translateY(0px);
@@ -121,8 +122,8 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider（完美無限循環+慣性+放大）</h2>
-  <div class="carousel-outer" id="carouselOuter">
+  <h2>📚 Flat Book Slider（9本只顯示中間5本，動畫版）</h2>
+  <div class="carousel-outer">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack"></div>
     <button class="slider-arrow right" id="rightBtn">&#8594;</button>
@@ -132,7 +133,7 @@
     <div class="book-desc-text" id="descText"></div>
   </div>
   <script>
-    // -- 基本參數 --
+    // 書資料
     const books = [
       { title: "書1", desc: "書1介紹", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
       { title: "書2", desc: "書2介紹", img: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" },
@@ -145,36 +146,57 @@
       { title: "書9", desc: "書9介紹", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
     ];
     const track = document.getElementById('bookTrack');
-    const visibleCount = 5;
-    const sideCount = Math.floor(visibleCount / 2);
-    const cardWidth = 120 + 28; // width + margin
-    let centerIdx = 0;
-    let position = books.length + sideCount; // 實際虛擬陣列中的 "視覺中心"
-    let lock = false;
+    let centerIdx = 4; // 初始正中間（0-based）
+    let lock = false; // 動畫期間鎖定按鈕
 
-    // -- 產生補頭尾的虛擬陣列 --
-    function getLoopArr() {
-      // [尾部補sideCount本, ...books, 頭部補sideCount本]
+    function getVisibleBooks(books, centerIdx) {
       const n = books.length;
-      let arr = [];
-      // 尾部補
-      for(let i = n - sideCount; i < n; i++) arr.push(books[i]);
-      // 主體
-      arr = arr.concat(books);
-      // 頭部補
-      for(let i = 0; i < sideCount; i++) arr.push(books[i]);
-      return arr;
+      const res = [];
+      for(let i = -2; i <= 2; i++) {
+        let idx = (centerIdx + i + n) % n;
+        res.push({
+          ...books[idx],
+          idx: idx,
+          pos: i // 位置用於 class
+        });
+      }
+      return res;
     }
 
-    // -- 根據位置渲染 --
-    function renderBooks(animate = true, offset = 0) {
-      const arr = getLoopArr();
+    function renderBooks() {
       track.innerHTML = '';
-      for(let i=0; i<arr.length; i++) {
-        let card = document.createElement('div');
-        card.className = 'book-card';
-        // 計算這格離中心的距離
-        let dist = i - position;
-        if(dist === 0) card.classList.add('active');
-        if(dist === -1 || dist === 1) card.classList.add('side1');
-        if(dist === -2 || dist === 2) card.classList
+      const visible = getVisibleBooks(books, centerIdx);
+      visible.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "book-card";
+        if (item.pos === 0) card.classList.add('active');
+        else if (item.pos === -1 || item.pos === 1) card.classList.add('side1');
+        else if (item.pos === -2 || item.pos === 2) card.classList.add('side2');
+        card.innerHTML = `<img src="${item.img}" alt="cover">`;
+        track.appendChild(card);
+      });
+      // 更新簡介區
+      document.getElementById('descTitle').textContent = books[centerIdx].title;
+      document.getElementById('descText').textContent = books[centerIdx].desc;
+    }
+
+    function moveLeft() {
+      if (lock) return;
+      lock = true;
+      centerIdx = (centerIdx - 1 + books.length) % books.length;
+      renderBooks();
+      setTimeout(()=>{ lock = false; }, 450); // 跟 .book-track transition 時間一致
+    }
+    function moveRight() {
+      if (lock) return;
+      lock = true;
+      centerIdx = (centerIdx + 1) % books.length;
+      renderBooks();
+      setTimeout(()=>{ lock = false; }, 450);
+    }
+    document.getElementById('leftBtn').onclick = moveLeft;
+    document.getElementById('rightBtn').onclick = moveRight;
+    renderBooks();
+  </script>
+</body>
+</html>
