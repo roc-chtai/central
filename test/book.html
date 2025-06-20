@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>動量拖曳放大書本輪播＋書籍一覽</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     body { background: #f3f5fa; }
     .carousel-outer {
@@ -70,7 +72,7 @@
       color: #222;
       font-size: 1.15em;
       text-align: center;
-      margin-top: 24px;
+      margin-top: -24px;
       max-width: 420px;
       margin-left: auto;
       margin-right: auto;
@@ -94,7 +96,7 @@
       font-weight: bold;
       font-size: 1.35rem;
       color: #174d88;
-      margin: 2.5rem auto 1.2rem auto;
+      margin: 3rem auto 0rem auto;
       text-align: center;
       letter-spacing: 0.05em;
     }
@@ -166,8 +168,11 @@
   </div>
 
   <!-- 區塊2：書籍一覽 -->
-  <div class="block-title">書籍一覽</div>
-  <div style="max-width: 600px; margin: 2rem auto 1rem; padding: 0 1rem;">
+  <div class="block-title">
+    <i class="fas fa-book-open"></i> 書籍一覽
+  </div>
+  ...
+  <div style="max-width: 600px; margin: 1rem auto 1rem; padding: 0 1rem;">
     <input type="text" id="bookSearch" placeholder="🔍 搜尋書名或介紹..." 
            style="width: 100%; padding: 12px 16px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;">
   </div>
@@ -175,11 +180,11 @@
 
 <script>
 const books = [
-  { title: "AI素養DNA", desc: "建立您的AI素養DNA", img: "https://roc-chtai.github.io/central/test/img/book01.png" },
-  { title: "書2", desc: "書2介紹", img: "https://roc-chtai.github.io/central/test/img/book02.png" },
-  { title: "書3", desc: "書3介紹", img: "https://roc-chtai.github.io/central/test/img/book03.png" },
-  { title: "書4", desc: "書4介紹", img: "https://roc-chtai.github.io/central/test/img/book04.png" },
-  { title: "書5", desc: "書5介紹", img: "https://roc-chtai.github.io/central/test/img/book05.jpg" }
+  { title: "AI概論：來來來，成為AI的良師益友", desc: "認識AI、理解AI", img: "https://roc-chtai.github.io/central/test/img/AIbook1.jpg" },
+  { title: "AI機器人、藍芽與Android整合開發技術", desc: "以為實際案例，來貫穿整本書的內容。從Android的應用程式(簡稱App)開發者角度出發，基於UBOT/BLE框架，設計插件程式", img: "https://roc-chtai.github.io/central/test/img/test/img/AIbook2.jpg" },
+  { title: "iPAS 經濟部產業人才 AI應用規劃師(初級)", desc: " 經濟部產業人才 AI應用規劃師必備書籍", img: "https://roc-chtai.github.io/central/test/img/AIbook3.jpg" },
+  { title: "可視化輕鬆學AI", desc: "學AI之路，從探索特徵出發。讓人人都能駕馭AI，掌握AI變化", img: "https://roc-chtai.github.io/central/test/img/AIbook4.jpg" },
+  { title: "不編程，而學AI", desc: "不懂程式學AI，好比不懂車而學開車", img: "https://roc-chtai.github.io/central/test/img/AIbook5.png" }
 ];
 
 // ------ 輪播區塊 ------
