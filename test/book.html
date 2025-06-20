@@ -121,7 +121,7 @@
   <div class="carousel-outer">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack">
-      <!-- 書卡會用JS生成 -->
+      <!-- 書卡用JS產生 -->
     </div>
     <button class="slider-arrow right" id="rightBtn">&#8594;</button>
   </div>
@@ -151,13 +151,15 @@
         const card = document.createElement('div');
         card.className = "book-card";
         if (i === centerIdx) card.classList.add('active');
-        else if (i === centerIdx - 1 || i === centerIdx + 1) card.classList.add('side1');
-        else if (i === centerIdx - 2 || i === centerIdx + 2) card.classList.add('side2');
+        else if (i === (centerIdx - 1 + books.length) % books.length || i === (centerIdx + 1) % books.length) card.classList.add('side1');
+        else if (i === (centerIdx - 2 + books.length) % books.length || i === (centerIdx + 2) % books.length) card.classList.add('side2');
         card.innerHTML = `<img src="${book.img}" alt="cover">`;
         track.appendChild(card);
       });
       // 讓 track 左移到中間那本正好在外框正中央
-      const offset = (centerIdx - 2) * (120 + 28);
+      const cardWidth = 120 + 28; // width+margin
+      // 中間要顯示5本，所以外框正中央是第4本(centerIdx=4)
+      const offset = (centerIdx - 2 + books.length) % books.length * cardWidth;
       track.style.transform = `translateX(${-offset}px)`;
       // 更新簡介區
       document.getElementById('descTitle').textContent = books[centerIdx].title;
