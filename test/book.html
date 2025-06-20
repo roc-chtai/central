@@ -10,11 +10,14 @@
     href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   />
   <style>
-    .swiper {
+      .swiper {
       width: 90vw;
       max-width: 900px;
       padding-top: 30px;
       padding-bottom: 30px;
+    }
+    .swiper-wrapper {
+      gap: 32px; /* 書本間距 */
     }
     .swiper-slide {
       background: #fff;
@@ -26,6 +29,7 @@
       justify-content: flex-start;
       width: 220px;
       transition: box-shadow 0.3s;
+      margin: 0 16px; /* 兩側各16px間隔，書本間總共32px */
     }
     .swiper-slide img {
       width: 160px;
