@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>環狀 Flat Book Slider（9本只顯示中間5本，無限循環）</title>
+  <title>Flat Book Slider（拖曳/觸控版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -13,6 +13,8 @@
       overflow: hidden;
       position: relative;
       height: 270px;
+      user-select: none;
+      touch-action: pan-y;
     }
     .book-track {
       display: flex;
@@ -36,7 +38,7 @@
       transform: scale(0.8) translateY(0px);
       box-shadow: none;
       z-index: 1;
-      transition: 
+      transition:
         transform .36s cubic-bezier(.55,1.5,.65,1),
         box-shadow .32s, opacity .32s;
       pointer-events: none;
@@ -94,6 +96,10 @@
     }
     .slider-arrow.left { left: 6px; }
     .slider-arrow.right { right: 6px; }
+    .slider-arrow:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
     .book-desc-area {
       min-height: 40px;
       color: #222;
@@ -118,8 +124,8 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider（9本只顯示中間5本，無限循環）</h2>
-  <div class="carousel-outer">
+  <h2>📚 Flat Book Slider（拖曳/觸控支援）</h2>
+  <div class="carousel-outer" id="carouselOuter">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack"></div>
     <button class="slider-arrow right" id="rightBtn">&#8594;</button>
@@ -143,6 +149,7 @@
     ];
     const track = document.getElementById('bookTrack');
     let centerIdx = 4; // 初始正中間（0-based）
+    let lock = false; // 動畫期間鎖定按鈕
 
     function getVisibleBooks(books, centerIdx) {
       const n = books.length;
@@ -174,16 +181,83 @@
       document.getElementById('descTitle').textContent = books[centerIdx].title;
       document.getElementById('descText').textContent = books[centerIdx].desc;
     }
+
     function moveLeft() {
+      if (lock) return;
+      lock = true;
       centerIdx = (centerIdx - 1 + books.length) % books.length;
       renderBooks();
+      setTimeout(()=>{ lock = false; }, 450);
     }
     function moveRight() {
+      if (lock) return;
+      lock = true;
       centerIdx = (centerIdx + 1) % books.length;
       renderBooks();
+      setTimeout(()=>{ lock = false; }, 450);
     }
     document.getElementById('leftBtn').onclick = moveLeft;
     document.getElementById('rightBtn').onclick = moveRight;
+
+    // 拖曳/觸控切換
+    const carouselOuter = document.getElementById('carouselOuter');
+    let startX = 0;
+    let isDragging = false;
+    let dragDelta = 0;
+
+    // 桌機滑鼠
+    carouselOuter.addEventListener('mousedown', e => {
+      if (lock) return;
+      isDragging = true;
+      startX = e.clientX;
+      dragDelta = 0;
+      track.style.transition = 'none';
+    });
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      dragDelta = e.clientX - startX;
+      track.style.transform = `translateX(${dragDelta}px)`;
+    });
+    window.addEventListener('mouseup', e => {
+      if (!isDragging) return;
+      isDragging = false;
+      track.style.transition = '';
+      if (dragDelta > 50) {
+        moveLeft();
+      } else if (dragDelta < -50) {
+        moveRight();
+      } else {
+        renderBooks(); // 回原位
+      }
+    });
+
+    // 手機觸控
+    carouselOuter.addEventListener('touchstart', e => {
+      if (lock) return;
+      if (e.touches.length !== 1) return;
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      dragDelta = 0;
+      track.style.transition = 'none';
+    });
+    window.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      dragDelta = e.touches[0].clientX - startX;
+      track.style.transform = `translateX(${dragDelta}px)`;
+    });
+    window.addEventListener('touchend', e => {
+      if (!isDragging) return;
+      isDragging = false;
+      track.style.transition = '';
+      if (dragDelta > 50) {
+        moveLeft();
+      } else if (dragDelta < -50) {
+        moveRight();
+      } else {
+        renderBooks(); // 回原位
+      }
+    });
+
     renderBooks();
   </script>
 </body>
