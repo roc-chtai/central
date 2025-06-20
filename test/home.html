@@ -117,19 +117,6 @@
     .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(282px);}
     .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(282px);}
 
-/* 桌機隱藏提示訊息 */
-@media (min-width: 992px) {
-  #rwd-notice {
-    display: none !important;
-  }
-}
-
-  /* 平板與手機顯示提示訊息，其它內容隱藏 */
-@media (max-width: 991.98px) {
-  body > *:not(#rwd-notice) {
-    display: none !important;
-  }
-
   #rwd-notice {
     display: flex !important;
     justify-content: center;
@@ -145,10 +132,7 @@
 </head>
 <body>
 
-<div id="rwd-notice">
-  <h2>｡ﾟ(ﾟ´Д｀ﾟ)ﾟ｡一直歪</h2>
-</div>
-   <canvas class="particle-bg" id="particle-bg" width="1046" height="934"></canvas>
+   <canvas class="particle-bg" id="particle-bg" width="1500" height="934"></canvas>
 
   <header class="tech-header py-2 px-3 d-flex align-items-center justify-content-between">
     <div class="logo-text">中華AI教育學會</div>
