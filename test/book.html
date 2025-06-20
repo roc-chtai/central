@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>Flat Book Slider 慣性循環中間放大</title>
+  <title>Flat Row Loop Carousel 完美慣性環狀</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -18,10 +18,9 @@
     }
     .book-track {
       display: flex;
-      transition: transform .45s cubic-bezier(.7,1.7,.6,1);
-      will-change: transform;
       height: 100%;
-      justify-content: flex-start;
+      will-change: transform;
+      transition: transform .45s cubic-bezier(.7,1.7,.6,1);
     }
     .book-card {
       width: 120px;
@@ -121,7 +120,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider（慣性循環中間放大）</h2>
+  <h2>📚 Flat Row Carousel（完美慣性無限循環，中間放大）</h2>
   <div class="carousel-outer" id="carouselOuter">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack"></div>
@@ -132,7 +131,7 @@
     <div class="book-desc-text" id="descText"></div>
   </div>
   <script>
-    // 書資料
+    // 書資料，最少 5 本
     const books = [
       { title: "書1", desc: "書1介紹", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
       { title: "書2", desc: "書2介紹", img: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=400" },
@@ -145,144 +144,132 @@
       { title: "書9", desc: "書9介紹", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
     ];
     const track = document.getElementById('bookTrack');
-    let centerIdx = 4; // 中間那本
-    const visibleCount = 5; // 顯示5本
+    const visibleCount = 5;
     const sideCount = Math.floor(visibleCount / 2);
+    const total = books.length;
     const cardWidth = 120 + 28; // width + margin
+    let centerIdx = 0;
     let lock = false;
-    let isDragging = false;
-    let startX = 0, dragDelta = 0, dragMoved = false, prevTime = 0, velocities = [];
+    let isDragging = false, dragStartX = 0, dragLastX = 0, dragDX = 0, dragLastT = 0, velocities = [];
+    let currentOffset = 0, baseOffset = 0;
 
-    // 頭尾補位
-    function getLoopArr() {
-      const n = books.length;
-      let arr = [];
-      for(let i = -sideCount; i <= books.length + sideCount - 1; i++) {
-        let idx = (i + n) % n;
-        arr.push({
-          ...books[idx],
-          idx: idx,
-          pos: i - (centerIdx - sideCount)
-        });
+    // 為實現無限循環，頭尾各複製 sideCount 張
+    function getRenderBooks() {
+      const res = [];
+      // 補尾
+      for (let i = total - sideCount; i < total; i++) {
+        res.push(books[i]);
       }
-      return arr;
+      // 正本
+      for (let i = 0; i < total; i++) {
+        res.push(books[i]);
+      }
+      // 補頭
+      for (let i = 0; i < sideCount; i++) {
+        res.push(books[i]);
+      }
+      return res;
     }
-
-    function renderBooks(animate = true, offset = 0) {
-      const arr = getLoopArr();
+    function setDesc(idx) {
+      const realIdx = (idx + total) % total;
+      document.getElementById('descTitle').textContent = books[realIdx].title;
+      document.getElementById('descText').textContent = books[realIdx].desc;
+    }
+    function render(animate = true, offset = 0) {
+      // 建立全部書卡
+      const renderBooksArr = getRenderBooks();
       track.innerHTML = '';
-      arr.forEach((item, i) => {
+      for (let i = 0; i < renderBooksArr.length; i++) {
         const card = document.createElement('div');
         card.className = "book-card";
-        if (item.idx === centerIdx && item.pos === 0) card.classList.add('active');
-        else if (item.pos === -1 || item.pos === 1) card.classList.add('side1');
-        else if (item.pos === -2 || item.pos === 2) card.classList.add('side2');
-        card.innerHTML = `<img src="${item.img}" alt="cover">`;
+        const relative = i - (centerIdx + sideCount);
+        // 加上active、side1、side2
+        if (relative === 0) {
+          card.classList.add('active');
+        } else if (relative === -1 || relative === 1) {
+          card.classList.add('side1');
+        } else if (relative === -2 || relative === 2) {
+          card.classList.add('side2');
+        }
+        card.innerHTML = `<img src="${renderBooksArr[i].img}" alt="cover">`;
         track.appendChild(card);
-      });
-      let base = -(centerIdx + sideCount) * cardWidth + (visibleCount >> 1) * cardWidth;
+      }
+      // 移動
+      baseOffset = -(centerIdx + sideCount) * cardWidth + ((visibleCount >> 1) * cardWidth);
+      currentOffset = baseOffset + offset;
       track.style.transition = animate ? 'transform .45s cubic-bezier(.7,1.7,.6,1)' : 'none';
-      track.style.transform = `translateX(${base + offset}px)`;
-      document.getElementById('descTitle').textContent = books[centerIdx].title;
-      document.getElementById('descText').textContent = books[centerIdx].desc;
+      track.style.transform = `translateX(${currentOffset}px)`;
+      setDesc(centerIdx);
     }
-    function moveLeft() {
-      if (lock) return;
-      lock = true;
-      centerIdx = (centerIdx - 1 + books.length) % books.length;
-      renderBooks(true, 0);
-      setTimeout(()=>{ lock = false; }, 450);
+    // 切換時補尾/頭
+    function fixLoop() {
+      // 若滑到補頭 or 補尾，瞬間跳回正本
+      if (centerIdx < 0) {
+        centerIdx += total;
+        render(false, 0);
+      } else if (centerIdx >= total) {
+        centerIdx -= total;
+        render(false, 0);
+      }
     }
-    function moveRight() {
-      if (lock) return;
-      lock = true;
-      centerIdx = (centerIdx + 1) % books.length;
-      renderBooks(true, 0);
-      setTimeout(()=>{ lock = false; }, 450);
+    function moveTo(idx, animate = true) {
+      centerIdx = (idx + total) % total;
+      render(animate, 0);
+      setTimeout(fixLoop, animate ? 450 : 0);
     }
+    function moveLeft() { if (!lock) { moveTo(centerIdx - 1); } }
+    function moveRight() { if (!lock) { moveTo(centerIdx + 1); } }
     document.getElementById('leftBtn').onclick = moveLeft;
     document.getElementById('rightBtn').onclick = moveRight;
 
-    // 拖曳/觸控+慣性
-    const carouselOuter = document.getElementById('carouselOuter');
-    let lastX = 0, lastT = 0, inertiaFrame = null, movingOffset = 0;
-
-    function startDrag(clientX) {
+    // 拖曳/觸控/慣性
+    function startDrag(x) {
       if (lock) return;
       isDragging = true;
-      dragMoved = false;
-      startX = clientX;
-      dragDelta = 0;
-      lastX = clientX;
-      lastT = Date.now();
+      dragStartX = x;
+      dragLastX = x;
+      dragDX = 0;
+      dragLastT = Date.now();
       velocities = [];
-      movingOffset = 0;
-      renderBooks(false, 0);
+      track.style.transition = 'none';
     }
-    function moveDrag(clientX) {
+    function moveDrag(x) {
       if (!isDragging) return;
-      dragDelta = clientX - startX;
-      dragMoved = true;
-      let now = Date.now();
-      let v = (clientX - lastX) / (now - lastT + 1); // px/ms
+      dragDX = x - dragStartX;
+      currentOffset = baseOffset + dragDX;
+      track.style.transform = `translateX(${currentOffset}px)`;
+      // 記錄速度
+      const now = Date.now();
+      const v = (x - dragLastX) / (now - dragLastT + 1);
       velocities.push(v);
       if (velocities.length > 5) velocities.shift();
-      lastX = clientX;
-      lastT = now;
-      movingOffset = dragDelta;
-      renderBooks(false, dragDelta);
+      dragLastX = x;
+      dragLastT = now;
     }
     function endDrag() {
       if (!isDragging) return;
       isDragging = false;
-      if (!dragMoved) return;
-      // 慣性判斷
+      // 平均速度
       let avgV = velocities.length ? velocities.reduce((a,b)=>a+b,0)/velocities.length : 0;
-      let movePx = dragDelta + avgV * 400; // 將速度轉換成拖曳距離
-      // 決定要滑幾格
-      let moveBooks = Math.round(-movePx / cardWidth); // 左正右負
-      if (moveBooks === 0 && Math.abs(dragDelta) > cardWidth / 2) moveBooks = dragDelta > 0 ? -1 : 1;
-      // 限制一次最多滑3格
+      let movePx = dragDX + avgV * 320;
+      let moveBooks = -Math.round(movePx / cardWidth);
+      // 有慣性滑超過3格時最多只跳3格
       moveBooks = Math.max(Math.min(moveBooks, 3), -3);
       if (moveBooks !== 0) {
-        inertiaSlide(moveBooks, avgV);
+        moveTo(centerIdx + moveBooks, true);
       } else {
-        renderBooks(true, 0); // 彈回原位
+        // 根據滑動距離超過一半也切換
+        if (dragDX > cardWidth/2) moveTo(centerIdx - 1, true);
+        else if (dragDX < -cardWidth/2) moveTo(centerIdx + 1, true);
+        else moveTo(centerIdx, true);
       }
     }
-
-    function inertiaSlide(moveBooks, v) {
-      lock = true;
-      // 動畫效果
-      let targetIdx = (centerIdx + moveBooks + books.length) % books.length;
-      let inertiaOffset = -moveBooks * cardWidth;
-      // 慣性動畫
-      track.style.transition = `transform 0.55s cubic-bezier(.23,1.1,.32,1)`;
-      let arr = getLoopArr();
-      track.innerHTML = '';
-      arr.forEach((item, i) => {
-        const card = document.createElement('div');
-        card.className = "book-card";
-        if (item.idx === centerIdx && item.pos === 0) card.classList.add('active');
-        else if (item.pos === -1 || item.pos === 1) card.classList.add('side1');
-        else if (item.pos === -2 || item.pos === 2) card.classList.add('side2');
-        card.innerHTML = `<img src="${item.img}" alt="cover">`;
-        track.appendChild(card);
-      });
-      let base = -(centerIdx + sideCount) * cardWidth + (visibleCount >> 1) * cardWidth;
-      track.style.transform = `translateX(${base + inertiaOffset}px)`;
-      setTimeout(()=>{
-        centerIdx = targetIdx;
-        renderBooks(true, 0);
-        lock = false;
-      }, 550);
-    }
-
+    // 滑鼠
+    const carouselOuter = document.getElementById('carouselOuter');
     carouselOuter.addEventListener('mousedown', e => startDrag(e.clientX));
     window.addEventListener('mousemove', e => { if (isDragging) moveDrag(e.clientX); });
     window.addEventListener('mouseup', endDrag);
-
-    // 手機觸控
+    // 觸控
     carouselOuter.addEventListener('touchstart', e => {
       if (e.touches.length === 1) startDrag(e.touches[0].clientX);
     });
@@ -291,7 +278,8 @@
     }, {passive:false});
     window.addEventListener('touchend', endDrag);
 
-    renderBooks(true, 0);
+    // 初始
+    render(true, 0);
   </script>
 </body>
 </html>
