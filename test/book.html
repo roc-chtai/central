@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>書籍中心5本平面輪播</title>
+  <title>書籍中心5本平面輪播-修正版</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
@@ -14,7 +14,7 @@
       margin: 0 auto;
     }
     .swiper-wrapper {
-      align-items: flex-end; /* 讓所有書卡底部對齊 */
+      align-items: flex-end;
     }
     .swiper-slide {
       display: flex;
@@ -28,7 +28,7 @@
       background: transparent;
       border-radius: 12px;
       width: 120px;
-      opacity: 0.5;
+      opacity: 0.35;
       transform: scale(0.6) translateY(0px);
       box-shadow: none;
       z-index: 1;
@@ -52,6 +52,19 @@
       margin-bottom: 0;
       margin-top: 3px;
     }
+    /* 中間主書 */
+    .swiper-slide-active {
+      opacity: 1;
+      z-index: 5;
+      pointer-events: auto;
+      background: #fff;
+      box-shadow: 0 8px 34px rgba(0,0,0,0.14);
+      transform: scale(1.18) translateY(-38px);
+    }
+    .swiper-slide-active img {
+      width: 150px;
+      height: 210px;
+    }
     /* 兩側第二本 */
     .swiper-slide-prev, .swiper-slide-next {
       opacity: 0.75;
@@ -60,31 +73,19 @@
       z-index: 2;
     }
     /* 兩側最外本 */
-    .swiper-slide-prev + .swiper-slide-prev, .swiper-slide-next + .swiper-slide-next {
-      opacity: 0.55;
+    .swiper-slide-prev ~ .swiper-slide-prev, 
+    .swiper-slide-next ~ .swiper-slide-next {
+      opacity: 0.45;
       transform: scale(0.62) translateY(0px);
       pointer-events: auto;
       z-index: 1;
     }
-    /* 中間主書 */
-    .swiper-slide-active {
-      opacity: 1;
-      z-index: 5;
-      pointer-events: auto;
-      background: #fff;
-      box-shadow: 0 8px 34px rgba(0,0,0,0.14);
-      transform: scale(1.18) translateY(-38px); /* 往上放大 */
-    }
-    .swiper-slide-active img {
-      width: 150px;
-      height: 210px;
-    }
-    /* 隱藏超出可見範圍的slide */
-    .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev):not(.swiper-slide-prev + .swiper-slide-prev):not(.swiper-slide-next + .swiper-slide-next) {
+    /* 不要讓其他slide完全消失，只縮小淡出 */
+    /* .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev):not(.swiper-slide-prev ~ .swiper-slide-prev):not(.swiper-slide-next ~ .swiper-slide-next) {
       opacity: 0;
       pointer-events: none;
       transition: opacity .16s;
-    }
+    } */
     .book-desc-area {
       min-height: 40px;
       color: #555;
@@ -114,7 +115,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 書籍中心5本平面輪播</h2>
+  <h2>📚 書籍中心5本平面輪播（修正版）</h2>
   <div class="swiper book-swiper">
     <div class="swiper-wrapper">
       <div class="swiper-slide" data-desc="一封信，解開人生難題的雜貨店，溫暖人心的故事。">
@@ -137,9 +138,7 @@
         <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400" alt="書名5">
         <div class="book-title">解體諸因</div>
       </div>
-      <!-- 可再增加更多本 -->
     </div>
-    <!-- 左右箭頭 -->
     <div class="swiper-button-prev"></div>
     <div class="swiper-button-next"></div>
   </div>
@@ -159,7 +158,6 @@
       },
       on: {
         slideChange: function() {
-          // 取得中間slide
           var slides = document.querySelectorAll('.swiper-slide');
           var descArea = document.getElementById('descArea');
           for(var i=0; i<slides.length; i++) {
