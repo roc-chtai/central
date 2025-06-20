@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>自製 Flat Book Slider（9本只顯示中間5本）</title>
+  <title>環狀 Flat Book Slider（9本只顯示中間5本，無限循環）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -19,6 +19,7 @@
       transition: transform .45s cubic-bezier(.7,1.7,.6,1);
       will-change: transform;
       height: 100%;
+      justify-content: center;
     }
     .book-card {
       width: 120px;
@@ -117,12 +118,10 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider（9本只顯示中間5本）</h2>
+  <h2>📚 Flat Book Slider（9本只顯示中間5本，無限循環）</h2>
   <div class="carousel-outer">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
-    <div class="book-track" id="bookTrack">
-      <!-- 書卡用JS產生 -->
-    </div>
+    <div class="book-track" id="bookTrack"></div>
     <button class="slider-arrow right" id="rightBtn">&#8594;</button>
   </div>
   <div class="book-desc-area" id="descArea">
@@ -143,24 +142,34 @@
       { title: "書9", desc: "書9介紹", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
     ];
     const track = document.getElementById('bookTrack');
-    let centerIdx = 4; // 中間那本（0-based）
+    let centerIdx = 4; // 初始正中間（0-based）
+
+    function getVisibleBooks(books, centerIdx) {
+      const n = books.length;
+      const res = [];
+      for(let i = -2; i <= 2; i++) {
+        let idx = (centerIdx + i + n) % n;
+        res.push({
+          ...books[idx],
+          idx: idx,
+          pos: i // 位置用於 class
+        });
+      }
+      return res;
+    }
 
     function renderBooks() {
       track.innerHTML = '';
-      books.forEach((book, i) => {
+      const visible = getVisibleBooks(books, centerIdx);
+      visible.forEach(item => {
         const card = document.createElement('div');
         card.className = "book-card";
-        if (i === centerIdx) card.classList.add('active');
-        else if (i === (centerIdx - 1 + books.length) % books.length || i === (centerIdx + 1) % books.length) card.classList.add('side1');
-        else if (i === (centerIdx - 2 + books.length) % books.length || i === (centerIdx + 2) % books.length) card.classList.add('side2');
-        card.innerHTML = `<img src="${book.img}" alt="cover">`;
+        if (item.pos === 0) card.classList.add('active');
+        else if (item.pos === -1 || item.pos === 1) card.classList.add('side1');
+        else if (item.pos === -2 || item.pos === 2) card.classList.add('side2');
+        card.innerHTML = `<img src="${item.img}" alt="cover">`;
         track.appendChild(card);
       });
-      // 讓 track 左移到中間那本正好在外框正中央
-      const cardWidth = 120 + 28; // width+margin
-      // 中間要顯示5本，所以外框正中央是第4本(centerIdx=4)
-      const offset = (centerIdx - 2 + books.length) % books.length * cardWidth;
-      track.style.transform = `translateX(${-offset}px)`;
       // 更新簡介區
       document.getElementById('descTitle').textContent = books[centerIdx].title;
       document.getElementById('descText').textContent = books[centerIdx].desc;
