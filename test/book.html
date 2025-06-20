@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>環狀 Flat Book Slider（9本只顯示中間5本，動畫版）</title>
+  <title>環狀 Flat Book Slider（9本只顯示中間5本，滑動動畫）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { background: #f3f5fa; }
@@ -16,10 +16,10 @@
     }
     .book-track {
       display: flex;
-      transition: transform .45s cubic-bezier(.7,1.7,.6,1);
-      will-change: transform;
       height: 100%;
       justify-content: center;
+      transition: transform 0.45s cubic-bezier(.7,1.7,.6,1);
+      will-change: transform;
     }
     .book-card {
       width: 120px;
@@ -36,7 +36,7 @@
       transform: scale(0.8) translateY(0px);
       box-shadow: none;
       z-index: 1;
-      transition: 
+      transition:
         transform .36s cubic-bezier(.55,1.5,.65,1),
         box-shadow .32s, opacity .32s;
       pointer-events: none;
@@ -50,7 +50,6 @@
       margin-bottom: 10px;
       transition: width .32s, height .32s;
     }
-    /* 中間主書 */
     .book-card.active {
       opacity: 1;
       z-index: 5;
@@ -63,14 +62,12 @@
       width: 150px;
       height: 210px;
     }
-    /* 兩側第二本 */
     .book-card.side1 {
       opacity: 0.85;
       transform: scale(0.95) translateY(-12px);
       z-index: 2;
       pointer-events: auto;
     }
-    /* 兩側最外本 */
     .book-card.side2 {
       opacity: 0.7;
       transform: scale(0.8) translateY(0px);
@@ -122,7 +119,7 @@
   </style>
 </head>
 <body>
-  <h2>📚 Flat Book Slider（9本只顯示中間5本，動畫版）</h2>
+  <h2>📚 Flat Book Slider（9本只顯示中間5本，滑動動畫）</h2>
   <div class="carousel-outer">
     <button class="slider-arrow left" id="leftBtn">&#8592;</button>
     <div class="book-track" id="bookTrack"></div>
@@ -145,11 +142,13 @@
       { title: "書8", desc: "書8介紹", img: "https://images.unsplash.com/photo-1528747045269-390fe33c19d3?w=400" },
       { title: "書9", desc: "書9介紹", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
     ];
+
     const track = document.getElementById('bookTrack');
     let centerIdx = 4; // 初始正中間（0-based）
     let lock = false; // 動畫期間鎖定按鈕
 
-    function getVisibleBooks(books, centerIdx) {
+    // 可見的5本，環狀
+    function getVisibleBooks(centerIdx) {
       const n = books.length;
       const res = [];
       for(let i = -2; i <= 2; i++) {
@@ -163,9 +162,13 @@
       return res;
     }
 
+    // 畫面上只保留5本，左右按鈕時用動畫「滑動」過去
+    let currentDirection = 0; // -1: left, 1: right, 0: 靜止
+
     function renderBooks() {
+      // 產生5本卡片
       track.innerHTML = '';
-      const visible = getVisibleBooks(books, centerIdx);
+      const visible = getVisibleBooks(centerIdx);
       visible.forEach(item => {
         const card = document.createElement('div');
         card.className = "book-card";
@@ -175,27 +178,59 @@
         card.innerHTML = `<img src="${item.img}" alt="cover">`;
         track.appendChild(card);
       });
+
       // 更新簡介區
       document.getElementById('descTitle').textContent = books[centerIdx].title;
       document.getElementById('descText').textContent = books[centerIdx].desc;
+
+      // 預設歸零（這一步很重要）
+      track.style.transition = "none";
+      track.style.transform = "translateX(0)";
+      setTimeout(() => {
+        track.style.transition = "transform 0.45s cubic-bezier(.7,1.7,.6,1)";
+        // 若有方向，先做滑動動畫
+        if (currentDirection === -1) {
+          // 向左滑（下一本進來）
+          track.style.transform = `translateX(${-(120+28)}px)`;
+        } else if (currentDirection === 1) {
+          // 向右滑（前一本進來）
+          track.style.transform = `${120+28}px` ? `translateX(${(120+28)}px)` : "";
+        }
+        // 下1 frame後（動畫結束），reset 回正中間並換內容
+        if (currentDirection !== 0) {
+          setTimeout(() => {
+            track.style.transition = "none";
+            track.style.transform = "translateX(0)";
+            currentDirection = 0;
+            lock = false;
+            // 強制刷新卡片內容（避免殘影）
+            renderBooks();
+          }, 450);
+        } else {
+          lock = false;
+        }
+      }, 16); // 下一個 event loop
     }
 
     function moveLeft() {
       if (lock) return;
       lock = true;
-      centerIdx = (centerIdx - 1 + books.length) % books.length;
+      currentDirection = -1;
+      // 這裡先渲染「滑動前」的內容，讓動畫往左
       renderBooks();
-      setTimeout(()=>{ lock = false; }, 450); // 跟 .book-track transition 時間一致
+      // 實際資料移動在動畫結束後
+      centerIdx = (centerIdx - 1 + books.length) % books.length;
     }
     function moveRight() {
       if (lock) return;
       lock = true;
-      centerIdx = (centerIdx + 1) % books.length;
+      currentDirection = 1;
       renderBooks();
-      setTimeout(()=>{ lock = false; }, 450);
+      centerIdx = (centerIdx + 1) % books.length;
     }
     document.getElementById('leftBtn').onclick = moveLeft;
     document.getElementById('rightBtn').onclick = moveRight;
+    // 初始化
     renderBooks();
   </script>
 </body>
