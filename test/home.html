@@ -7,132 +7,113 @@
   <link href="https://fonts.googleapis.com/css?family=Orbitron:700|Montserrat:400,700&amp;display=swap" rel="stylesheet">
 
   <style>
-    /* === 基本樣式 === */
-    html, body {
-      margin: 0;
-      height: 100%;
-      font-family: 'Montserrat', sans-serif;
-      background: #101b36;
-      width:100%
-    }
-
-    .tech-header {
-      background: rgba(13, 27, 77, 0.9);
-      box-shadow: 0 2px 12px #08102c66;
-    }
-
-    .logo-text {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.6rem, 2.6vw, 3.2rem);
-      font-weight: 700;
-      color: #1eb5e5;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 30px #1eb5e5AA;
-    }
-
-    .main-slogan {
-      font-size:clamp(1.8rem, 2.6vw, 3.2rem);
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 2px 16px #1eb5e544;
-    }
-
-    .main-slogan span {
-      color: #b621fe;
-    }
-
-    .particle-bg {
-      position: fixed;
-      z-index: 0;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-    }
-
-    .main-row {
-      min-height: 70vh;
-    }
-
-    /* === Prism 基本樣式 === */
-    .hex-prism-container {
-      perspective: 1600px;
-      width: 420px;
-      height: 440px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hex-prism {
-      width: 320px;
-      height: 320px;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.08s linear;
-    }
-
-    .hex-face {
-      position: absolute;
-      width: 320px;
-      height: 320px;
-      box-shadow: 0 8px 32px #0003;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #fff;
-      text-align: center;
-      cursor: pointer;
-      border-radius: 18px;
-      padding: 22px 16px;
-      user-select: none;
-      background: linear-gradient(135deg,#1eb5e5 60%,#b621fe 100%);
-    }
-
-    .hex-face i {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 2px 8px #fff7);
-    }
-
-    .hex-face h3 {
-      font-size: 1.25rem;
-      font-weight: bold;
-      margin-bottom: 0.4rem;
-    }
-
-    .hex-face p {
-      font-size: 1rem;
-      opacity: 0.9;
-      margin: 0;
-    }
-
-    .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(282px);}
-    .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(282px);}
-    .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(282px);}
-    .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(282px);}
-    .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(282px);}
-    .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(282px);}
-
-  #rwd-notice {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #fff;
-    font-size: 1.5rem;
-    background: #101b36;
-    font-family: 'Montserrat', sans-serif;
-  }
+  /* === 基本樣式 === */
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: 'Montserrat', sans-serif;
+  background: #101b36;
+  width: 100%;
 }
 
+.tech-header {
+  background: rgba(13, 27, 77, 0.9);
+  box-shadow: 0 2px 12px #08102c66;
+}
 
+.logo-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.6rem, 2.6vw, 3.2rem);
+  font-weight: 700;
+  color: #1eb5e5;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 30px #1eb5e5AA;
+}
 
-/* 覆蓋 Bootstrap container 最大寬度設定 */
+.main-slogan {
+  font-size: clamp(1.8rem, 2.6vw, 3.2rem);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 16px #1eb5e544;
+}
+.main-slogan span {
+  color: #b621fe;
+}
+
+.particle-bg {
+  position: fixed;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.main-row {
+  min-height: 70vh;
+}
+
+/* === Prism 基本樣式 === */
+.hex-prism-container {
+  perspective: 1600px;
+  width: 420px;
+  height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hex-prism {
+  width: 320px;
+  height: 320px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.08s linear;
+}
+
+.hex-face {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  box-shadow: 0 8px 32px #0003;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 18px;
+  padding: 22px 16px;
+  user-select: none;
+  background: linear-gradient(135deg,#1eb5e5 60%,#b621fe 100%);
+}
+.hex-face i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 8px #fff7);
+}
+.hex-face h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+}
+.hex-face p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+.hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(282px);}
+.hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(282px);}
+.hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(282px);}
+.hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(282px);}
+.hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(282px);}
+.hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(282px);}
+
+/* RWD 螢幕寬度調整 */
 @media (min-width: 576px) {
   .container, .container-sm {
     max-width: 95% !important;
@@ -142,20 +123,19 @@
   .container, .container-md, .container-sm {
     max-width: 90% !important;
   }
-
 }
-
 @media (min-width: 768px) and (max-width: 991.98px) {
-.hex-prism-container {margin-right:-150px;}
+  .hex-prism-container {
+    margin-right: -150px;
+  }
 }
 
-
+/* RWD 手機樣式 */
 @media (max-width: 767.98px) {
   .hex-prism-container {
     width: 180px !important;
     height: 190px !important;
-
-    margin: 20px auto 0 auto !important; 
+    margin: 20px auto 0 auto !important;
     padding: 0;
   }
   .hex-prism {
@@ -179,19 +159,31 @@
   .hex-face p {
     font-size: 0.88rem;
   }
-
-    .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(160px);}
-    .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(160px);}
-    .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(160px);}
-    .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(160px);}
-    .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(160px);}
-    .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(160px);}
-}
-.main-row{
-min-height:55%;
-margin:2%;
+  .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(160px);}
+  .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(160px);}
+  .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(160px);}
+  .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(160px);}
+  .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(160px);}
+  .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(160px);}
 }
 
+/* 額外區塊：RWD 注意訊息樣式 */
+#rwd-notice {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+  font-size: 1.5rem;
+  background: #101b36;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* main-row 補充 */
+.main-row {
+  min-height: 55%;
+  margin: 2%;
+}
   </style>
 </head>
 <body>
