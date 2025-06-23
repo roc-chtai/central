@@ -13,6 +13,7 @@
       height: 100%;
       font-family: 'Montserrat', sans-serif;
       background: #101b36;
+      width:100%
     }
 
     .tech-header {
@@ -30,7 +31,7 @@
     }
 
     .main-slogan {
-      font-size: 2.6rem;
+      font-size:clamp(1.8rem, 2.6vw, 3.2rem);
       font-weight: 700;
       color: #fff;
       text-shadow: 0 2px 16px #1eb5e544;
@@ -128,6 +129,25 @@
     font-family: 'Montserrat', sans-serif;
   }
 }
+
+
+
+/* 覆蓋 Bootstrap container 最大寬度設定 */
+@media (min-width: 576px) {
+  .container, .container-sm {
+    max-width: 95% !important;
+  }
+}
+@media (min-width: 768px) {
+  .container, .container-md, .container-sm {
+    max-width: 90% !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+.hex-prism-container {margin-right:-150px;}
+}
+
   </style>
 </head>
 <body>
@@ -145,7 +165,7 @@
     </nav>
   </header>
 
-  <main class="container pt-5" style="position: relative; z-index: 1;">
+  <main class="container pt-3" style="position: relative; z-index: 1;">
     <!-- 手機專用輪播 -->
 <div class="hex-prism-container d-block d-md-none" id="prismMobileBox">
       <div class="hex-prism" id="hexPrism" style="transform: rotateY(589.45deg);">
@@ -160,7 +180,7 @@
 
     <div class="row main-row align-items-center">
       <!-- 左邊 slogan -->
-      <div class="col-md-6 pb-4 pb-md-0 d-flex flex-column align-items-start justify-content-center">
+      <div class="col-md-4 pb-4 pb-md-0 d-flex flex-column align-items-start justify-content-center">
         <div class="main-slogan ">
           推動<span>AI教育</span>，<br>創新未來！
         </div>
@@ -171,7 +191,7 @@
       </div>
 
       <!-- 右邊 Prism：平板與桌機共用 -->
-<div class="col-md-6 d-none d-md-flex justify-content-center" id="prismDesktopBox">
+<div class="col-md-8 d-none d-md-flex justify-content-center" id="prismDesktopBox">
         <div class="hex-prism-container">
           <div class="hex-prism" id="hexPrismDesktop" style="transform: rotateY(589.45deg);">
             <div class="hex-face"><i class="fas fa-robot"></i><h3>學會簡介</h3><p>推動AI教育普及與師資培育，整合產官學資源，共創智慧學習未來。</p></div>
