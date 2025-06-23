@@ -142,10 +142,54 @@
   .container, .container-md, .container-sm {
     max-width: 90% !important;
   }
+
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
 .hex-prism-container {margin-right:-150px;}
+}
+
+
+@media (max-width: 767.98px) {
+  .hex-prism-container {
+    width: 180px !important;
+    height: 190px !important;
+
+    margin: 20px auto 0 auto !important; 
+    padding: 0;
+  }
+  .hex-prism {
+    width: 180px;
+    height: 180px;
+  }
+  .hex-face {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 6vw 2vw;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+  .hex-face i {
+    font-size: 2.1rem;
+    margin-bottom: 0.6rem;
+  }
+  .hex-face h3 {
+    font-size: 1.05rem;
+  }
+  .hex-face p {
+    font-size: 0.88rem;
+  }
+
+    .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(160px);}
+    .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(160px);}
+    .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(160px);}
+    .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(160px);}
+    .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(160px);}
+    .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(160px);}
+}
+.main-row{
+min-height:55%;
+margin:2%;
 }
 
   </style>
@@ -206,7 +250,7 @@
     </div>
   </main>
 
-  <footer class="text-center text-white-50 py-3 mt-5" style="background:#0d1b4d;">
+  <footer class="text-center text-white-50 py-3 mt-2" style="background:#0d1b4d;">
     © 2025 中華AI教育學會 | 聯絡信箱：ai@ai.org.tw
   </footer>
 
