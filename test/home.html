@@ -363,6 +363,7 @@ html, body {
         if (e.touches.length === 1) {
           dragging = true;
           lastX = e.touches[0].clientX;
+          lastY = e.touches[0].clientY; 
           lastTime = Date.now();
           inertia = 0;
           prism.style.transition = 'none';
@@ -372,15 +373,19 @@ html, body {
       window.addEventListener('touchmove', e => {
         if (dragging && e.touches.length === 1) {
           let dx = e.touches[0].clientX - lastX;
-          angle += dx * 0.2;
-          let now = Date.now();
-          inertia = dx / (now - lastTime + 1);
-          lastX = e.touches[0].clientX;
-          lastTime = now;
-          prism.style.transform = `rotateY(${angle}deg)`;
-        }
-      });
-
+          let dy = e.touches[0].clientY - lastY;
+ if (Math.abs(dx) < 2 && Math.abs(dy) > 0) {
+      dx = Math.sign(dx || dy) * Math.sqrt(dx*dx + dy*dy) * 0.7;
+    }
+    angle += dx * 0.25;
+    let now = Date.now();
+    inertia = dx / (now - lastTime + 1);
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    lastTime = now;
+    prism.style.transform = `rotateY(${angle}deg)`;
+  }
+});
       window.addEventListener('touchend', () => {
         if (dragging) {
           dragging = false;
