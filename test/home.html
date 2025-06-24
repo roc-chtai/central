@@ -78,6 +78,8 @@
     padding: 22px 16px;
     user-select: none;
     background: linear-gradient(135deg,#1eb5e5 60%,#b621fe 100%);
+  transition: box-shadow 0.18s, filter 0.18s;
+
   }
   .hex-face i {
     font-size: 4rem;
@@ -165,102 +167,108 @@
     margin: 2%;
   }
 
-.hex-face a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
-  text-decoration: none;
-  width: 100%;
-  height: 100%;
-}
-.hex-face a:hover, .hex-face a:focus {
+.hex-face:hover, .hex-face:focus {
   color: #fff3c2;
   border-radius: 12px;
+  filter: brightness(1.09);
+  box-shadow: 0 8px 40px #b621fe66;
 }
+
+ 
   </style>
+
 </head>
 <body>
 
   <canvas class="particle-bg" id="particle-bg" width="1500" height="934"></canvas>
 
-  <main class="container pt-3" style="position: relative; z-index: 1;">
-    <!-- 手機專用輪播 -->
-<div class="hex-prism-container d-block d-md-none" id="prismMobileBox">
-  <div class="hex-prism" id="hexPrism" style="transform: rotateY(589.45deg);">
-    <div class="hex-face">
-      <a href="#">
+<main class="container pt-3" style="position: relative; z-index: 1;">
+  <!-- 手機專用輪播（改用 data-href） -->
+  <div class="hex-prism-container d-block d-md-none" id="prismMobileBox">
+    <div class="hex-prism" id="hexPrism" style="transform: rotateY(589.45deg);">
+      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">
         <i class="fas fa-robot"></i>
         <h3>學會簡介</h3>
-      </a>
-    </div>
-    <div class="hex-face">
-      <a href="#">
+      </div>
+      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">
         <i class="fas fa-users"></i>
         <h3>講座活動</h3>
-      </a>
-    </div>
-    <div class="hex-face">
-      <a href="#">
+      </div>
+      <div class="hex-face" data-href="#">
         <i class="fas fa-chalkboard-teacher"></i>
         <h3>師資培訓</h3>
-      </a>
-    </div>
-    <div class="hex-face">
-      <a href="#">
+      </div>
+      <div class="hex-face" data-href="#">
         <i class="fas fa-book-open"></i>
         <h3>著作書籍</h3>
-      </a>
-    </div>
-    <div class="hex-face">
-      <a href="#">
+      </div>
+      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/aiVideos/">
         <i class="fas fa-video"></i>
         <h3>活動影音</h3>
-      </a>
-    </div>
-    <div class="hex-face">
-      <a href="#">
+      </div>
+      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5">
         <i class="fas fa-user-graduate"></i>
         <h3>AI規劃師</h3>
-      </a>
+      </div>
     </div>
   </div>
-</div>
 
-    <div class="row main-row align-items-center">
-      <!-- 左邊 slogan -->
-      <div class="col-md-4 pb-4 pb-md-0 d-flex flex-column align-items-start justify-content-center">
-        <div class="main-slogan">
-          推動<span>AI教育</span>，<br>創新未來！
-        </div>
-        <p class="text-white-50 fs-5 mb-4" style="max-width:420px;">
-          我們致力於推廣人工智慧教育，<br>提供最新AI課程、資源與活動 陪伴你一起<br>邁向智慧新時代。
-        </p>
-        <a href="#" class="btn btn-lg btn-primary rounded-pill px-5 shadow" style="background:linear-gradient(90deg,#1eb5e5,#b621fe);border:none;">加入我們</a>
+  <div class="row main-row align-items-center">
+    <!-- 左邊 slogan -->
+    <div class="col-md-4 pb-4 pb-md-0 d-flex flex-column align-items-start justify-content-center">
+      <div class="main-slogan">
+        推動<span>AI教育</span>，<br>創新未來！
       </div>
-      <!-- 右邊 Prism：平板與桌機共用 -->
-      <div class="col-md-8 d-none d-md-flex justify-content-center" id="prismDesktopBox">
-        <div class="hex-prism-container">
-          <div class="hex-prism" id="hexPrismDesktop" style="transform: rotateY(589.45deg);">
-            <div class="hex-face"><i class="fas fa-robot"></i><h3>學會簡介</h3><p>推動AI教育普及與師資培育，整合產官學資源，共創智慧學習未來。</p></div>
-            <div class="hex-face"><i class="fas fa-users"></i><h3>講座活動</h3><p>定期舉辦AI主題講座，邀請專家分享最新趨勢與實務應用，免費參與、共學共創。</p></div>
-            <div class="hex-face"><i class="fas fa-chalkboard-teacher"></i><h3>師資培訓</h3><p>開設AI教育專業課程，培養教師AI教學能力，打造數位轉型教學力。</p></div>
-            <div class="hex-face"><i class="fas fa-book-open"></i><h3>著作書籍</h3><p>AI教育專書與教學指引，分享實務經驗與研究成果，推動教育創新發展。</p></div>
-            <div class="hex-face"><i class="fas fa-video"></i><h3>活動影音</h3><p>紀錄AI教育活動與講座實況，提供精彩影片回顧與學習資源分享。</p></div>
-            <div class="hex-face"><i class="fas fa-user-graduate"></i><h3>AI規劃師</h3><p>想成為AI時代的關鍵人才？報名AI規劃師課程，實戰學習、滿人即開課！</p></div>
+      <p class="text-white-50 fs-5 mb-4" style="max-width:420px;">
+        我們致力於推廣人工智慧教育，<br>提供最新AI課程、資源與活動 陪伴你一起<br>邁向智慧新時代。
+      </p>
+      <a href="#" class="btn btn-lg btn-primary rounded-pill px-5 shadow" style="background:linear-gradient(90deg,#1eb5e5,#b621fe);border:none;">加入我們</a>
+    </div>
+
+    <!-- 右邊 Prism：平板與桌機共用 -->
+    <div class="col-md-8 d-none d-md-flex justify-content-center" id="prismDesktopBox">
+      <div class="hex-prism-container">
+        <div class="hex-prism" id="hexPrismDesktop" style="transform: rotateY(589.45deg);">
+          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">
+            <i class="fas fa-robot"></i>
+            <h3>學會簡介</h3>
+            <p>推動AI教育普及與師資培育，整合產官學資源，共創智慧學習未來。</p>
+          </div>
+          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">
+            <i class="fas fa-users"></i>
+            <h3>講座活動</h3>
+            <p>定期舉辦AI主題講座，邀請專家分享最新趨勢與實務應用，免費參與、共學共創。</p>
+          </div>
+          <div class="hex-face" data-href="#">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h3>師資培訓</h3>
+            <p>開設AI教育專業課程，培養教師AI教學能力，打造數位轉型教學力。</p>
+          </div>
+          <div class="hex-face" data-href="#">
+            <i class="fas fa-book-open"></i>
+            <h3>著作書籍</h3>
+            <p>AI教育專書與教學指引，分享實務經驗與研究成果，推動教育創新發展。</p>
+          </div>
+          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/aiVideos/">
+            <i class="fas fa-video"></i>
+            <h3>活動影音</h3>
+            <p>紀錄AI教育活動與講座實況，提供精彩影片回顧與學習資源分享。</p>
+          </div>
+          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5">
+            <i class="fas fa-user-graduate"></i>
+            <h3>AI規劃師</h3>
+            <p>想成為AI時代的關鍵人才？報名AI規劃師課程，實戰學習、滿人即開課！</p>
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </div>
+</main>
+
+
 
   <canvas class="particle-bg" id="particle-bg" width="1500" height="934"></canvas>
-  <footer class="footer-ai">
-    © 2025 中華AI教育學會 | 聯絡信箱：
-    <a href="mailto:roc.chtai@gmail.com">roc.chtai@gmail.com
-</a>
-  </footer>
+
 
   <!-- 粒子背景動畫 -->
   <script>
@@ -314,104 +322,145 @@
     }
     draw();
   </script>
-
-  <!-- Prism 輪播動畫 -->
   <script>
-    function setupPrism(id) {
-      const prism = document.getElementById(id);
-      if (!prism) return;
-      let angle = 0;
-      let autoSpeed = 0.05;
-      let speed = autoSpeed;
-      let dragging = false;
-      let lastX = 0;
-      let lastTime = 0;
-      let inertia = 0;
+// Prism 旋轉
+function setupPrism(id) {
+  const prism = document.getElementById(id);
+  if (!prism) return;
+  let angle = 0;
+  let autoSpeed = 0.05;
+  let speed = autoSpeed;
+  let dragging = false;
+  let lastX = 0, lastY = 0;
+  let lastTime = 0;
+  let inertia = 0;
 
-      function animate() {
-        if (!dragging) {
-          angle += speed;
-          if (Math.abs(speed - autoSpeed) > 0.001) {
-            speed *= 0.97;
-            if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
-          } else {
-            speed = autoSpeed;
-          }
-        }
-        prism.style.transform = `rotateY(${angle}deg)`;
-        requestAnimationFrame(animate);
+  function animate() {
+    if (!dragging) {
+      angle += speed;
+      if (Math.abs(speed - autoSpeed) > 0.001) {
+        speed *= 0.97;
+        if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
+      } else {
+        speed = autoSpeed;
       }
-      animate();
-
-      prism.addEventListener('mousedown', e => {
-        dragging = true;
-        lastX = e.clientX;
-        lastTime = Date.now();
-        inertia = 0;
-        prism.style.transition = 'none';
-        e.preventDefault();
-      });
-
-      window.addEventListener('mousemove', e => {
-        if (dragging) {
-          let dx = e.clientX - lastX;
-          angle += dx * 0.2;
-          let now = Date.now();
-          inertia = dx / (now - lastTime + 1);
-          lastX = e.clientX;
-          lastTime = now;
-          prism.style.transform = `rotateY(${angle}deg)`;
-        }
-      });
-
-      window.addEventListener('mouseup', () => {
-        if (dragging) {
-          dragging = false;
-          speed = inertia * 2;
-          if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
-          prism.style.transition = '';
-        }
-      });
-
-      prism.addEventListener('touchstart', e => {
-        if (e.touches.length === 1) {
-          dragging = true;
-          lastX = e.touches[0].clientX;
-          lastY = e.touches[0].clientY; 
-          lastTime = Date.now();
-          inertia = 0;
-          prism.style.transition = 'none';
-        }
-      });
-
-      window.addEventListener('touchmove', e => {
-        if (dragging && e.touches.length === 1) {
-          let dx = e.touches[0].clientX - lastX;
-          let dy = e.touches[0].clientY - lastY;
-          if (Math.abs(dx) < 2 && Math.abs(dy) > 0) {
-            dx = Math.sign(dx || dy) * Math.sqrt(dx*dx + dy*dy) * 0.7;
-          }
-          angle += dx * 0.25;
-          let now = Date.now();
-          inertia = dx / (now - lastTime + 1);
-          lastX = e.touches[0].clientX;
-          lastY = e.touches[0].clientY;
-          lastTime = now;
-          prism.style.transform = `rotateY(${angle}deg)`;
-        }
-      });
-      window.addEventListener('touchend', () => {
-        if (dragging) {
-          dragging = false;
-          speed = inertia * 2;
-          if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
-          prism.style.transition = '';
-        }
-      });
     }
+    prism.style.transform = `rotateY(${angle}deg)`;
+    requestAnimationFrame(animate);
+  }
+  animate();
 
-    setupPrism('hexPrismDesktop');
-    setupPrism('hexPrism');
+  prism.addEventListener('mousedown', e => {
+    dragging = true;
+    lastX = e.clientX;
+    lastTime = Date.now();
+    inertia = 0;
+    prism.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (dragging) {
+      let dx = e.clientX - lastX;
+      angle += dx * 0.2;
+      let now = Date.now();
+      inertia = dx / (now - lastTime + 1);
+      lastX = e.clientX;
+      lastTime = now;
+      prism.style.transform = `rotateY(${angle}deg)`;
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (dragging) {
+      dragging = false;
+      speed = inertia * 2;
+      if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
+      prism.style.transition = '';
+    }
+  });
+
+  // 手機
+  prism.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      dragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY; 
+      lastTime = Date.now();
+      inertia = 0;
+      prism.style.transition = 'none';
+      e.preventDefault();
+    }
+  });
+
+  window.addEventListener('touchmove', e => {
+    if (dragging && e.touches.length === 1) {
+      let dx = e.touches[0].clientX - lastX;
+      angle += dx * 0.25;
+      let now = Date.now();
+      inertia = dx / (now - lastTime + 1);
+      lastX = e.touches[0].clientX;
+      lastTime = now;
+      prism.style.transform = `rotateY(${angle}deg)`;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', () => {
+    if (dragging) {
+      dragging = false;
+      speed = inertia * 2;
+      if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
+      prism.style.transition = '';
+    }
+  });
+}
+
+setupPrism('hexPrismDesktop');
+setupPrism('hexPrism');
+
+// 點擊六角面（防止拖動誤觸，只有真正點一下才跳轉）
+document.querySelectorAll('.hex-face').forEach(function(face) {
+  let startX = 0, startY = 0, moved = false;
+
+  // 桌機
+  face.addEventListener('mousedown', function(e) {
+    moved = false;
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  face.addEventListener('mousemove', function(e) {
+    if (Math.abs(e.clientX - startX) > 8 || Math.abs(e.clientY - startY) > 8) {
+      moved = true;
+    }
+  });
+  face.addEventListener('mouseup', function(e) {
+    if (!moved && face.dataset.href && face.dataset.href !== '#') {
+      window.open(face.dataset.href, "_self");
+    }
+  });
+
+  // 手機
+  face.addEventListener('touchstart', function(e) {
+    moved = false;
+    if (e.touches.length === 1) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }
+  });
+  face.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1) {
+      let dx = Math.abs(e.touches[0].clientX - startX);
+      let dy = Math.abs(e.touches[0].clientY - startY);
+      if (dx > 8 || dy > 8) moved = true;
+    }
+  });
+  face.addEventListener('touchend', function(e) {
+    if (!moved && face.dataset.href && face.dataset.href !== '#') {
+      window.open(face.dataset.href, "_self");
+    }
+  });
+});
   </script>
 </body>
 </html>
