@@ -1,173 +1,355 @@
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>中華AI教育學會</title>
+  <!-- CSS & Fonts -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css?family=Orbitron:700|Montserrat:400,700&display=swap" rel="stylesheet">
-
   <style>
- 
   html, body {
-    margin: 0;
-    height: 100%;
-    font-family: 'Montserrat', sans-serif;
-    background: #101b36;
-    width: 100%;
-    overflow-x: hidden;
-  }
-  body {
-    display: flex;
-    flex-direction: column;
-  }
-  main {
-    flex: 1 0 auto;
-  }
+  margin: 0;
+  height: 100%;
+  font-family: 'Montserrat', sans-serif;
+  background: #101b36;
+  width: 100%;
+  overflow-x: hidden;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main {
+  flex: 1 0 auto;
+}
 
-  .main-slogan {
-    font-size: clamp(1.8rem, 2.6vw, 3.2rem);
-    font-weight: 700;
-    color: #fff;
-    text-shadow: 0 2px 16px #1eb5e544;
+/* Navbar */
+.tech-navbar {
+  background: rgba(13, 27, 77, 0.8) !important;
+  box-shadow: 0 2px 16px #1eb5e544;
+  backdrop-filter: blur(2px);
+  border-bottom: 1.5px solid #1eb5e566;
+  height: 4rem;
+  padding-top: 0.12rem;
+  padding-bottom: 0.12rem;
+  z-index: 1020 !important;
+  position: relative;
+}
+.logo-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+  font-weight: 1000;
+  color: #5cd0f5 !important;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 30px #1eb5e5AA;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  margin-left:10px;
+}
+
+.navbar-nav .nav-link i {
+  margin-right: 0.2em;
+  margin-left: 0.8em;
+}
+.navbar-nav .nav-link,
+.navbar-nav .dropdown-toggle {
+  color: #fff !important;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  text-shadow: 0 2px 12px #1eb5e544;
+  transition: color 0.18s, background 0.21s;
+  border-radius: 7px;
+  font-size: 1.08em;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus,
+.navbar-nav .nav-link.active,
+.navbar-nav .dropdown-toggle:hover,
+.navbar-nav .dropdown-toggle:focus,
+.navbar-nav .dropdown-toggle.show {
+  color: #fff3c2 !important;
+}
+.navbar-nav .nav-link:active {
+  color: #ffe066 !important;
+}
+.dropdown-menu {
+  background: rgba(13, 27, 77, 0.8) !important;
+  border-radius: 14px;
+  border: 2px solid #1eb5e5;
+  box-shadow: 0 0 16px 2px #b621fe88, 0 1.5px 0 #1eb5e5aa;
+  min-width: 170px;
+  margin-top: 0.6rem !important;
+  padding: 0.5rem 0.22rem;
+  filter: drop-shadow(0 0 10px #1eb5e5aa);
+  z-index: 1050 !important;
+  position: absolute !important;
+}
+.dropdown-item {
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  margin: 0rem 0.8rem;
+  transition: background 0.18s, color 0.18s;
+  font-size: 1.04em;
+  letter-spacing: 0.5px;
+}
+.dropdown-item:hover,
+.dropdown-item:focus,
+.dropdown-item.active,
+.dropdown-item:active {
+  color: #fff3c2 !important;
+  background: rgba(255,255,255,0) !important;
+}
+@media (min-width: 768px) {
+  .navbar-toggler {
+    display: none !important;
   }
-  .main-slogan span {
-    color: #b621fe;
+}
+.navbar-toggler {
+  border: none;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0.19em 0.45em;
+  margin-left: 0.3em;
+  display: flex;
+  align-items: center;
+  height: 1.2em;
+}
+.hamburger {
+  width: 1.9em;
+  height: 1.9em;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.23s;
+}
+.hamburger-bar {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 3.5px;
+  border-radius: 3px;
+  background: #fff;
+  transition: all 0.36s cubic-bezier(0.4,0,0.2,1);
+}
+.hamburger-bar:nth-child(1) { top: 0.33em; }
+.hamburger-bar:nth-child(2) { top: 0.89em; }
+.hamburger-bar:nth-child(3) { top: 1.45em; }
+.navbar-toggler.collapsed .hamburger-bar { transform: none; opacity: 1; }
+.navbar-toggler:not(.collapsed) .hamburger-bar:nth-child(1) { transform: translateY(0.56em) rotate(45deg); }
+.navbar-toggler:not(.collapsed) .hamburger-bar:nth-child(2) { opacity: 0; }
+.navbar-toggler:not(.collapsed) .hamburger-bar:nth-child(3) { transform: translateY(-0.56em) rotate(-45deg); }
+@media (max-width: 767.98px) {
+  .navbar-collapse {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 16px;
+    background: none;
   }
-  .particle-bg {
-    position: fixed;
-    z-index: 0;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
+  .dropdown-menu {
+    border: 0px;
   }
-  .main-row {
-    min-height: 70vh;
+}
+@media (max-width: 991.98px) {
+  .dropdown-menu {
+    background: rgba(13, 27, 77, 0.92) !important;
+    box-shadow: 0 6px 24px #1eb5e544;
   }
+}
+@media (max-width: 767.98px) {
+  .navbar-collapse {
+    position: absolute !important;
+    top: 100%;
+    left: 0; right: 0;
+    z-index: 999;
+    background: rgba(13,27,77,0.97);
+    border-radius: 0 0 18px 18px;
+    max-width: 80%;
+    margin: 0 auto;
+    box-shadow: 0 8px 28px #1eb5e554;
+    padding: 1.2rem 1.2rem 1.1rem 1.2rem;
+  }
+  .navbar {
+    position: relative;
+  }
+}
+ul.dropdown-menu > li:not(:last-child)::after {
+  content: "";
+  display: block;
+  height: 2.8px;
+  width: 70%;
+  margin: 0rem 1.5rem ;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    #53e2ff 0%,
+    #53e2ff99 55%,
+    #53e2ff00 100%
+  );
+  pointer-events: none;
+}
+
+/* Prism 六角區塊、背景、主內容 */
+.particle-bg {
+  position: fixed;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+.main-slogan {
+  font-size: clamp(1.8rem, 2.6vw, 3.2rem);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 16px #1eb5e544;
+}
+.main-slogan span {
+  color: #b621fe;
+}
+.main-row {
+  min-height: 70vh;
+}
+.hex-prism-container {
+  perspective: 1600px;
+  width: 420px;
+  height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  position: relative;
+}
+.hex-prism {
+  width: 320px;
+  height: 320px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.08s linear;
+  z-index: 1;
+}
+.hex-face {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  box-shadow: 0 8px 32px #0003;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 18px;
+  padding: 22px 16px;
+  user-select: none;
+  background: linear-gradient(135deg,#1eb5e5 60%,#b621fe 100%);
+  transition: box-shadow 0.18s, filter 0.18s;
+}
+.hex-face i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 8px #fff7);
+}
+.hex-face h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+}
+.hex-face p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+.hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(282px);}
+.hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(282px);}
+.hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(282px);}
+.hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(282px);}
+.hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(282px);}
+.hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(282px);}
+@media (min-width: 576px) {
+  .container, .container-sm {
+    max-width: 95% !important;
+  }
+}
+@media (min-width: 768px) {
+  .container, .container-md, .container-sm {
+    max-width: 90% !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
   .hex-prism-container {
-    perspective: 1600px;
-    width: 420px;
-    height: 440px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-right: -150px;
+  }
+}
+@media (max-width: 767.98px) {
+  .hex-prism-container {
+    width: 180px !important;
+    height: 190px !important;
+    margin: 20px auto 0 auto !important;
+    padding: 0;
   }
   .hex-prism {
-    width: 320px;
-    height: 320px;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.08s linear;
+    width: 180px;
+    height: 180px;
   }
   .hex-face {
-    position: absolute;
-    width: 320px;
-    height: 320px;
-    box-shadow: 0 8px 32px #0003;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #fff;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 18px;
-    padding: 22px 16px;
-    user-select: none;
-    background: linear-gradient(135deg,#1eb5e5 60%,#b621fe 100%);
-  transition: box-shadow 0.18s, filter 0.18s;
-
+    width: 100% !important;
+    height: 100% !important;
+    padding: 6vw 2vw;
+    border-radius: 12px;
+    font-size: 1rem;
   }
   .hex-face i {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 2px 8px #fff7);
+    font-size: 2.95rem;
+    margin-bottom: 0.85rem;
   }
   .hex-face h3 {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 0.4rem;
+    font-size: 1.5rem;
   }
   .hex-face p {
-    font-size: 1rem;
-    opacity: 0.9;
-    margin: 0;
+    font-size: 0.88rem;
   }
-  .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(282px);}
-  .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(282px);}
-  .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(282px);}
-  .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(282px);}
-  .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(282px);}
-  .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(282px);}
-  @media (min-width: 576px) {
-    .container, .container-sm {
-      max-width: 95% !important;
-    }
+  .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(160px);}
+  .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(160px);}
+  .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(160px);}
+  .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(160px);}
+  .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(160px);}
+  .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(160px);}
+
+
+  .dropdown-menu {
+    position: static !important;
+    float: none;
+    box-shadow: none;
+    border-radius: 10px;
+    width: 100%;
+    margin: 0.5rem 0;
+    background: rgba(13, 27, 77, 0.97) !important;
+    z-index: auto !important;
   }
-  @media (min-width: 768px) {
-    .container, .container-md, .container-sm {
-      max-width: 90% !important;
-    }
-  }
-  @media (min-width: 768px) and (max-width: 991.98px) {
-    .hex-prism-container {
-      margin-right: -150px;
-    }
-  }
-  @media (max-width: 767.98px) {
-    .hex-prism-container {
-      width: 180px !important;
-      height: 190px !important;
-      margin: 20px auto 0 auto !important;
-      padding: 0;
-    }
-    .hex-prism {
-      width: 180px;
-      height: 180px;
-    }
-    .hex-face {
-      width: 100% !important;
-      height: 100% !important;
-      padding: 6vw 2vw;
-      border-radius: 12px;
-      font-size: 1rem;
-    }
-    .hex-face i {
-      font-size: 2.95rem;
-      margin-bottom: 0.85rem;
-    }
-    .hex-face h3 {
-      font-size: 1.5rem;
-    }
-    .hex-face p {
-      font-size: 0.88rem;
-    }
-    .hex-face:nth-child(1) { transform: rotateY(0deg) translateZ(160px);}
-    .hex-face:nth-child(2) { transform: rotateY(60deg) translateZ(160px);}
-    .hex-face:nth-child(3) { transform: rotateY(120deg) translateZ(160px);}
-    .hex-face:nth-child(4) { transform: rotateY(180deg) translateZ(160px);}
-    .hex-face:nth-child(5) { transform: rotateY(240deg) translateZ(160px);}
-    .hex-face:nth-child(6) { transform: rotateY(300deg) translateZ(160px);}
-  }
-  #rwd-notice {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #fff;
-    font-size: 1.5rem;
-    background: #101b36;
-    font-family: 'Montserrat', sans-serif;
-  }
-  .main-row {
-    min-height: 55%;
-    margin: 2%;
+  .dropdown-item {
+    margin: 0.3em 0.5em;
+    border-radius: 8px;
   }
 
+
+}
+.main-row {
+  min-height: 55%;
+  margin: 2%;
+}
 .hex-face:hover, .hex-face:focus {
   color: #fff3c2;
   border-radius: 12px;
@@ -175,104 +357,177 @@
   box-shadow: 0 8px 40px #b621fe66;
 }
 
- 
+/* Footer */
+footer {
+  text-align: center;
+  color: #fff;
+  padding-bottom: 1rem;
+  background: #0d1b4d;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  flex-shrink: 0;
+}
+footer a {
+  color: #faff66;
+  text-decoration: underline dotted;
+  transition: color 0.18s;
+}
+footer a:hover, footer.footer-ai a:focus {
+  color: #ffe066;
+  text-decoration: underline solid;
+}
+@media (max-width: 576px) {
+  footer {
+    font-size: 0.95rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+}
   </style>
-
 </head>
 <body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-md tech-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand logo-text" href="https://roc-central-ai-edu.org/">中華AI教育學會</a>
+      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="hamburger">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="https://roc-central-ai-edu.org/"><i class="fa-solid fa-house"></i>首頁</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="promotionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-solid fa-location-dot"></i>推廣園區
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="promotionDropdown">
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5&nsn=9">應考須知</a></li>
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5&nsn=11">權威教材</a></li>
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5&nsn=12">教學影集</a></li>
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5&nsn=14">報名簡章</a></li>
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5&nsn=13">優惠學費</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="educationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-solid fa-font-awesome"></i>培育園區
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="educationDropdown">
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">學會簡介</a></li>
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">講座活動</a></li>
+              <li><a class="dropdown-item" href="#">師資培訓</a></li>
+              <li><a class="dropdown-item" href="#">著作書籍</a></li>
+              <li><a class="dropdown-item" href="https://roc-central-ai-edu.org/modules/aiVideos/">活動影音</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa-solid fa-comment"></i>最新訊息</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
+  <!-- 粒子背景 -->
   <canvas class="particle-bg" id="particle-bg" width="1500" height="934"></canvas>
 
-<main class="container pt-3" style="position: relative; z-index: 1;">
-  <!-- 手機專用輪播（改用 data-href） -->
-  <div class="hex-prism-container d-block d-md-none" id="prismMobileBox">
-    <div class="hex-prism" id="hexPrism" style="transform: rotateY(589.45deg);">
-      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">
-        <i class="fas fa-robot"></i>
-        <h3>學會簡介</h3>
-      </div>
-      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">
-        <i class="fas fa-users"></i>
-        <h3>講座活動</h3>
-      </div>
-      <div class="hex-face" data-href="#">
-        <i class="fas fa-chalkboard-teacher"></i>
-        <h3>師資培訓</h3>
-      </div>
-      <div class="hex-face" data-href="#">
-        <i class="fas fa-book-open"></i>
-        <h3>著作書籍</h3>
-      </div>
-      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/aiVideos/">
-        <i class="fas fa-video"></i>
-        <h3>活動影音</h3>
-      </div>
-      <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5">
-        <i class="fas fa-user-graduate"></i>
-        <h3>AI規劃師</h3>
+  <main class="container pt-3" style="position: relative; z-index: 1;">
+    <!-- 手機專用輪播 -->
+    <div class="hex-prism-container d-block d-md-none" id="prismMobileBox">
+      <div class="hex-prism" id="hexPrism" style="transform: rotateY(589.45deg);">
+        <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">
+          <i class="fas fa-robot"></i>
+          <h3>學會簡介</h3>
+        </div>
+        <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">
+          <i class="fas fa-users"></i>
+          <h3>講座活動</h3>
+        </div>
+        <div class="hex-face" data-href="#">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>師資培訓</h3>
+        </div>
+        <div class="hex-face" data-href="#">
+          <i class="fas fa-book-open"></i>
+          <h3>著作書籍</h3>
+        </div>
+        <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/aiVideos/">
+          <i class="fas fa-video"></i>
+          <h3>活動影音</h3>
+        </div>
+        <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5">
+          <i class="fas fa-user-graduate"></i>
+          <h3>AI規劃師</h3>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="row main-row align-items-center">
-    <!-- 左邊 slogan -->
-    <div class="col-md-4 pb-4 pb-md-0 d-flex flex-column align-items-start justify-content-center">
-      <div class="main-slogan">
-        推動<span>AI教育</span>，<br>創新未來！
+    <div class="row main-row align-items-center">
+      <!-- slogan -->
+      <div class="col-md-4 pb-4 pb-md-0 d-flex flex-column align-items-start justify-content-center">
+        <div class="main-slogan">
+          推動<span>AI教育</span>，<br>創新未來！
+        </div>
+        <p class="text-white-50 fs-5 mb-4" style="max-width:420px;">
+          我們致力於推廣人工智慧教育，<br>提供最新AI課程、資源與活動 陪伴你一起<br>邁向智慧新時代。
+        </p>
+        <a href="#" class="btn btn-lg btn-primary rounded-pill px-5 shadow" style="background:linear-gradient(90deg,#1eb5e5,#b621fe);border:none;">加入我們</a>
       </div>
-      <p class="text-white-50 fs-5 mb-4" style="max-width:420px;">
-        我們致力於推廣人工智慧教育，<br>提供最新AI課程、資源與活動 陪伴你一起<br>邁向智慧新時代。
-      </p>
-      <a href="#" class="btn btn-lg btn-primary rounded-pill px-5 shadow" style="background:linear-gradient(90deg,#1eb5e5,#b621fe);border:none;">加入我們</a>
-    </div>
-
-    <!-- 右邊 Prism：平板與桌機共用 -->
-    <div class="col-md-8 d-none d-md-flex justify-content-center" id="prismDesktopBox">
-      <div class="hex-prism-container">
-        <div class="hex-prism" id="hexPrismDesktop" style="transform: rotateY(589.45deg);">
-          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">
-            <i class="fas fa-robot"></i>
-            <h3>學會簡介</h3>
-            <p>推動AI教育普及與師資培育，整合產官學資源，共創智慧學習未來。</p>
-          </div>
-          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">
-            <i class="fas fa-users"></i>
-            <h3>講座活動</h3>
-            <p>定期舉辦AI主題講座，邀請專家分享最新趨勢與實務應用，免費參與、共學共創。</p>
-          </div>
-          <div class="hex-face" data-href="#">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <h3>師資培訓</h3>
-            <p>開設AI教育專業課程，培養教師AI教學能力，打造數位轉型教學力。</p>
-          </div>
-          <div class="hex-face" data-href="#">
-            <i class="fas fa-book-open"></i>
-            <h3>著作書籍</h3>
-            <p>AI教育專書與教學指引，分享實務經驗與研究成果，推動教育創新發展。</p>
-          </div>
-          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/aiVideos/">
-            <i class="fas fa-video"></i>
-            <h3>活動影音</h3>
-            <p>紀錄AI教育活動與講座實況，提供精彩影片回顧與學習資源分享。</p>
-          </div>
-          <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5">
-            <i class="fas fa-user-graduate"></i>
-            <h3>AI規劃師</h3>
-            <p>想成為AI時代的關鍵人才？報名AI規劃師課程，實戰學習、滿人即開課！</p>
+      <!-- Prism（桌機/平板） -->
+      <div class="col-md-8 d-none d-md-flex justify-content-center" id="prismDesktopBox">
+        <div class="hex-prism-container">
+          <div class="hex-prism" id="hexPrismDesktop" style="transform: rotateY(589.45deg);">
+            <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&nsn=15">
+              <i class="fas fa-robot"></i>
+              <h3>學會簡介</h3>
+              <p>推動AI教育普及與師資培育，整合產官學資源，共創智慧學習未來。</p>
+            </div>
+            <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16">
+              <i class="fas fa-users"></i>
+              <h3>講座活動</h3>
+              <p>定期舉辦AI主題講座，邀請專家分享最新趨勢與實務應用，免費參與、共學共創。</p>
+            </div>
+            <div class="hex-face" data-href="#">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <h3>師資培訓</h3>
+              <p>開設AI教育專業課程，培養教師AI教學能力，打造數位轉型教學力。</p>
+            </div>
+            <div class="hex-face" data-href="#">
+              <i class="fas fa-book-open"></i>
+              <h3>著作書籍</h3>
+              <p>AI教育專書與教學指引，分享實務經驗與研究成果，推動教育創新發展。</p>
+            </div>
+            <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/aiVideos/">
+              <i class="fas fa-video"></i>
+              <h3>活動影音</h3>
+              <p>紀錄AI教育活動與講座實況，提供精彩影片回顧與學習資源分享。</p>
+            </div>
+            <div class="hex-face" data-href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5">
+              <i class="fas fa-user-graduate"></i>
+              <h3>AI規劃師</h3>
+              <p>想成為AI時代的關鍵人才？報名AI規劃師課程，實戰學習、滿人即開課！</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</main>
-
-
-
-  <canvas class="particle-bg" id="particle-bg" width="1500" height="934"></canvas>
-
-
-  <!-- 粒子背景動畫 -->
+  </main>
+  <!-- Footer -->
+  <footer class="text-center py-3 mt-2">
+    © 2025 中華AI教育學會 | 聯絡信箱：
+    <a href="mailto:roc.chtai@gmail.com">roc.chtai@gmail.com</a>
+  </footer>
+  <!-- JS and scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // 粒子背景動畫
     const cvs = document.getElementById('particle-bg');
     const ctx = cvs.getContext('2d');
     function resize() {
@@ -292,7 +547,6 @@
         a: 0.28 + Math.random()*0.5
       });
     }
-
     function draw() {
       ctx.clearRect(0, 0, cvs.width, cvs.height);
       for(let i=0; i<particles.length; i++) {
@@ -324,144 +578,154 @@
     draw();
   </script>
   <script>
-// Prism 旋轉
-function setupPrism(id) {
-  const prism = document.getElementById(id);
-  if (!prism) return;
-  let angle = 0;
-  let autoSpeed = 0.05;
-  let speed = autoSpeed;
-  let dragging = false;
-  let lastX = 0, lastY = 0;
-  let lastTime = 0;
-  let inertia = 0;
+    // Prism 旋轉
+    function setupPrism(id) {
+      const prism = document.getElementById(id);
+      if (!prism) return;
+      let angle = 0;
+      let autoSpeed = 0.05;
+      let speed = autoSpeed;
+      let dragging = false;
+      let lastX = 0, lastY = 0;
+      let lastTime = 0;
+      let inertia = 0;
 
-  function animate() {
-    if (!dragging) {
-      angle += speed;
-      if (Math.abs(speed - autoSpeed) > 0.001) {
-        speed *= 0.97;
-        if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
-      } else {
-        speed = autoSpeed;
+      function animate() {
+        if (!dragging) {
+          angle += speed;
+          if (Math.abs(speed - autoSpeed) > 0.001) {
+            speed *= 0.97;
+            if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
+          } else {
+            speed = autoSpeed;
+          }
+        }
+        prism.style.transform = `rotateY(${angle}deg)`;
+        requestAnimationFrame(animate);
       }
-    }
-    prism.style.transform = `rotateY(${angle}deg)`;
-    requestAnimationFrame(animate);
-  }
-  animate();
+      animate();
 
-  prism.addEventListener('mousedown', e => {
-    dragging = true;
-    lastX = e.clientX;
-    lastTime = Date.now();
-    inertia = 0;
-    prism.style.transition = 'none';
-    e.preventDefault();
-  });
+      prism.addEventListener('mousedown', e => {
+        dragging = true;
+        lastX = e.clientX;
+        lastTime = Date.now();
+        inertia = 0;
+        prism.style.transition = 'none';
+        e.preventDefault();
+      });
 
-  window.addEventListener('mousemove', e => {
-    if (dragging) {
-      let dx = e.clientX - lastX;
-      angle += dx * 0.2;
-      let now = Date.now();
-      inertia = dx / (now - lastTime + 1);
-      lastX = e.clientX;
-      lastTime = now;
-      prism.style.transform = `rotateY(${angle}deg)`;
-    }
-  });
+      window.addEventListener('mousemove', e => {
+        if (dragging) {
+          let dx = e.clientX - lastX;
+          angle += dx * 0.2;
+          let now = Date.now();
+          inertia = dx / (now - lastTime + 1);
+          lastX = e.clientX;
+          lastTime = now;
+          prism.style.transform = `rotateY(${angle}deg)`;
+        }
+      });
 
-  window.addEventListener('mouseup', () => {
-    if (dragging) {
-      dragging = false;
-      speed = inertia * 2;
-      if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
-      prism.style.transition = '';
-    }
-  });
+      window.addEventListener('mouseup', () => {
+        if (dragging) {
+          dragging = false;
+          speed = inertia * 2;
+          if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
+          prism.style.transition = '';
+        }
+      });
 
-  // 手機
-  prism.addEventListener('touchstart', e => {
-    if (e.touches.length === 1) {
-      dragging = true;
-      lastX = e.touches[0].clientX;
-      lastY = e.touches[0].clientY; 
-      lastTime = Date.now();
-      inertia = 0;
-      prism.style.transition = 'none';
-      e.preventDefault();
-    }
-  });
+      // 手機
+      prism.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+          dragging = true;
+          lastX = e.touches[0].clientX;
+          lastY = e.touches[0].clientY; 
+          lastTime = Date.now();
+          inertia = 0;
+          prism.style.transition = 'none';
+          e.preventDefault();
+        }
+      });
 
-  window.addEventListener('touchmove', e => {
-    if (dragging && e.touches.length === 1) {
-      let dx = e.touches[0].clientX - lastX;
-      angle += dx * 0.25;
-      let now = Date.now();
-      inertia = dx / (now - lastTime + 1);
-      lastX = e.touches[0].clientX;
-      lastTime = now;
-      prism.style.transform = `rotateY(${angle}deg)`;
-      e.preventDefault();
-    }
-  }, { passive: false });
+      window.addEventListener('touchmove', e => {
+        if (dragging && e.touches.length === 1) {
+          let dx = e.touches[0].clientX - lastX;
+          angle += dx * 0.25;
+          let now = Date.now();
+          inertia = dx / (now - lastTime + 1);
+          lastX = e.touches[0].clientX;
+          lastTime = now;
+          prism.style.transform = `rotateY(${angle}deg)`;
+          e.preventDefault();
+        }
+      }, { passive: false });
 
-  window.addEventListener('touchend', () => {
-    if (dragging) {
-      dragging = false;
-      speed = inertia * 2;
-      if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
-      prism.style.transition = '';
+      window.addEventListener('touchend', () => {
+        if (dragging) {
+          dragging = false;
+          speed = inertia * 2;
+          if (Math.abs(speed) < autoSpeed) speed = autoSpeed * (speed > 0 ? 1 : -1);
+          prism.style.transition = '';
+        }
+      });
     }
-  });
-}
 
-setupPrism('hexPrismDesktop');
-setupPrism('hexPrism');
+    setupPrism('hexPrismDesktop');
+    setupPrism('hexPrism');
 
-// 點擊六角面（防止拖動誤觸，只有真正點一下才跳轉）
-document.querySelectorAll('.hex-face').forEach(function(face) {
-  let startX = 0, startY = 0, moved = false;
+    // 點擊六角面
+    document.querySelectorAll('.hex-face').forEach(function(face) {
+      let startX = 0, startY = 0, moved = false;
+      // 桌機
+      face.addEventListener('mousedown', function(e) {
+        moved = false;
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+      face.addEventListener('mousemove', function(e) {
+        if (Math.abs(e.clientX - startX) > 8 || Math.abs(e.clientY - startY) > 8) {
+          moved = true;
+        }
+      });
+      face.addEventListener('mouseup', function(e) {
+        if (!moved && face.dataset.href && face.dataset.href !== '#') {
+          window.open(face.dataset.href, "_self");
+        }
+      });
+      // 手機
+      face.addEventListener('touchstart', function(e) {
+        moved = false;
+        if (e.touches.length === 1) {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+        }
+      });
+      face.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 1) {
+          let dx = Math.abs(e.touches[0].clientX - startX);
+          let dy = Math.abs(e.touches[0].clientY - startY);
+          if (dx > 8 || dy > 8) moved = true;
+        }
+      });
+      face.addEventListener('touchend', function(e) {
+        if (!moved && face.dataset.href && face.dataset.href !== '#') {
+          window.open(face.dataset.href, "_self");
+        }
+      });
+    });
 
-  // 桌機
-  face.addEventListener('mousedown', function(e) {
-    moved = false;
-    startX = e.clientX;
-    startY = e.clientY;
-  });
-  face.addEventListener('mousemove', function(e) {
-    if (Math.abs(e.clientX - startX) > 8 || Math.abs(e.clientY - startY) > 8) {
-      moved = true;
-    }
-  });
-  face.addEventListener('mouseup', function(e) {
-    if (!moved && face.dataset.href && face.dataset.href !== '#') {
-      window.open(face.dataset.href, "_self");
-    }
-  });
-
-  // 手機
-  face.addEventListener('touchstart', function(e) {
-    moved = false;
-    if (e.touches.length === 1) {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }
-  });
-  face.addEventListener('touchmove', function(e) {
-    if (e.touches.length === 1) {
-      let dx = Math.abs(e.touches[0].clientX - startX);
-      let dy = Math.abs(e.touches[0].clientY - startY);
-      if (dx > 8 || dy > 8) moved = true;
-    }
-  });
-  face.addEventListener('touchend', function(e) {
-    if (!moved && face.dataset.href && face.dataset.href !== '#') {
-      window.open(face.dataset.href, "_self");
-    }
-  });
-});
+    // Navbar toggler hamburger
+    document.addEventListener('DOMContentLoaded', function () {
+      var toggler = document.querySelector('.navbar-toggler');
+      var nav = document.getElementById('mainNav');
+      nav.addEventListener('show.bs.collapse', function () {
+        toggler.classList.remove('collapsed');
+      });
+      nav.addEventListener('hide.bs.collapse', function () {
+        toggler.classList.add('collapsed');
+      });
+    });
   </script>
 </body>
 </html>
