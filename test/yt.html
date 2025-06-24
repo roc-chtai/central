@@ -137,8 +137,8 @@
     // 填入YouTube ID即可
     const ytIds = [
       "ZcpBUQOGLn8",
-      "cmcRFohwhps",
-      "celrMTMIIB8"
+      "pA-e602CT_k",
+      "gfQP4Wl4k80"
     ];
     async function fetchVideoInfo(id) {
       const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`;
@@ -170,38 +170,39 @@
       setMainVideo(0);
     }
     function renderThumbs() {
-      const container = document.getElementById('video-thumbs');
-      container.innerHTML = '';
-      if(listMode === 'grid') {
-        videoList.forEach((item, idx) => {
-          const col = document.createElement('div');
-          col.className = 'col-4 mb-4';
-          col.innerHTML = `
-            <div class="card video-thumb-card${idx===mainIndex?' active':''}" data-vid="${idx}">
-              <img src="${item.poster}" class="card-img-top" alt="${item.title}">
-              <div class="card-body"><div class="card-title">${item.title}</div></div>
-            </div>
-          `;
-          col.querySelector('.video-thumb-card').onclick = () => setMainVideo(idx);
-          container.appendChild(col);
-        });
-      } else {
-        videoList.forEach((item, idx) => {
-          const div = document.createElement('div');
-          div.className = `list-thumb-card${idx===mainIndex?' active':''}`;
-          div.setAttribute('data-vid', idx);
-          div.innerHTML = `
-            <img src="${item.poster}" alt="${item.title}">
-            <div>
-              <div class="list-thumb-title">${item.title}</div>
-              <div class="list-thumb-desc">${item.desc}</div>
-            </div>
-          `;
-          div.onclick = () => setMainVideo(idx);
-          container.appendChild(div);
-        });
-      }
-    }
+  const container = document.getElementById('video-thumbs');
+  container.innerHTML = '';
+  if(listMode === 'grid') {
+    videoList.forEach((item, idx) => {
+      const col = document.createElement('div');
+      col.className = 'col-4 mb-4';
+      col.innerHTML = `
+        <div class="card video-thumb-card${idx===mainIndex?' active':''}" data-vid="${idx}">
+          <img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg" class="card-img-top" alt="${item.title}">
+          <div class="card-body"><div class="card-title">${item.title}</div></div>
+        </div>
+      `;
+      col.querySelector('.video-thumb-card').onclick = () => setMainVideo(idx);
+      container.appendChild(col);
+    });
+  } else {
+    videoList.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = `list-thumb-card${idx===mainIndex?' active':''}`;
+      div.setAttribute('data-vid', idx);
+      div.innerHTML = `
+        <img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg" alt="${item.title}">
+        <div>
+          <div class="list-thumb-title">${item.title}</div>
+          <div class="list-thumb-desc">${item.desc}</div>
+        </div>
+      `;
+      div.onclick = () => setMainVideo(idx);
+      container.appendChild(div);
+    });
+  }
+}
+
     function setMainVideo(idx) {
       mainIndex = idx;
       const vid = videoList[idx];
