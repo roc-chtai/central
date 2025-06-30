@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI 容器大商機之台北AI免費講座 </title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <!-- AOS 動畫 -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <!-- 字體 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+  <!-- 連結外部 CSS -->
+  <link rel="stylesheet" href="navbar.css">
+  <style>
+
+    :root {
+      --main-blue: #00558c;
+      --main-green: #00bf72;
+      --main-yellow: #ffd600;
+      --main-radius: 1rem;
+      --main-shadow: 0 0 15px rgba(0, 85, 140, 0.15);
+    }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+      color: #212529;
+      overflow-x: hidden;
+    }
+    .section-title {
+      color: #00558c;
+      text-align: center;
+      text-shadow: 0 0 1.5px #b2e7f7, 0 0 3.5px #b2e7f7;
+      margin: 2rem 0 1.5rem 0;
+      font-weight: 700;
+    }
+    .section-dark {
+      background-color: #f4f7fa;
+      padding: 4rem 1rem;
+    }
+    .glow-card {
+      background: #fff;
+      border-radius: var(--main-radius);
+      padding: 2rem;
+      box-shadow: var(--main-shadow);
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+    .glow-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(0,85,140,0.35);
+    }
+    /* --- 菱形卡片 --- */
+   .diamond-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.diamond-wrap {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+  .diamond {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  box-shadow: 0 0 30px 0 rgba(0,85,140,0.16), 0 0 0 3px #36c4e525;
+  border-radius: 24px;
+  border: 2px solid #b2e7f7;
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow .28s, border-color .28s, transform .18s, background .18s;
+  position: relative;
+  z-index: 1;
+}
+ .diamond:hover {
+  box-shadow: 0 0 56px 0 #b2e7f7, 0 0 0 5px #36c4e555;
+  border-color: #36c4e5;
+  transform: rotate(45deg) scale(1.08);
+  background: #fffbe9;
+}
+  .diamond-content {
+  transform: rotate(-45deg);
+  width: 100%;
+  text-align: center;
+  padding: 0 10px;
+  font-size: 1rem;
+}
+  .diamond-content h5 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.diamond-content p {
+  font-size: .96rem;
+  color: #00558c;
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+@media (max-width: 900px) {
+  .diamond-row {
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    align-items: center;
+  }
+  .diamond-wrap {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 0;
+  }
+}
+    /* --- end 菱形卡片 --- */
+    .hero {
+      position: relative;
+      background: radial-gradient(circle at top left, #2c3e50, #000000);
+      color: #fff;
+      padding: 7rem 1rem 4rem;
+      text-align: center;
+      overflow: hidden;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 60% 100%, 40% 100%, 0 85%);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 20%;
+      background: #fff;
+      z-index: 1;
+      border-bottom-left-radius: 50% 40%;
+      border-bottom-right-radius: 50% 40%;
+      pointer-events: none;
+      animation: fadeInDown 1.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-48px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .wave-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/black-linen.png');
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .rings {
+      position: absolute;
+      width: 300px; height: 300px;
+      border: 2px solid rgba(0,255,255,0.3);
+      border-radius: 50%;
+      animation: rotateRing 20s linear infinite;
+      z-index: 0;
+    }
+    .rings::before, .rings::after {
+      content: '';
+      position: absolute;
+      width: 100%; height: 100%;
+      border: 2px solid rgba(0,255,255,0.15);
+      border-radius: 50%;
+    }
+    .rings::before { transform: scale(1.2); }
+    .rings::after  { transform: scale(0.8); }
+    .left-ring { top: 5%; left: 2%; animation-delay: -5s; }
+    .right-ring { top: 60%; left: 80%; }
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100%{ transform: rotate(360deg); }
+    }
+    .hero h1, .hero p {
+      position: relative;
+      z-index: 2;
+      animation: fadeInUp 1s ease-in-out;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: #f0f0f0;
+    }
+    .cta-dark {
+      background: radial-gradient(circle at top left, #25384A, #000000);
+      overflow: hidden;
+      position: relative;
+    }
+    .cta-dark .shimmer-bar {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at center, rgba(0,255,200,0.42) 0%, transparent 70%);
+      animation: shimmer 4s infinite linear;
+      z-index: 0;
+      opacity: .42;
+    }
+    @keyframes shimmer {
+      0%{transform:translateX(-100%);}
+      100%{transform:translateX(100%);}
+    }
+    .cta-dark .container {
+      position: relative;
+      z-index: 1;
+    }
+    .glow-blue {
+      color: #36c4e5;
+      text-shadow: 0 0 2px #46e2ffbb, 0 0 6px #2ec9ff66, 0 0 12px #1a5a7f44;
+    }
+    /* --- 講者語錄牆彩色卡片 --- */
+    .color-card-blue {
+      background: linear-gradient(135deg,#e3f4fa 60%, #d8f8ff 100%) !important;
+      border-left: 7px solid #36c4e5;
+    }
+    .color-card-green {
+      background: linear-gradient(135deg, #e7fcec 70%, #e8fff2 100%) !important;
+      border-left: 7px solid #00bf72;
+    }
+    .color-card-yellow {
+      background: linear-gradient(135deg,#fffbe6 80%,#fffded 100%) !important;
+      border-left: 7px solid #ffd600;
+    }
+
+.animated-bullet-list {
+  position: relative;
+  padding-left: 2.1rem;
+  border-left: 3px solid #b8e0f9;
+  list-style: none;
+  margin-bottom: 0;
+}
+.animated-bullet-section {
+  background: #f4fbff;
+}
+.animated-bullet-list {
+  position: relative;
+  padding-left: 2.1rem;
+  border-left: 3px solid #b8e0f9;
+  list-style: none;
+  margin-bottom: 0;
+}
+.animated-bullet-list li {
+  position: relative;
+  margin-bottom: 12px;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: #15507c;
+}
+.animated-bullet-list li b {
+  color: #074074;
+  font-size: 1.11rem;
+}
+.animated-bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: -1.35rem;
+  top: 0.52em;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#56c4e7 70%, #c0ebff 100%);
+  box-shadow: 0 1px 4px 0 #80d7ff60;
+  z-index: 1;
+}
+
+
+
+/* 修正 AOS 對彈窗的干擾 */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.col-12, .col-md-*, .mobile-menu-grid-custom {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+</style>
+<meta name="description" content="AI講座免費參加！主題涵蓋AI容器、主權式AI、產業應用、晶創技術，高煥堂教授解析AI產業最新趨勢。想了解AI應用、產業前景、AI人才養成？立即報名台北AI免費講座，把握第三波AI浪潮！">
+<meta property="og:title" content="台北AI免費講座｜主權式AI與產業新趨勢" />
+<meta property="og:description" content="高煥堂教授主講，深入剖析AI應用與產業未來。歡迎免費報名參加。" />
+<meta property="og:image" content="https://roc-central-ai-edu.org/uploads/page/Co-Design/img/icon_gr.png" />
+<meta property="og:url" content="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" />
+
+
+
+<!-- Google Tag Manager -->
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-NTNRLMV3');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SH31ZHPZGB"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	
+	gtag('config', 'G-SH31ZHPZGB');
+	</script>
+	
+</head>
+	
+<body >
+<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTNRLMV3"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+
+  <div id="floating-navbar" class="navbar-floating-container animate__animated animate__fadeInDown">
+    <div class="navbar-floating-inner">
+      <div class="navbar-main">
+        <!-- LOGO 跳首頁 -->
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" class="navbar-logo" alt="Logo" id="navbar-logo" />
+        <div class="navbar-links">
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="navbar-link">首頁</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="navbar-link">推廣園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="navbar-link">培育園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="navbar-link">最新消息</a>
+        </div>
+        <!-- 三條線動畫漢堡 -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="展開/關閉選單">
+          <span class="burger-bar bar-top"></span>
+          <span class="burger-bar bar-middle"></span>
+          <span class="burger-bar bar-bottom"></span>
+        </button>
+      </div>
+      <!-- 桌面 免費講座 -->
+      <button class="navbar-join-btn" id="free-seminar-btn">免費講座</button>
+      <!-- 手機 免費（原本+改成免費兩字） -->
+      <button class="mobile-plus-btn" id="free-seminar-mobile-btn" aria-label="免費">免費</button>
+    </div>
+  </div>
+  <!-- 手機/平板：2x2 四格彈窗 -->
+  <div id="mobileMenuPopup">
+    <div class="mobile-menu-grid-custom">
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/home.png" alt="首頁"><span>前往首頁</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/news.png" alt="最新消息"><span>最新消息</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="推廣園區"><span>推廣園區</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="培育園區"><span>培育園區</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 免費講座彈出視窗 -->
+  <div id="seminar-popup" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:3000;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;box-shadow:0 8px 24px #0004;max-width:340px;width:90vw;padding:32px 22px;text-align:center;">
+      <div style="font-size:1.25rem;font-weight:700;margin-bottom:16px;">免費參加</div>
+      <div style="font-size:1.09rem;line-height:1.7;">
+        當日自由入場<br>
+        或來電確認AI講座座席<br>
+        電話：(02) 23116475<br>
+地址：台北市中正區公園路26號      </div>
+      <button id="seminar-popup-close" style="margin-top:22px;padding:6px 32px;background:#0a5e95;color:#fff;border:none;border-radius:6px;font-weight:bold;font-size:1.05rem;cursor:pointer;">關閉</button>
+    </div>
+  </div>
+
+
+
+  <section class="hero animate__animated animate__fadeIn">
+    <div class="wave-bg"></div>
+    <div class="rings left-ring"></div>
+    <div class="rings right-ring"></div>
+    <h1>AI 容器大商機 第三波</h1>
+    <p>主權式 AI 與容器化晶創</p>
+    <p>⏰ 講座時間：2025年6月4日（週三） 19:00〜20:30</p>
+    <p>🎤 主講人：高煥堂 教授｜AI建模師俱樂部 會長</p>
+    <p>地址：台北市中正區公園路26號 B1教室 </p>
+  </section>
+  <!-- 區塊 1：自然啟發 × AI模組設計 -->
+  <section data-aos="fade-up" data-aos-duration="800">
+    <div class="container py-1">
+       <h2 class="section-title">自然啟發 × AI 模組設計</h2>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="glow-card h-100 d-flex flex-column justify-content-center align-items-center text-center" data-aos="flip-left" data-aos-duration="1000">
+            <h5 class="fw-bold">像 DNA 的複製與突變</h5>
+            <p>規則簡單但能產出變化，是 AI 模型演化的隱喻基礎。</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card h-100 position-relative overflow-hidden" data-aos="flip-right" data-aos-duration="1000">
+            <h5 class="fw-bold text-center">像細胞 × 模組容器</h5>
+            <p class="text-center">容器封裝每段能力，彼此串接合作，就像有機體內分工的細胞。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+   <!-- 區塊 2：產業公式（菱形/鑽石卡片） -->
+  <section class="py-2">
+    <div class="container">
+      <h2 class="section-title">台灣未來30年的核心產業公式</h2>
+      <div class="diamond-row py-5">
+        <div class="diamond-wrap aos-init aos-animate" data-aos="zoom-in">
+          <div class="diamond">
+            <div class="diamond-content">
+              <h5>🧠<br>AI容器化</h5>
+              <p>打造有機次序<br>成就彈性架構</p>
+            </div>
+          </div>
+        </div>
+        <div class="diamond-wrap aos-init aos-animate" data-aos="zoom-in" data-aos-delay="120">
+          <div class="diamond">
+            <div class="diamond-content">
+              <h5>🔩<br>晶片積木化</h5>
+              <p>模組自由替換<br>硬體不再綁死</p>
+            </div>
+          </div>
+        </div>
+        <div class="diamond-wrap aos-init aos-animate" data-aos="zoom-in" data-aos-delay="240">
+          <div class="diamond">
+            <div class="diamond-content">
+              <h5>👩‍💻<br>愛碼人才</h5>
+              <p>協同設計<br>創造話語權</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 區塊 3：什麼是 AI 容器（六項目繽紛版，有動畫） -->
+<section style="background:#fff;">
+  <div class="container py-2">
+    <h2 class="section-title">什麼是 AI 容器？</h2>
+    <div class="text-center mb-4" style="max-width:720px;margin:auto;">
+      <p style="font-size:1.1rem;color:#18446b;">
+        AI 容器是一種能「包裝模型、標準介接、加速部署」的智慧型模組，將革新 AI 應用生態。
+      </p>
+    </div>
+    <div class="row text-center g-4 justify-content-center">
+      <div class="col-6 col-md-4" data-aos="zoom-in">
+        <div style="margin-bottom:14px;">
+          <img src="img/icon_re.png" style="height:65px;" alt="模型解耦">
+        </div>
+        <div style="color:#D84848; font-weight:600;">模型解耦</div>
+        <div style="color:#D84848;  font-size:.97rem;">提升替換彈性</div>
+      </div>
+      <div class="col-6 col-md-4" data-aos="zoom-in" >
+        <div style="margin-bottom:14px;">
+          <img src="img/icon_or.png" style="height:65px;" alt="部署加速">
+        </div>
+        <div style="color:#DE7C00; font-weight:600;">部署加速</div>
+        <div style="color:#DE7C00; font-size:.97rem;">跨平台支援</div>
+      </div>
+      <div class="col-6 col-md-4" data-aos="zoom-in" >
+        <div style="margin-bottom:14px;">
+          <img src="img/icon_gr.png" style="height:65px;" alt="規格制定者">
+        </div>
+        <div style="color:#2A7451; font-weight:600;">規格制定者</div>
+        <div style="color:#2A7451; font-size:.97rem;">擁有話語權</div>
+      </div>
+      <div class="col-6 col-md-4" data-aos="zoom-in" data-aos-delay="120">
+        <div style="margin-bottom:14px;">
+          <img src="img/icon_bl.png" style="height:65px;" alt="容器介面">
+        </div>
+        <div style="color:#3C98C3; font-weight:600;">容器介面實作</div>
+        <div style="color:#3C98C3;  font-size:.97rem;">標準連接協定</div>
+      </div>
+      <div class="col-6 col-md-4" data-aos="zoom-in" data-aos-delay="120">
+        <div style="margin-bottom:14px;">
+          <img src="img/icon_pu.png" style="height:65px;" alt="IC協同模擬">
+        </div>
+        <div style="color:#A070A0; font-weight:600;">IC協同模擬</div>
+        <div style="color:#A070A0; font-size:.97rem;">高效異質整合</div>
+      </div>
+      <div class="col-6 col-md-4" data-aos="zoom-in" data-aos-delay="120">
+        <div style="margin-bottom:14px;">
+          <img src="img/icon_br.png" style="height:65px;" alt="AI模型訓練">
+        </div>
+        <div style="color:#7B6440; font-weight:600;">AI模型訓練</div>
+        <div style="color:#7B6440; font-size:.97rem;">實戰能力養成</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 高煥堂教授條列 -->
+<section class="animated-bullet-section ">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7 mb-4 mb-lg-0">
+        <h2 class="fw-bold mb-4" style="color:#2177b1; margin-top: 2rem;">高煥堂 教授</h2>
+        <ul class="animated-bullet-list">
+          <li data-aos="fade-up" data-aos-delay="0" class="aos-init aos-animate"><b>現任：</b></li>
+          <li data-aos="fade-up" data-aos-delay="40" class="aos-init aos-animate">AI 建模師俱樂部 會長</li>
+          <li data-aos="fade-up" data-aos-delay="80" class="aos-init aos-animate">教於銘傳大學AI通識課程</li>
+          <li data-aos="fade-up" data-aos-delay="120" class="aos-init aos-animate">長庚智慧醫療研究所AI課程授課老師</li>
+          <li data-aos="fade-up" data-aos-delay="160" class="aos-init aos-animate"><b>專長／推廣：</b></li>
+          <li data-aos="fade-up" data-aos-delay="200" class="aos-init aos-animate">AI（人工智慧）、IC軟硬整合技術與大數據</li>
+          <li data-aos="fade-up" data-aos-delay="240" class="aos-init aos-animate">推廣 AI 建模方法與容器式邏輯應用</li>
+          <li data-aos="fade-up" data-aos-delay="280" class="aos-init aos-animate">擁有41年軟硬體整合設計經驗</li>
+          <li data-aos="fade-up" data-aos-delay="320" class="aos-init aos-animate">專精Android終端平台、AI、Docker容器、VR技術等</li>
+        </ul>
+      </div>
+      <div class="col-lg-5 text-center">
+      <img src="https://donhi.com.tw/uploads/ai/image/Kao.jpg" alt="高煥堂 教授" class="img-fluid rounded shadow aos-init aos-animate" style="max-height: 320px; object-fit: cover;" data-aos="fade-left" data-aos-duration="900">
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- 講者語錄牆 -->
+<section class="aos-init aos-animate" data-aos="fade-up" data-aos-duration="800">
+    <div class="container" style="margin-bottom: 2rem;">
+       <h2 class="section-title">來自講者的洞見</h2>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="glow-card color-card-blue aos-init aos-animate" data-aos="fade-up-right" data-aos-duration="1000">
+            <p class="mb-0">「AI 的基礎不是資訊工程，而是統計學與邏輯思維！」</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card color-card-green aos-init aos-animate" data-aos="fade-up-left" data-aos-duration="1000">
+            <p class="mb-0">「iPAS 是推廣檢定，不是專職技能的驗證。」</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card color-card-yellow aos-init aos-animate" data-aos="fade-up-right" data-aos-duration="1000">
+            <p class="mb-0">「真正的 AI 專業，是如何支持漫長實作路徑與複雜變異。」</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card color-card-blue aos-init aos-animate" data-aos="fade-up-left" data-aos-duration="1000">
+            <p class="mb-0">「人才分化為雙軌，是市場演化的必然，不是教育的錯。」</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA區塊 -->
+  <section class="cta-dark">
+    <div class="shimmer-bar"></div>
+    <div class="container text-center text-white py-5 position-relative">
+      <h2 class="mb-3 glow-blue">現在加入我們</h2>
+      <p class="mb-4">🚀 不要錯過這場關於 AI 容器化與未來晶創技術的講座</p>
+<a href="#" id="cta-signup-btn" class="btn btn-light fw-bold px-4 py-2 rounded-pill">立即參加</a>
+    </div>
+  </section>
+
+  <!-- JS區塊 -->
+
+<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SH31ZHPZGB"></script>
+
+
+  <script>
+    // ==== LOGO點擊，導向首頁 ====
+    document.getElementById('navbar-logo').addEventListener('click', function() {
+      window.location.href = 'https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16';
+    });
+
+    // ==== 導覽列上下滑動畫顯示/隱藏 ====
+    let lastScrollY = window.scrollY;
+    const navbar = document.getElementById('floating-navbar');
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          let nowY = window.scrollY;
+          if (nowY < lastScrollY - 3) {
+            navbar.classList.remove('animate__fadeOutUp');
+            navbar.classList.add('animate__fadeInDown');
+            navbar.style.display = 'flex';
+          } else if (nowY > lastScrollY + 3) {
+            navbar.classList.remove('animate__fadeInDown');
+            navbar.classList.add('animate__fadeOutUp');
+          }
+          lastScrollY = nowY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    navbar.addEventListener('animationend', function(e) {
+      if (navbar.classList.contains('animate__fadeOutUp')) {
+        navbar.style.display = 'none';
+      }
+    });
+
+    // ==== 手機漢堡彈窗功能 ====
+    const hamburgerBtn = document.getElementById('mobile-menu-btn');
+    const menuPopup = document.getElementById('mobileMenuPopup');
+    let isMenuOpen = false;
+
+    function openMenu() {
+      if (isMenuOpen) return;
+      isMenuOpen = true;
+      hamburgerBtn.classList.add('active');
+      menuPopup.style.display = 'block';
+      menuPopup.classList.remove('fade-in-menu');
+      void menuPopup.offsetWidth;
+      menuPopup.classList.add('fade-in-menu');
+    }
+    function closeMenu() {
+      if (!isMenuOpen) return;
+      isMenuOpen = false;
+      hamburgerBtn.classList.remove('active');
+      menuPopup.classList.remove('fade-in-menu');
+      menuPopup.style.display = 'none';
+    }
+    hamburgerBtn && hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isMenuOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+    window.addEventListener('click', function(e) {
+      if (
+        isMenuOpen &&
+        !menuPopup.contains(e.target) &&
+        e.target !== hamburgerBtn &&
+        !hamburgerBtn.contains(e.target)
+      ) {
+        closeMenu();
+      }
+    });
+    menuPopup.addEventListener('click', e => e.stopPropagation());
+
+    // ====== 免費講座彈窗 ======
+    function showSeminarPopup() {
+      document.getElementById('seminar-popup').style.display = 'block';
+    }
+    function hideSeminarPopup() {
+      document.getElementById('seminar-popup').style.display = 'none';
+    }
+
+// 只要加進來的 id，全部一起統一加事件
+['free-seminar-btn', 'free-seminar-mobile-btn', 'cta-signup-btn'].forEach(function(id){
+  var btn = document.getElementById(id);
+  btn && btn.addEventListener('click', function(e){
+
+    showSeminarPopup();
+  });
+});
+
+
+    // 關閉按鈕
+    const seminarPopupCloseBtn = document.getElementById('seminar-popup-close');
+    seminarPopupCloseBtn && seminarPopupCloseBtn.addEventListener('click', hideSeminarPopup);
+    // 點擊外部區塊也關閉
+    document.getElementById('seminar-popup').addEventListener('click', function(e){
+      if(e.target === this){ hideSeminarPopup(); }
+    });
+  </script>
+
+  <!-- AOS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+</body>
+</html>

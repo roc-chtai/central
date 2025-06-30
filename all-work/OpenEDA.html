@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OpenEDA 開源生態系建設</title>
+ <!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<!-- AOS 動畫 -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<!-- 字體 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="navbar.css">
+
+<style>
+
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .hero {
+    background: linear-gradient(160deg, #003B6F, #9ecce0);
+    color: white;
+    padding: 6.5rem 1rem 3rem;
+    text-align: center;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background: #fff;
+    z-index: 1;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+  }
+  .section-title, .ad-section-title {
+    text-align: center;
+    color: #003B6F;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  .info-box {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .diamond {
+    width: 180px;
+    height: 180px;
+    transform: rotate(45deg);
+    background: #5EA3C1;
+    margin: 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10%;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .diamond span {
+    transform: rotate(-30deg);
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.20), 0 2px 4px rgba(0,0,0,0.18);
+  }
+  .ad-bg-softblue {
+    background: #f0f6fa;
+  }
+  .fun-block {
+    background: linear-gradient(135deg, #fceabb, #f8b500);
+    padding:  1rem;
+    color: #333;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .fun-block h2 {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #5f370e;
+  }
+  .fun-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    transition: transform 0.4s ease;
+  }
+  .fun-icon:hover {
+    transform: scale(1.2) rotate(10deg);
+  }
+  .fun-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+  }
+  .fun-card:hover {
+    transform: translateY(-8px);
+  }
+
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .timeline-box {
+    position: relative;
+    border-left: 3px solid #00558c;
+    padding-left: 1.5rem;
+    max-width: 560px;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.45;
+    padding-left: 0.5rem;
+  }
+
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -1.1rem;
+    top: 0.4rem;
+    width: 10px;
+    height: 10px;
+    background-color: #00558c;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px #fff;
+  }
+
+.bounce {
+  animation: bounce 1s infinite alternate;
+}
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+
+
+/* 修正 AOS 對彈窗的干擾 */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.col-12, .col-md-*, .mobile-menu-grid-custom {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+</style>
+
+</head>
+<body>
+  <div id="floating-navbar" class="navbar-floating-container animate__animated animate__fadeInDown">
+    <div class="navbar-floating-inner">
+      <div class="navbar-main">
+        <!-- LOGO 跳首頁 -->
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" class="navbar-logo" alt="Logo" id="navbar-logo" />
+        <div class="navbar-links">
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="navbar-link">首頁</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="navbar-link">推廣園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="navbar-link">培育園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="navbar-link">最新消息</a>
+        </div>
+        <!-- 三條線動畫漢堡 -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="展開/關閉選單">
+          <span class="burger-bar bar-top"></span>
+          <span class="burger-bar bar-middle"></span>
+          <span class="burger-bar bar-bottom"></span>
+        </button>
+      </div>
+      <button class="navbar-join-btn" onclick="window.location.href='https://roc-central-ai-edu.org/modules/profile/'">加入會員</button>
+      <button class="mobile-plus-btn" aria-label="加入會員" onclick="window.location.href='https://roc-central-ai-edu.org/modules/profile/'">+</button>
+    </div>
+  </div>
+  <!-- 手機/平板：2x2 四格彈窗 -->
+  <div id="mobileMenuPopup">
+    <div class="mobile-menu-grid-custom">
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/home.png" alt="首頁"><span>前往首頁</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/news.png" alt="最新消息"><span>最新消息</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="推廣園區"><span>推廣園區</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="培育園區"><span>培育園區</span>
+      </a>
+    </div>
+  </div>
+<div style="width: 100%;">
+
+ <section class="hero">
+  <div class="container" data-aos="zoom-in">
+    <h1>開源EDA的革命性突破</h1>
+    <p>從自動化設計到無人值守的IC製程，OpenEDA將帶來IC設計的新時代。</p>
+  </div>
+</section>
+
+  
+  <section class="py-5" data-aos="fade-up">
+    <div class="container">
+      <h2 class="ad-section-title">核心技術亮點</h2>
+      <div class="row text-center">
+        <div class="col-md-4 mb-4">
+          <div class="info-box">
+            <h5>自動化設計</h5>
+            <p>從RTL到GDS，完全自動化，24小時完成設計。</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="info-box">
+            <h5>雲端優化</h5>
+            <p>在雲端進行設計優化，突破傳統EDA的設計局限。</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="info-box">
+            <h5>教育合作</h5>
+            <p>大學合作開設EDA設計課程，培養下一代IC設計師。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 ad-bg-softblue">
+    <div class="container">
+      <h2 class="ad-section-title">OpenEDA 生態系統架構</h2>
+      <div class="row text-center">
+        <div class="col-md-3">
+          <div class="diamond" data-aos="zoom-in">
+            <span>自動化設計</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="diamond" data-aos="zoom-in" data-aos-delay="100">
+            <span>雲端優化</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="diamond" data-aos="zoom-in" data-aos-delay="200">
+            <span>教育合作</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="diamond" data-aos="zoom-in" data-aos-delay="300">
+            <span>一條龍服務</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container">
+      <h2 class="ad-section-title">技術挑戰</h2>
+      <div class="row">
+        <div class="col-md-6" data-aos="fade-up">
+          <h5>性能調整</h5>
+          <p>開源EDA工具設計的IC在效能、功耗等指標上需持續調校。</p>
+        </div>
+        <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <h5>技術精通門檻</h5>
+          <p>開發EDA工具需要專業的程式開發經驗和演算法知識，對新手而言門檻較高。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 bg-white">
+  <div class="container">
+    <h2 class="ad-section-title">攸關台灣最強產業的未來30年</h2>
+    <blockquote class="blockquote text-center" data-aos="fade-up">
+      <p class="mb-4" style="font-size: 1.25rem; font-style: italic;">「AI 師資培育，不只是教育，也是我們半導體未來30年的根基！」</p>
+      <footer class="blockquote-footer">高煥堂 教授（2025.05.09）</footer>
+    </blockquote>
+    <div class="row mt-5">
+      <div class="col-md-6" data-aos="fade-up">
+        <h5>AI 師資培育計畫啟動中</h5>
+<p>高煥堂教授領軍的實體課程預計於暑期推動，由中華AI教育學會支持，敬請關注後續開課資訊（實際開課資訊以學會公告為準）。</p>
+      </div>
+      <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <h5>榮獲教案競賽首獎</h5>
+        <p>高教授帶領國小老師團隊，勇奪台北市小學AI教材教案競賽「特優首獎」肯定！</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="ad-section-title">OpenEDA 實際案例</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4" data-aos="fade-up">
+          <div class="info-box">
+            <h5>University of Michigan</h5>
+            <p>成功使用OpenROAD完成Intel 16nm SoC設計，結合數位與模擬元件。</p>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="info-box">
+            <h5>Ascenium</h5>
+            <p>利用OpenEDA開發能效優化的處理器，透過7nm PDK實現高效率。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 ad-bg-softblue">
+  <div class="container">
+    <h2 class="ad-section-title">成為我們志同道合的夥伴</h2>
+    <p class="text-center" data-aos="fade-up">
+      無論你是教師、工程師、研究者、業界推動者——
+      <br>我們誠摯邀請你一同投入開源EDA的生態推進行列，
+      <br>一起創造下一波技術與教育的革命！
+    </p>
+  </div>
+</section>
+
+<section class="py-5 pb-0" id="future">
+  <div class="container">
+    <h2 class="ad-section-title">OpenEDA的未來願景</h2>
+    <div class="row align-items-center g-0">
+      
+      <div class="col-md-7 pe-md-3 px-4">
+        <div class="timeline-box">
+          <div class="timeline-item" data-aos="fade-up" data-aos-delay="0">
+            這不只是一套工具
+          </div>
+          <div class="timeline-item" data-aos="fade-up" data-aos-delay="150">
+            而是一場關於自由、速度、創新的設計革命。
+          </div>
+          <div class="timeline-item" data-aos="fade-up" data-aos-delay="300">
+            從台灣啟動，連結全球社群與教育，
+          </div>
+          <div class="timeline-item" data-aos="fade-up" data-aos-delay="450">
+            我們正在打造一個真正屬於開發者的晶片設計宇宙。
+          </div>
+          <div class="timeline-item" data-aos="fade-up" data-aos-delay="600">
+            如果你曾經對硬體設計感到遙不可及，
+          </div>
+          <div class="timeline-item" data-aos="fade-up" data-aos-delay="750">
+            那麼 OpenEDA 就是那道打開大門的鑰匙。
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5 ps-md-2 text-center" data-aos="fade-up" data-aos-delay="100">
+        <img src="img/open_eda.png" alt="" class="img-fluid" style="max-width: 60%; height: auto;">
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<div style="line-height:0;">
+  <svg viewBox="0 0 1440 100" width="100%" height="100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,80 C400,140 1040,0 1440,80 L1440,100 L0,100 Z" fill="#fceabb"></path>
+  </svg>
+</div>
+  
+ <section class="fun-block">
+  <div class="container">
+    <h2 class="ad-section-title">設計不該只是工程 <br /> 它也可以人性、有趣、直覺</h2>
+    <p class="mb-3" data-aos="fade-up">OpenEDA 推動的不只是技術創新，更是設計文化的轉變<br>讓每個人都能參與晶片設計的創作旅程。</p>
+    <div class="mb-4">
+      <a href="#signup-form" class="btn btn-primary btn-lg bounce">報名參加</a>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-4" data-aos="zoom-in">
+        <div class="fun-card">
+          <div class="fun-icon">🎮</div>
+          <h5>互動模擬</h5>
+          <p>讓設計晶片像玩遊戲一樣，點擊、拖曳、組合功能模組。</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="fun-card">
+          <div class="fun-icon">🎨</div>
+          <h5>色彩化流程</h5>
+          <p>每個EDA設計階段都有獨特視覺風格，告別黑白終端畫面。</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="fun-card">
+          <div class="fun-icon">🤝</div>
+          <h5>社群共創</h5>
+          <p>設計不是孤單旅程，加入全球開源社群一起討論、改進、創造！</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+</div>
+
+
+  <!-- JS區塊 -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+
+
+
+  <script>
+    // ==== LOGO點擊，導向首頁 ====
+    document.getElementById('navbar-logo').addEventListener('click', function() {
+      window.location.href = 'https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16';
+    });
+
+    // ==== 導覽列上下滑動畫顯示/隱藏 ====
+    let lastScrollY = window.scrollY;
+    const navbar = document.getElementById('floating-navbar');
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          let nowY = window.scrollY;
+          if (nowY < lastScrollY - 3) {
+            navbar.classList.remove('animate__fadeOutUp');
+            navbar.classList.add('animate__fadeInDown');
+            navbar.style.display = 'flex';
+          } else if (nowY > lastScrollY + 3) {
+            navbar.classList.remove('animate__fadeInDown');
+            navbar.classList.add('animate__fadeOutUp');
+          }
+          lastScrollY = nowY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    navbar.addEventListener('animationend', function(e) {
+      if (navbar.classList.contains('animate__fadeOutUp')) {
+        navbar.style.display = 'none';
+      }
+    });
+
+    // ==== 手機漢堡彈窗功能 ====
+    const hamburgerBtn = document.getElementById('mobile-menu-btn');
+    const menuPopup = document.getElementById('mobileMenuPopup');
+    let isMenuOpen = false;
+
+    // 開啟彈窗（含進場動畫）
+    function openMenu() {
+      if (isMenuOpen) return;
+      isMenuOpen = true;
+      hamburgerBtn.classList.add('active');
+      menuPopup.style.display = 'block';
+      menuPopup.classList.remove('fade-in-menu'); // 清除殘留
+      // 觸發 reflow 強制動畫重播
+      void menuPopup.offsetWidth;
+      menuPopup.classList.add('fade-in-menu');
+    }
+
+    // 關閉彈窗（無收合動畫）
+    function closeMenu() {
+      if (!isMenuOpen) return;
+      isMenuOpen = false;
+      hamburgerBtn.classList.remove('active');
+      menuPopup.classList.remove('fade-in-menu');
+      menuPopup.style.display = 'none';
+    }
+
+    hamburgerBtn && hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isMenuOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+
+    // 點外部收合
+    window.addEventListener('click', function(e) {
+      if (
+        isMenuOpen &&
+        !menuPopup.contains(e.target) &&
+        e.target !== hamburgerBtn &&
+        !hamburgerBtn.contains(e.target)
+      ) {
+        closeMenu();
+      }
+    });
+
+    // 阻止彈窗內點擊冒泡
+    menuPopup.addEventListener('click', e => e.stopPropagation());
+  </script>
+
+<!-- AOS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+
+
+</body>
+</html>
