@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我是導覽條</title>
+ <!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<!-- AOS 動畫 -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<!-- 字體 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="navbar.css">
+
+<style>
+
+/* MAINCSS放這 */
+
+
+/* 修正 AOS 對彈窗的干擾 */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+</style>
+
+</head>
+<body>
+  <div id="floating-navbar" class="navbar-floating-container animate__animated animate__fadeInDown">
+    <div class="navbar-floating-inner">
+      <div class="navbar-main">
+        <!-- LOGO 跳首頁 -->
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" class="navbar-logo" alt="Logo" id="navbar-logo" />
+        <div class="navbar-links">
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="navbar-link">首頁</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="navbar-link">推廣園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="navbar-link">培育園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="navbar-link">最新消息</a>
+        </div>
+        <!-- 三條線動畫漢堡 -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="展開/關閉選單">
+          <span class="burger-bar bar-top"></span>
+          <span class="burger-bar bar-middle"></span>
+          <span class="burger-bar bar-bottom"></span>
+        </button>
+      </div>
+      <button class="navbar-join-btn" onclick="window.location.href='https://roc-central-ai-edu.org/modules/profile/'">加入會員</button>
+      <button class="mobile-plus-btn" aria-label="加入會員" onclick="window.location.href='https://roc-central-ai-edu.org/modules/profile/'">+</button>
+    </div>
+  </div>
+  <!-- 手機/平板：2x2 四格彈窗 -->
+  <div id="mobileMenuPopup">
+    <div class="mobile-menu-grid-custom">
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/home.png" alt="首頁"><span>前往首頁</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/news.png" alt="最新消息"><span>最新消息</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="推廣園區"><span>推廣園區</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="培育園區"><span>培育園區</span>
+      </a>
+    </div>
+  </div>
+
+
+<div style="width: 100%;">
+
+  <!-- MAIN-->
+
+</div>
+
+
+  <!-- JS區塊 -->
+
+
+  <script>
+    // ==== LOGO點擊，導向首頁 ====
+    document.getElementById('navbar-logo').addEventListener('click', function() {
+      window.location.href = 'https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16';
+    });
+
+    // ==== 導覽列上下滑動畫顯示/隱藏 ====
+    let lastScrollY = window.scrollY;
+    const navbar = document.getElementById('floating-navbar');
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          let nowY = window.scrollY;
+          if (nowY < lastScrollY - 3) {
+            navbar.classList.remove('animate__fadeOutUp');
+            navbar.classList.add('animate__fadeInDown');
+            navbar.style.display = 'flex';
+          } else if (nowY > lastScrollY + 3) {
+            navbar.classList.remove('animate__fadeInDown');
+            navbar.classList.add('animate__fadeOutUp');
+          }
+          lastScrollY = nowY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    navbar.addEventListener('animationend', function(e) {
+      if (navbar.classList.contains('animate__fadeOutUp')) {
+        navbar.style.display = 'none';
+      }
+    });
+
+    // ==== 手機漢堡彈窗功能 ====
+    const hamburgerBtn = document.getElementById('mobile-menu-btn');
+    const menuPopup = document.getElementById('mobileMenuPopup');
+    let isMenuOpen = false;
+
+    // 開啟彈窗（含進場動畫）
+    function openMenu() {
+      if (isMenuOpen) return;
+      isMenuOpen = true;
+      hamburgerBtn.classList.add('active');
+      menuPopup.style.display = 'block';
+      menuPopup.classList.remove('fade-in-menu'); // 清除殘留
+      // 觸發 reflow 強制動畫重播
+      void menuPopup.offsetWidth;
+      menuPopup.classList.add('fade-in-menu');
+    }
+
+    // 關閉彈窗（無收合動畫）
+    function closeMenu() {
+      if (!isMenuOpen) return;
+      isMenuOpen = false;
+      hamburgerBtn.classList.remove('active');
+      menuPopup.classList.remove('fade-in-menu');
+      menuPopup.style.display = 'none';
+    }
+
+    hamburgerBtn && hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isMenuOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+
+    // 點外部收合
+    window.addEventListener('click', function(e) {
+      if (
+        isMenuOpen &&
+        !menuPopup.contains(e.target) &&
+        e.target !== hamburgerBtn &&
+        !hamburgerBtn.contains(e.target)
+      ) {
+        closeMenu();
+      }
+    });
+
+    // 阻止彈窗內點擊冒泡
+    menuPopup.addEventListener('click', e => e.stopPropagation());
+  </script>
+
+<!-- AOS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+
+
+</body>
+</html>
