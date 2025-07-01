@@ -1,0 +1,1006 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我是導覽條</title>
+ <!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<!-- AOS 動畫 -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<!-- 字體 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+
+<style>
+
+/* MAINCSS放這 */
+
+
+/* 修正 AOS 對彈窗的干擾 */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+
+  /* ==== 導覽列外層 ==== */
+    body { background: #f6f8fa;}
+    .navbar-floating-container { /* 浮動導覽列外層 */
+      position: fixed;
+      top: 32px;
+      left: 0;
+      width: 100vw;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .navbar-floating-inner { /* 導覽列內容 */
+      display: flex;
+      width: 80vw;
+      min-width: 220px;
+      pointer-events: all;
+      align-items: center;
+      justify-content: center;
+    }
+    .navbar-main { /* 藍色主條 */
+      background: #0a5e95;
+      color: #fff;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      height: 52px;
+      flex: 1 1 auto;
+      box-shadow: 0 4px 16px 0 #0002;
+      margin-right: 12px;
+      min-width: 0;
+      position: relative;
+    }
+    .navbar-logo { /* LOGO 圖片 */
+      height: 32px;
+      margin-right: 10px;
+      cursor:pointer;
+    }
+    .navbar-links { /* 上方四個連結外層 */
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-left: auto;
+    }
+    .navbar-link { /* 上方四個連結 */
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1.02rem;
+    }
+    .navbar-join-btn { /* 我要報名按鈕 */
+      background: #252525;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      height: 52px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.08rem;
+      box-shadow: 0 2px 8px 0 #0001;
+      cursor:pointer;
+    }
+    .navbar-join-btn:active { background: #333; }
+    .mobile-menu-btn, .mobile-plus-btn { display: none !important; }
+
+    /* ==== 漢堡按鈕（手機用） ==== */
+    .mobile-menu-btn {
+      background: transparent;
+      border: none;
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      position: relative;
+      z-index: 20;
+      cursor: pointer;
+    }
+    .burger-bar {
+      display: block;
+      position: absolute;
+      left: 6px;
+      width: 24px;
+      height: 3.2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: all 0.33s cubic-bezier(.67,-0.39,.51,1.42);
+    }
+    .bar-top { top: 9px; }
+    .bar-middle { top: 16.5px; }
+    .bar-bottom { top: 24px; }
+    .mobile-menu-btn.active .bar-top {
+      top: 16.5px; transform: rotate(45deg);
+    }
+    .mobile-menu-btn.active .bar-middle {
+      opacity: 0; transform: scaleX(0.2);
+    }
+    .mobile-menu-btn.active .bar-bottom {
+      top: 16.5px; transform: rotate(-45deg);
+    }
+
+    /* ==== 響應式（900px以下變漢堡+隱藏桌機按鈕） ==== */
+    @media (max-width: 900px) {
+      .navbar-links, .navbar-join-btn { display: none !important; }
+      .mobile-menu-btn { display: flex !important; margin-left: auto;}
+      .mobile-plus-btn {
+        display: flex !important;
+        width: 70px; height: 40px;
+        background: #222;
+        color: #fff;
+        border: none;
+        border-radius: 25px;
+        margin-left: 10px;
+        align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        box-shadow: 0 2px 8px 0 #0001;
+        padding: 0;
+        cursor:pointer;
+      }
+    }
+
+    /* ==== 手機彈窗四宮格 ==== */
+    #mobileMenuPopup {
+      position: fixed;
+      top: 100px;
+      left: 0; right: 0;
+      margin: 0 auto;
+      z-index: 2001;
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 6px 32px 0 #0002;
+      width: 94vw;
+      max-width: 410px;
+      min-width: 0;
+      padding: 28px 16px 18px 16px;
+      display: none;
+      opacity: 0;
+    }
+    /* ==== 手機彈窗進場動畫 ==== */
+    @keyframes fadeInCustomMenu {
+      0% { opacity: 0; transform: translateY(-50px) scale(0.92);}
+      100% { opacity: 1; transform: translateY(0) scale(1);}
+    }
+    .fade-in-menu {
+      display: block !important;
+      opacity: 1 !important;
+      animation: fadeInCustomMenu 0.5s cubic-bezier(.46,1.48,.47,.97) both;
+    }
+    /* ==== 四宮格 Grid 布局 ==== */
+    .mobile-menu-grid-custom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 22px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .mobile-menu-btn-custom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f7fa;
+      border-radius: 20px;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 1.09rem;
+      text-decoration: none;
+      color: #144A72;
+      box-shadow: 0 2px 8px 0 #0001;
+      border: 3px solid #0a5e95;
+      min-width: 0;
+      margin: 0;
+      width: 98%;
+      max-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+      cursor:pointer;
+    }
+    .mobile-menu-btn-custom img {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      object-fit: contain;
+      display: block;
+    }
+    .mobile-menu-btn-custom span {
+      font-size: 1.13rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+    }
+
+
+.hero {
+      position: relative;
+      background: radial-gradient(circle at top left, #2c3e50, #000000);
+      color: #fff;
+      padding: 7rem 1rem 4rem;
+      text-align: center;
+      overflow: hidden;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 60% 100%, 40% 100%, 0 85%);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 20%;
+      background: #fff;
+      z-index: 1;
+      border-bottom-left-radius: 50% 40%;
+      border-bottom-right-radius: 50% 40%;
+      pointer-events: none;
+      animation: fadeInDown 1.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-48px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .wave-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/black-linen.png');
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .rings {
+      position: absolute;
+      width: 300px; height: 300px;
+      border: 2px solid rgba(0,255,255,0.3);
+      border-radius: 50%;
+      animation: rotateRing 20s linear infinite;
+      z-index: 0;
+    }
+    .rings::before, .rings::after {
+      content: '';
+      position: absolute;
+      width: 100%; height: 100%;
+      border: 2px solid rgba(0,255,255,0.15);
+      border-radius: 50%;
+    }
+    .rings::before { transform: scale(1.2); }
+    .rings::after  { transform: scale(0.8); }
+    .left-ring { top: 5%; left: 2%; animation-delay: -5s; }
+    .right-ring { top: 60%; left: 80%; }
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100%{ transform: rotate(360deg); }
+    }
+    .hero h1, .hero p {
+      position: relative;
+      z-index: 2;
+      animation: fadeInUp 1s ease-in-out;
+    }
+    .hero h1 {
+      font-size: clamp(1.5rem, 6vw, 2.4rem);
+      font-weight: 700;
+
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: #f0f0f0;
+    }
+    .cta-dark {
+      background: radial-gradient(circle at top left, #25384A, #000000);
+      overflow: hidden;
+      position: relative;
+    }
+    .cta-dark .shimmer-bar {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at center, rgba(0,255,200,0.42) 0%, transparent 70%);
+      animation: shimmer 4s infinite linear;
+      z-index: 0;
+      opacity: .42;
+    }
+    @keyframes shimmer {
+      0%{transform:translateX(-100%);}
+      100%{transform:translateX(100%);}
+    }
+    .cta-dark .container {
+      position: relative;
+      z-index: 1;
+    }
+    .glow-blue {
+      color: #36c4e5;
+      text-shadow: 0 0 2px #46e2ffbb, 0 0 6px #2ec9ff66, 0 0 12px #1a5a7f44;
+    }
+    .cta-dark .btn {
+      background: #36c4e5;
+      color: #fff;
+      padding: 0.8rem 2rem;
+      border-radius: 24px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      box-shadow: 0 4px 16px rgba(0, 85, 140, 0.4);
+      transition: background 0.3s ease-in-out;
+    }
+    .cta-dark .btn:hover {
+      background: #2a5d8a;
+    }
+
+
+.diamond-section {
+  background: #f5f8fc;
+  text-align: center;
+  width:100%;
+}
+
+.diamond-section h2 {
+  font-size: clamp(1.5rem, 6vw, 2.4rem);
+  font-weight: bold;
+  color: #00558c;
+}
+
+.ad-diamond {
+  position: relative;
+  width: 80%;
+  aspect-ratio: 1 / 1; /* 寬高比為 1:1 */
+  background-color: #00558c; /* 深藍色背景 */
+  margin: 0 auto;
+  transform: rotate(45deg); /* 菱形效果 */
+  border-radius: 35px;       /* 圓角半徑，越大越圓 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ad-diamond h5 {
+  color: #fff; /* 白色文字 */
+  font-size: 1.5rem;
+  font-weight: bold;
+  transform: rotate(-45deg); /* 文字水平居中 */
+  margin: 0;
+}
+
+.row .col-md-3 {
+  margin-bottom: 1rem;
+}
+
+
+/* 響應式設計：手機版優化 */
+@media (max-width: 768px) {
+  .ad-diamond {
+    width: 50%;
+  }
+
+
+
+  .diamond-section h5 {
+  font-size: 1.5rem;
+
+  }
+}
+
+
+  .carousel-outer {
+    width: 650px;
+    max-width: 98vw;
+    margin: 20px auto;
+    overflow: hidden;
+    position: relative;
+    height: 340px;
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .carousel-outer.dragging { cursor: grabbing; }
+  .book-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .carousel-book-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -90px 0 0 -60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    z-index: 1;
+    opacity: 0.4;
+    pointer-events: none;
+    transition:
+      transform 0.52s cubic-bezier(.7,1.7,.6,1),
+      box-shadow .32s, opacity .36s;
+    overflow: visible;
+    box-shadow: 0 8px 34px 0 rgba(0,0,0,0.28);
+  }
+  .carousel-book-card img {
+    height: auto;
+    width: 120px;
+    object-fit: contain;
+    object-position: center;
+    background: transparent;
+    border-radius: 12px;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    display: block;
+    margin: 0 auto;
+  }
+  .carousel-book-card.center {
+    z-index: 5;
+    opacity: 1;
+    pointer-events: auto;
+    background: transparent;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+
+.animated-bullet-section {
+  background: #f4fbff;
+}
+.animated-bullet-list {
+  position: relative;
+  padding-left: 2.1rem;
+  border-left: 3px solid #b8e0f9;
+  list-style: none;
+  margin-bottom: 0;
+}
+.animated-bullet-list li {
+  position: relative;
+  margin-bottom: 12px;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: #15507c;
+}
+.animated-bullet-list li b {
+  color: #074074;
+  font-size: 1.11rem;
+}
+.animated-bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: -1.35rem;
+  top: 0.52em;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#56c4e7 70%, #c0ebff 100%);
+  box-shadow: 0 1px 4px 0 #80d7ff60;
+  z-index: 1;
+}
+/* RWD for Professor Section */
+@media (max-width: 991.98px) {
+  .animated-bullet-section .row {
+    flex-direction: column;
+  }
+  .animated-bullet-section .col-lg-7,
+  .animated-bullet-section .col-lg-5 {
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+  .animated-bullet-section .col-lg-5 {
+    margin-bottom: 2rem;
+  }
+}
+
+/* --- 講者語錄牆彩色卡片 --- */
+.glow-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 0 15px rgba(0, 85, 140, 0.15);
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+.glow-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(0,85,140,0.35);
+}
+
+.color-card-blue {
+  background: linear-gradient(135deg,#e3f4fa 60%, #d8f8ff 100%) !important;
+  border-left: 7px solid #36c4e5;
+}
+.color-card-green {
+  background: linear-gradient(135deg, #e7fcec 70%, #e8fff2 100%) !important;
+  border-left: 7px solid #00bf72;
+}
+.color-card-yellow {
+  background: linear-gradient(135deg,#fffbe6 80%,#fffded 100%) !important;
+  border-left: 7px solid #ffd600;
+}
+</style>
+
+<!-- Google Tag Manager -->
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-NTNRLMV3');</script>
+	<!-- End Google Tag Manager -->
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SH31ZHPZGB"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	
+	gtag('config', 'G-SH31ZHPZGB');
+	</script>
+	
+	</head>
+	
+	<body >
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTNRLMV3"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  <div id="floating-navbar" class="navbar-floating-container animate__animated animate__fadeInDown">
+    <div class="navbar-floating-inner">
+      <div class="navbar-main">
+        <!-- LOGO 跳首頁 -->
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" class="navbar-logo" alt="Logo" id="navbar-logo" />
+        <div class="navbar-links">
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="navbar-link">首頁</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="navbar-link">推廣園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="navbar-link">培育園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="navbar-link">最新消息</a>
+        </div>
+        <!-- 三條線動畫漢堡 -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="展開/關閉選單">
+          <span class="burger-bar bar-top"></span>
+          <span class="burger-bar bar-middle"></span>
+          <span class="burger-bar bar-bottom"></span>
+        </button>
+      </div>
+
+<button class="navbar-join-btn" id="go-signup-btn">我要報名</button>
+
+<button class="mobile-plus-btn" id="go-signup-btn-mobile" aria-label="我要報名">報名</button>
+
+
+    </div>
+  </div>
+  <!-- 手機/平板：2x2 四格彈窗 -->
+  <div id="mobileMenuPopup">
+    <div class="mobile-menu-grid-custom">
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/home.png" alt="首頁"><span>前往首頁</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/news.png" alt="最新消息"><span>最新消息</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="推廣園區"><span>推廣園區</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="培育園區"><span>培育園區</span>
+      </a>
+    </div>
+  </div>
+
+
+<div style="width: 100%;">
+
+ <!-- HERO區塊 -->
+  <section class="hero animate__animated animate__fadeIn">
+    <div class="wave-bg"></div>
+    <div class="rings left-ring"></div>
+    <div class="rings right-ring"></div>
+    <h1 class="glow-blue">暑期AI教師培育課程</h1>
+    <p class="py-1">掌握AI知識體系，精通生成式AI技能，熟悉AI PC功能</p>
+    <p>⏰ 課程日期：2025/7/15~7/18<br>📍 地點：彰化市 | 人數：10~20人</p>
+  </section>
+
+<!-- 課程特色區塊 -->
+<section class="diamond-section py-5">
+  <div class="container">
+    <h2  data-aos="fade-up">課程特色</h2>
+  <div >
+    
+    <div class="row justify-content-center text-center py-5">
+      <!-- 菱形一 -->
+      <div class="col-md-3 mb-4" data-aos="zoom-in">
+        <div class="ad-diamond">
+          <h5>翻轉學習</h5>
+        </div>
+      </div>
+      <!-- 菱形二 -->
+      <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="ad-diamond">
+          <h5>做中學</h5>
+        </div>
+      </div>
+      <!-- 菱形三 -->
+      <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="ad-diamond">
+          <h5>協作創作</h5>
+        </div>
+      </div>
+      <!-- 菱形四 -->
+      <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="300">
+        <div class="ad-diamond">
+          <h5>創新實踐</h5>
+        </div>
+      </div>
+    </div>
+
+<!-- 下方文本 -->
+      <div  data-aos="zoom-in">
+          <h5>E-books × 實機演練 × 雲端訓練 × AI PC</h5>
+      </div>
+      <div data-aos="zoom-in" data-aos-delay="100">
+          <h5>調知識的前置準備與課堂的深度互動</h5>
+      </div>
+      <div data-aos="zoom-in" data-aos-delay="200">
+          <h5>透過實踐操作，強化技能與知識的內化</h5>
+      </div>
+      <div data-aos="zoom-in" data-aos-delay="300">
+          <h5>探索新的教學與學習方式</h5>
+      </div>
+  </div>
+</section>
+
+
+<!-- 書區塊 -->
+<section>
+  <div class="diamond-section">
+    <h2  data-aos="fade-up">掌握知識 上課用書</h2>
+  </div >
+  <div class="carousel-outer" id="carouselOuter">
+    <div class="book-track" id="bookTrack"></div>
+  </div>
+</section>
+
+
+<!-- 教材區塊 Begin -->
+
+<section class="aos-init aos-animate" data-aos="fade-up" data-aos-duration="800">
+    <div class="container" style="margin-bottom: 2rem;">
+  <div class="diamond-section">
+    <h2  data-aos="fade-up">豐富教材</h2>
+  </div >       
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="glow-card color-card-blue aos-init aos-animate" data-aos="fade-up-right" data-aos-duration="1000">
+            <p class="mb-0">學員自習教材(12小時影片)</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card color-card-green aos-init aos-animate" data-aos="fade-up-left" data-aos-duration="1000">
+            <p class="mb-0">學員觀摩的<專題創作案例></p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card color-card-yellow aos-init aos-animate" data-aos="fade-up-right" data-aos-duration="1000">
+            <p class="mb-0">2021年Intel公司AI創新競賽，榮獲亞軍獎項</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glow-card color-card-blue aos-init aos-animate" data-aos="fade-up-left" data-aos-duration="1000">
+            <p class="mb-0">Copilot + PC互動學習體驗包</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+<!-- 高煥堂教授條列區塊 Begin -->
+<section class="animated-bullet-section me-5 ms-5">
+  <div class="container ">
+    <div class="row align-items-center">
+      <div class="col-lg-7 mb-4 mb-lg-0">
+        <h2 class="fw-bold mb-4" style="color:#2177b1; margin-top: 2rem;">高煥堂 教授</h2>
+        <ul class="animated-bullet-list">
+          <li data-aos="fade-up" data-aos-delay="0"><b>現任：</b></li>
+          <li data-aos="fade-up" data-aos-delay="40">AI 建模師俱樂部 會長</li>
+          <li data-aos="fade-up" data-aos-delay="80">教於銘傳大學AI通識課程</li>
+          <li data-aos="fade-up" data-aos-delay="120">長庚智慧醫療研究所AI課程授課老師</li>
+          <li data-aos="fade-up" data-aos-delay="160"><b>專長／推廣：</b></li>
+          <li data-aos="fade-up" data-aos-delay="200">AI（人工智慧）、IC軟硬整合技術與大數據</li>
+          <li data-aos="fade-up" data-aos-delay="240">推廣 AI 建模方法與容器式邏輯應用</li>
+          <li data-aos="fade-up" data-aos-delay="280">擁有41年軟硬體整合設計經驗</li>
+          <li data-aos="fade-up" data-aos-delay="320">專精Android終端平台、AI、Docker容器、VR技術等</li>
+        </ul>
+      </div>
+      <div class="col-lg-5 text-center">
+        <img src="https://donhi.com.tw/uploads/ai/image/Kao.jpg" alt="高煥堂 教授" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: cover;" data-aos="fade-left" data-aos-delay="120"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- CTA 區塊 -->
+  <section class="cta-dark">
+    <div class="shimmer-bar"></div>
+    <div class="container text-center text-white py-5 position-relative">
+      <h2 class="mb-3 glow-blue">立即報名暑期AI教師培育課程</h2>
+      <p class="mb-4">抓住AI新世代，成為推動AI教育的關鍵老師！</p>
+      <a class="btn">我要報名</a>
+    </div>
+  </section>
+
+
+</div>
+
+
+  <!-- JS區塊 -->
+<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SH31ZHPZGB"></script>
+
+  <script>
+    // ==== LOGO點擊，導向首頁 ====
+    document.getElementById('navbar-logo').addEventListener('click', function() {
+      window.location.href = 'https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16';
+    });
+
+    // ==== 導覽列上下滑動畫顯示/隱藏 ====
+    let lastScrollY = window.scrollY;
+    const navbar = document.getElementById('floating-navbar');
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          let nowY = window.scrollY;
+          if (nowY < lastScrollY - 3) {
+            navbar.classList.remove('animate__fadeOutUp');
+            navbar.classList.add('animate__fadeInDown');
+            navbar.style.display = 'flex';
+          } else if (nowY > lastScrollY + 3) {
+            navbar.classList.remove('animate__fadeInDown');
+            navbar.classList.add('animate__fadeOutUp');
+          }
+          lastScrollY = nowY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    navbar.addEventListener('animationend', function(e) {
+      if (navbar.classList.contains('animate__fadeOutUp')) {
+        navbar.style.display = 'none';
+      }
+    });
+
+    // ==== 手機漢堡彈窗功能 ====
+    const hamburgerBtn = document.getElementById('mobile-menu-btn');
+    const menuPopup = document.getElementById('mobileMenuPopup');
+    let isMenuOpen = false;
+
+    // 開啟彈窗（含進場動畫）
+    function openMenu() {
+      if (isMenuOpen) return;
+      isMenuOpen = true;
+      hamburgerBtn.classList.add('active');
+      menuPopup.style.display = 'block';
+      menuPopup.classList.remove('fade-in-menu'); // 清除殘留
+      // 觸發 reflow 強制動畫重播
+      void menuPopup.offsetWidth;
+      menuPopup.classList.add('fade-in-menu');
+    }
+
+    // 關閉彈窗（無收合動畫）
+    function closeMenu() {
+      if (!isMenuOpen) return;
+      isMenuOpen = false;
+      hamburgerBtn.classList.remove('active');
+      menuPopup.classList.remove('fade-in-menu');
+      menuPopup.style.display = 'none';
+    }
+
+    hamburgerBtn && hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isMenuOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+
+    // 點外部收合
+    window.addEventListener('click', function(e) {
+      if (
+        isMenuOpen &&
+        !menuPopup.contains(e.target) &&
+        e.target !== hamburgerBtn &&
+        !hamburgerBtn.contains(e.target)
+      ) {
+        closeMenu();
+      }
+    });
+
+    // 阻止彈窗內點擊冒泡
+    menuPopup.addEventListener('click', e => e.stopPropagation());
+  </script>
+
+<!-- AOS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+
+
+<script>
+  const books = [
+    { img: "https://roc-chtai.github.io/central/test/img/book01.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book02.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book03.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book04.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book01.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book02.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book03.png" },
+    { img: "https://roc-chtai.github.io/central/test/img/book04.png" }
+  ];
+
+  const track = document.getElementById('bookTrack');
+  const carousel = document.getElementById('carouselOuter');
+  const bookCount = books.length;
+  const visibleCount = 7;
+  let cards = [];
+  let pos = 4; // 中心的浮點索引（可以不是整數，拖曳時用）
+  let isDragging = false, lastX = 0, velocity = 0, dragStartX = 0, dragStartPos = 0, lastTime = 0, momentumId = null;
+
+  function setupBooks() {
+    for (let i = 0; i < bookCount; i++) {
+      const card = document.createElement('div');
+      card.className = "carousel-book-card";
+      const img = document.createElement('img');
+      img.src = books[i].img;
+      img.alt = "cover";
+      img.draggable = false;
+      img.addEventListener('dragstart', e => e.preventDefault());
+      card.appendChild(img);
+      track.appendChild(card);
+      cards.push(card);
+    }
+  }
+
+  function updateBooks(center = pos) {
+    for (let i = 0; i < bookCount; i++) {
+      let dist = i - center;
+      if (dist > bookCount / 2) dist -= bookCount;
+      if (dist < -bookCount / 2) dist += bookCount;
+      if (Math.abs(dist) > (visibleCount - 1) / 2) {
+        cards[i].style.visibility = "hidden";
+      } else {
+        cards[i].style.visibility = "visible";
+        const baseX = 150;
+        const tx = dist * baseX;
+        let scale = (Math.abs(dist) < 0.4) ? 1.7 : 1;
+        if (scale < 0.6) scale = 0.6;
+        let opacity = 1 - 0.23 * Math.abs(dist);
+        if (opacity < 0.35) opacity = 0.35;
+        cards[i].style.transform = `translateX(${tx}px) scale(${scale})`;
+        cards[i].style.opacity = opacity;
+        cards[i].classList.toggle('center', Math.abs(dist) < 0.4);
+      }
+    }
+  }
+
+  function startMomentum() {
+    cancelMomentum();
+    function step() {
+      if (Math.abs(velocity) < 0.02) {
+        velocity = 0;
+        pos = Math.round(pos);
+        updateBooks();
+        return;
+      }
+      pos -= velocity;
+      if (pos < 0) pos += bookCount;
+      if (pos >= bookCount) pos -= bookCount;
+      updateBooks();
+      velocity *= 0.92;
+      momentumId = requestAnimationFrame(step);
+    }
+    momentumId = requestAnimationFrame(step);
+  }
+
+  function cancelMomentum() {
+    if (momentumId) cancelAnimationFrame(momentumId);
+    momentumId = null;
+  }
+
+  carousel.addEventListener('mousedown', e => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartPos = pos;
+    lastX = e.clientX;
+    lastTime = Date.now();
+    velocity = 0;
+    cancelMomentum();
+    carousel.classList.add('dragging');
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  });
+
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    pos = dragStartPos - dx / 150;
+    if (pos < 0) pos += bookCount;
+    if (pos >= bookCount) pos -= bookCount;
+    updateBooks();
+    const now = Date.now();
+    velocity = (e.clientX - lastX) / (now - lastTime);
+    lastX = e.clientX;
+    lastTime = now;
+  }
+
+  function onMouseUp(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    carousel.classList.remove('dragging');
+    pos = Math.round(pos);
+    updateBooks();
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('mouseup', onMouseUp);
+  }
+
+  carousel.addEventListener('touchstart', e => {
+    if (e.touches.length > 1) return;
+    isDragging = true;
+    dragStartX = e.touches[0].clientX;
+    dragStartPos = pos;
+    lastX = e.touches[0].clientX;
+    lastTime = Date.now();
+    velocity = 0;
+    cancelMomentum();
+    carousel.classList.add('dragging');
+  }, { passive: true });
+
+  carousel.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const dx = e.touches[0].clientX - dragStartX;
+    pos = dragStartPos - dx / 150;
+    if (pos < 0) pos += bookCount;
+    if (pos >= bookCount) pos -= bookCount;
+    updateBooks();
+    const now = Date.now();
+    velocity = (e.touches[0].clientX - lastX) / (now - lastTime);
+    lastX = e.touches[0].clientX;
+    lastTime = now;
+  }, { passive: true });
+
+  carousel.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    carousel.classList.remove('dragging');
+    velocity = (e.changedTouches[0].clientX - lastX) / (Date.now() - lastTime);
+    if (Math.abs(velocity) > 0.01) startMomentum();
+    else {
+      pos = Math.round(pos);
+      updateBooks();
+    }
+  }, { passive: true });
+
+  setupBooks();
+  updateBooks();
+
+
+document.getElementById('go-signup-btn')?.addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelector('.cta-dark').scrollIntoView({ behavior: 'smooth' });
+});
+document.getElementById('go-signup-btn-mobile')?.addEventListener('click', function(e) {
+  e.preventDefault();
+  document.querySelector('.cta-dark').scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+</body>
+
+</html>
