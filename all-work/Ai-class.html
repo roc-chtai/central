@@ -1,0 +1,681 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="keywords" content="中華 AI 教育學會 ROC Central Ai Eduction,OpenEDA 開源生態系建設">
+  <meta name="description" content="中華 AI 教育學會 ROC Central Ai Eduction，協助考生參加 AI 認證考試">
+  <meta name="rating" content="general">
+  <meta name="author" content="中華 AI 教育學會 ROC Central Ai Eduction">
+  <meta name="copyright" content="Copyright © 2025">
+  <meta property="og:title" content="OpenEDA 開源生態系建設 - 中華 AI 教育學會，ROC Central Ai Eduction">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://roc-central-ai-edu.org/uploads/tad_themes/ai2025/config2/config2_og_image_4_1_CSn.png">
+  <meta property="og:site_name" content="中華 AI 教育學會 ROC Central Ai Eduction">
+  <title>OpenEDA 開源生態系建設</title>
+ <!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Animate.css -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<!-- AOS 動畫 -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<!-- 字體 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://roc-central-ai-edu.org/uploads/page/OpenEDA/navbar.css">
+
+<style>
+/* 修正 AOS 對彈窗的干擾 */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: #f6f8fa;
+  color: #1b2b3a;
+}
+.hero-section {
+  position: relative;
+  background: linear-gradient(160deg, #194072 60%, #82bde5 100%);
+  color: #fff;
+  padding: 7.5rem 0 4rem;
+  text-align: center;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+.hero-section::before {
+  /* 涵洞保留！ */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  background: #fff;
+  z-index: 1;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+.hero-bg-ani {
+  /* CSS 背景動畫 - 呼吸泡泡 & 低調紋理 */
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 40%, #5ce6ff22 0 14%, transparent 65%),
+    radial-gradient(circle at 70% 22%, #ffd4402b 0 12%, transparent 62%),
+    repeating-linear-gradient(120deg, #fff1 0 12px, #0073b929 12px 36px);
+  animation: heroBreathe 8s ease-in-out infinite alternate;
+}
+@keyframes heroBreathe {
+  from { opacity: 0.82; }
+  to   { opacity: 1; filter: blur(2px);}
+}
+.hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 1.2rem;
+  text-shadow: 0 3px 16px #003b6f33;
+}
+.hero-subtitle {
+  position: relative;
+  z-index: 2;
+  font-size: 1.3rem;
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 6px #4444;
+}
+.ad-diamond {
+    position: relative;
+    width: 80%;
+    aspect-ratio: 1 / 1;
+    background-color: #00558c;
+    margin: 0 auto;
+    transform: rotate(45deg);
+    border-radius: 35px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.ad-diamond h5 {
+    color: #fff; 
+    font-size: 1.2rem;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    margin: 0;
+}
+.section-title {
+  font-size: 2.1rem;
+  color: #003B6F;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+
+.section-gradient {
+  background: linear-gradient(130deg, #f2f9ff 60%, #fbeab8 100%);
+}
+.section-gradient2 {
+  background: linear-gradient(120deg, #e5f5fc 50%, #ffe8e2 100%);
+}
+
+.diamond-card {
+  background: #fff;
+  border-radius: 25px;
+  padding: 2.4rem 1.2rem 2.1rem 1.2rem;
+  margin: 0 auto 18px;
+  max-width: 350px;
+  min-height: 305px;
+  box-shadow: 0 8px 32px 0 #003b6f16, 0 0 0 2px #e1edfa;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: rotate(45deg);
+  transition: box-shadow .3s, transform .24s;
+
+}
+
+.feature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #f7fbff;
+  border-radius: 24px;
+  padding: 2.1rem 1.2rem 1.6rem;
+  box-shadow: 0 8px 22px #003b6f18;
+  transition: box-shadow 0.26s, transform 0.26s;
+}
+.feature-icon {
+  font-size: 2.3rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+  /* 讓圖示永遠頂齊最上方，也可以用 align-self:center 做微調 */
+}
+.feature-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.feature-title {
+  font-weight: bold;
+  color: #2177b1;
+  font-size: 1.16rem;
+  margin-bottom: .4rem;
+}
+.feature-desc {
+  color: #375978;
+  font-size: 1.01rem;
+  line-height: 1.6;
+}
+
+
+.feature-card:hover {
+  box-shadow: 0 16px 36px #feaf0055;
+  transform: translateY(-6px) scale(1.03);
+}
+
+
+
+.round-card {
+  background: #fff;
+  border-radius: 50px;
+  padding: 1.8rem 1.2rem 1.4rem;
+  text-align: center;
+  box-shadow: 0 6px 28px #8fd7fc21;
+  min-height: 168px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow .23s, transform .23s;
+}
+.round-card:hover {
+  box-shadow: 0 16px 40px #ffd44055;
+  transform: scale(1.06) rotate(-1.5deg);
+}
+.round-title {
+  font-weight: bold;
+  color: #045b80;
+  font-size: 1.18rem;
+  margin-bottom: .5rem;
+}
+.round-desc {
+  color: #003b6f;
+  font-size: .98rem;
+}
+
+.future-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.3rem;
+    background: linear-gradient(120deg, #ffec85 60%, #ff9c9c 100%);
+  border-radius: 18px;
+  padding: 2rem 1.5rem 1.2rem;
+  box-shadow: 0 0 22px #ffe8a360;
+  transition: box-shadow .28s, transform .19s;
+}
+.future-card:hover {
+  box-shadow: 0 14px 46px #ffcf4580;
+  transform: scale(1.04) translateY(-5px);
+}
+.future-icon {
+  font-size: 2.25rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+.future-title {
+  font-weight: bold;
+  color: #5d4611;
+  font-size: 1.13rem;
+  margin-bottom: .18rem;
+  line-height: 1.5;
+}
+.future-desc {
+  color: #704c1a;
+  font-size: 1.01rem;
+}
+
+.future-trend-bar {
+background: linear-gradient(90deg, #ff8400eb 60%, #380055c4 100%);
+  border-radius: 32px;
+  color: #fff;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  font-size: 1.14rem;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 16px #ffd44052;
+}
+
+
+.future-icon-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  min-width: 48px; /* 保證左右間距 */
+  font-size: 2.1rem;
+}
+
+.future-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.cta-section {
+  background: linear-gradient(120deg, #003B6F 70%, #ffd440 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section:before {
+  content: "";
+  position: absolute;
+  top: -55px;
+  width: 100%;
+  height: 100px;
+  background: #fff;
+  z-index: 0;
+  border-bottom-left-radius: 50% 40px;
+  border-bottom-right-radius: 50% 40px;
+}
+.cta-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 1.4rem;
+  text-shadow: 0 4px 20px #1e3a8a33;
+  position: relative;
+  z-index: 1;
+}
+.cta-desc {
+  font-size: 1.14rem;
+  margin-bottom: 1.4rem;
+  position: relative;
+  z-index: 1;
+}
+.cta-btn {
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 0.85em 2.8em;
+    border-radius: 44px;
+    box-shadow: 0 4px 16px #2224;
+    background: linear-gradient(85deg, #f6ff79 70%, #e75252 100%);
+    color: #4a4545;
+    border: none;
+    transition: background 0.3s, box-shadow .2s, transform .18s;
+    position: relative;
+    z-index: 1;
+}
+
+.cta-btn:hover {
+  color: #4a4545;
+  box-shadow: 0 8px 24px #ffda2b88;
+  transform: scale(1.04);
+}
+
+@media (max-width: 900px) {
+  .diamond-card {
+    min-height: 220px;
+    padding: 1.4rem .5rem 1.1rem .5rem;
+    max-width: 98vw;
+  }
+  .feature-card, .future-card {
+    padding: 1.2rem 1rem;
+  }
+  .round-card {
+    min-height: 108px;
+    padding: 1.1rem .5rem 1rem;
+  }
+  .hero-title {
+    font-size: 1.8rem;
+  }
+}
+.text-center {
+    margin-top: 30px;
+}
+@media (max-width: 600px) {
+  .section-title, .cta-title {
+    font-size: 1.37rem;
+  }
+  .cta-section {
+    padding: 2.6rem 0 2rem 0;
+  }
+}
+@media (max-width: 768px) {
+    .ad-diamond {
+        width: 50%;
+    }
+}
+</style>
+
+<!-- Google Tag Manager -->
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-NTNRLMV3');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SH31ZHPZGB"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	
+	gtag('config', 'G-SH31ZHPZGB');
+	</script>
+	
+</head>
+	
+<body >
+<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTNRLMV3"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+
+  <!-- ====== 導覽條（自帶） ====== -->
+  <div id="floating-navbar" class="navbar-floating-container animate__animated animate__fadeInDown">
+    <div class="navbar-floating-inner">
+      <div class="navbar-main">
+        <!-- LOGO 跳首頁 -->
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/logo/logo_1_5_ENr.png" class="navbar-logo" alt="Logo" id="navbar-logo" />
+        <div class="navbar-links">
+          <a href="https://roc-central-ai-edu.org/" class="navbar-link">首頁</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="navbar-link">推廣園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="navbar-link">培育園區</a>
+          <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="navbar-link">最新消息</a>
+        </div>
+        <!-- 三條線動畫漢堡 -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="展開/關閉選單">
+          <span class="burger-bar bar-top"></span>
+          <span class="burger-bar bar-middle"></span>
+          <span class="burger-bar bar-bottom"></span>
+        </button>
+      </div>
+
+<button class="navbar-join-btn" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'});">我要報名</button>
+
+<button class="mobile-plus-btn" aria-label="我要報名" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'});" style="font-size: 1.2rem;width: 70px; height: 40px;">報名</button>
+
+
+    </div>
+  </div>
+  <!-- 手機/平板：2x2 四格彈窗 -->
+  <div id="mobileMenuPopup">
+    <div class="mobile-menu-grid-custom">
+      <a href="https://roc-central-ai-edu.org/" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/home.png" alt="首頁"><span>前往首頁</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/index.php" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/news.png" alt="最新消息"><span>最新消息</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=5" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="推廣園區"><span>推廣園區</span>
+      </a>
+      <a href="https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=7&amp;nsn=15" class="mobile-menu-btn-custom">
+        <img src="https://roc-central-ai-edu.org/themes/ai2025/images/btn/trainingzone.png" alt="培育園區"><span>培育園區</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== HERO 區塊 ===== -->
+  <section class="hero-section">
+    <div class="hero-bg-ani"></div>
+    <div class="container position-relative" data-aos="zoom-in">
+      <h1 class="hero-title">AI 思維與技能<br class="d-md-none"/>｜7/16 8:00 PM 線上技能培育講座</h1>
+      <div class="hero-subtitle">打造跨領域 AI 專業人才，掌握產業致勝三力，搶攻 Gen AI 潮流！</div>
+    </div>
+  </section>
+
+  <!-- ===== 區塊1：產業三力 ===== -->
+<section class="diamond-section py-5">
+  <div class="container">
+<h2 class="section-title mb-5 aos-init aos-animate" data-aos="fade-up">產業致勝三力，全面提升你的競爭力</h2>
+  <div>
+    
+    <div class="row justify-content-center text-center py-5">
+      <!-- 菱形一 -->
+      <div class="col-md-3 mb-4 aos-init aos-animate" data-aos="zoom-in">
+        <div class="ad-diamond">
+          <h5>專家直覺<br>知識力</h5>
+        </div>
+      </div>
+      <!-- 菱形二 -->
+      <div class="col-md-4 mb-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="100">
+        <div class="ad-diamond">
+          <h5>建模師<br>創新力</h5>
+        </div>
+      </div>
+      <!-- 菱形三 -->
+      <div class="col-md-3 mb-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="200">
+        <div class="ad-diamond">
+          <h5>大數據<br>運算力
+</h5>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+</div></section>
+  <!-- ===== 區塊2：跨領域人才、科技美學 ===== -->
+  <section id="about" class="py-5 bg-white">
+    <div class="container">
+      <h2 class="section-title mb-5" data-aos="fade-up">科技 × 美學新典範，複合型AI人才養成</h2>
+      <div class="row g-4 justify-content-center">
+       
+
+ <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <div class="feature-content">
+            <div class="feature-title">科技 + 美學雙軌</div>
+            <div class="feature-desc">工程、設計、管理齊聚一堂，激盪新火花，讓產品不只會做，還會被看見。</div>
+          </div>
+        </div>
+
+       <div class="feature-card">
+          <div class="feature-icon">🤝</div>
+          <div class="feature-content">
+            <div class="feature-title">跨領域交流</div>
+            <div class="feature-desc">設計思考結合AI實作，讓你不只懂技術，更能打造有視覺力、創意力的AI應用。</div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 區塊3：實戰導向 ===== -->
+  <section class="py-5 section-gradient2">
+    <div class="container">
+      <h2 class="section-title mb-5" data-aos="fade-up">實戰導向課程｜理論 × 實作全包辦</h2>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-3">
+          <div class="round-card" data-aos="zoom-in">
+            <div class="round-title">18小時密集訓練</div>
+            <div class="round-desc">AI/ML、深度學習、AI晶片設計一次學會。</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="round-card" data-aos="zoom-in" data-aos-delay="100">
+            <div class="round-title">TensorFlow實作</div>
+            <div class="round-desc">主流工具直接上手，打造專屬AI模型。</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="round-card" data-aos="zoom-in" data-aos-delay="200">
+            <div class="round-title">真實產業案例</div>
+            <div class="round-desc">醫療、製造、文創等多領域應用，學以致用。</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="round-card" data-aos="zoom-in" data-aos-delay="300">
+            <div class="round-title">MLOps專案管理</div>
+            <div class="round-desc">學會團隊協作，專案部署，直接貼近業界。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 區塊4：Gen AI未來趨勢 ===== -->
+  <section class="py-5 bg-white">
+    <div class="container">
+      <h2 class="section-title mb-5" data-aos="fade-up">搶佔 Gen AI 產業大潮<br>把握未來機會</h2>
+      <div class="row g-4 justify-content-center">
+        
+        <div class="col-md-6">
+<div class="future-card  mb-2">
+  <div class="future-icon-group">
+    <span class="future-icon">🐱</span>
+  </div>
+  <div class="future-content">
+    <div class="future-title">家貓＋野貓協作模式</div>
+    <div class="future-desc">
+      融合企業內部AI（家貓）與外部大模型（野貓），發揮最大效益，搶先產業浪頭。
+    </div>
+  </div>
+</div>
+
+<div class="future-card">
+  <div class="future-icon-group">
+    <span class="future-icon">🔗</span>
+  </div>
+  <div class="future-content">
+    <div class="future-title">知識圖譜</div>
+    <div class="future-desc">
+      打造企業專屬智慧資料庫，決策快又準，創新實力飆升。
+    </div>
+  </div>
+</div>
+         
+        </div>
+        <div class="col-12 mt-4" data-aos="zoom-in">
+          <div class="future-trend-bar">產業趨勢最前線：最新動態與技術第一手掌握，讓你成為企業最搶手的AI人才！</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA 行動呼籲 ===== -->
+  <section id="signup" class="cta-section py-5">
+    <div class="container text-center">
+      <h2 class="cta-title animate__animated animate__pulse">雲端講座｜掌握生成式AI建模關鍵技能，開啟你的AI未來</h2>
+      <p class="cta-desc mb-4">7/16 週三 晚上八點 為最有企圖心的你設計，名額有限 </p>
+      <a href="https://meet.google.com/tgo-qgzg-vge" target="_blank" class="btn btn-lg btn-primary cta-btn">我要參加</a>
+    </div>
+  </section>
+
+  <!-- JS區塊 -->
+
+<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SH31ZHPZGB"></script>
+
+
+
+  <script>
+    // ==== LOGO點擊，導向首頁 ====
+    document.getElementById('navbar-logo').addEventListener('click', function() {
+      window.location.href = 'https://roc-central-ai-edu.org/modules/tadnews/page.php?ncsn=8&nsn=16';
+    });
+
+    // ==== 導覽列上下滑動畫顯示/隱藏 ====
+    let lastScrollY = window.scrollY;
+    const navbar = document.getElementById('floating-navbar');
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          let nowY = window.scrollY;
+          if (nowY < lastScrollY - 3) {
+            navbar.classList.remove('animate__fadeOutUp');
+            navbar.classList.add('animate__fadeInDown');
+            navbar.style.display = 'flex';
+          } else if (nowY > lastScrollY + 3) {
+            navbar.classList.remove('animate__fadeInDown');
+            navbar.classList.add('animate__fadeOutUp');
+          }
+          lastScrollY = nowY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    navbar.addEventListener('animationend', function(e) {
+      if (navbar.classList.contains('animate__fadeOutUp')) {
+        navbar.style.display = 'none';
+      }
+    });
+
+    // ==== 手機漢堡彈窗功能 ====
+    const hamburgerBtn = document.getElementById('mobile-menu-btn');
+    const menuPopup = document.getElementById('mobileMenuPopup');
+    let isMenuOpen = false;
+
+    // 開啟彈窗（含進場動畫）
+    function openMenu() {
+      if (isMenuOpen) return;
+      isMenuOpen = true;
+      hamburgerBtn.classList.add('active');
+      menuPopup.style.display = 'block';
+      menuPopup.classList.remove('fade-in-menu'); // 清除殘留
+      // 觸發 reflow 強制動畫重播
+      void menuPopup.offsetWidth;
+      menuPopup.classList.add('fade-in-menu');
+    }
+
+    // 關閉彈窗（無收合動畫）
+    function closeMenu() {
+      if (!isMenuOpen) return;
+      isMenuOpen = false;
+      hamburgerBtn.classList.remove('active');
+      menuPopup.classList.remove('fade-in-menu');
+      menuPopup.style.display = 'none';
+    }
+
+    hamburgerBtn && hamburgerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isMenuOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+
+    // 點外部收合
+    window.addEventListener('click', function(e) {
+      if (
+        isMenuOpen &&
+        !menuPopup.contains(e.target) &&
+        e.target !== hamburgerBtn &&
+        !hamburgerBtn.contains(e.target)
+      ) {
+        closeMenu();
+      }
+    });
+
+    // 阻止彈窗內點擊冒泡
+    menuPopup.addEventListener('click', e => e.stopPropagation());
+  </script>
+
+<!-- AOS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>  AOS.init(); </script>
+
+
+</body>
+</html>
