@@ -20,11 +20,6 @@ window.LECTURES_DATA = {
             url: "https://roc-central-ai-edu.org/uploads/page/Summer/", 
             color: "warning" 
            }
-    },
-    {
-      title: "AI應用實作專班",
-      desc: "帶你手把手建構AI專案，涵蓋Python、ChatGPT、Prompt Engineering等熱門主題。",
-      btn: { text: "立即了解", url: "#", color: "warning" }
     }
   ],
   history: [
