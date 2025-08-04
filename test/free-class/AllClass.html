@@ -1,1 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI規劃師考試 免費複習講座總覽</title>
+  <!-- 外部 CSS -->
+  <link rel="stylesheet" href="https://roc-central-ai-edu.org/modules/tadtools/bootstrap5/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://roc-central-ai-edu.org/themes/aiPro2025/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: 'Noto Sans TC', sans-serif; background-color: #f9fbfc; margin: 0; padding: 0;}
+    .container { max-width: 1080px; margin: auto; padding: 1.5rem 1rem;}
+    .main-header-full { background: linear-gradient(to right, #eaf5fb, transparent); padding: 12px 0; margin-bottom: 24px;}
+    .main-header { font-size: 2rem; color: #00558c; font-weight: bold; border-left: 6px solid #0077b6; padding-left: 16px; margin: 0 auto; width: 98%; max-width: 1200px;}
+    .blue-bold-text { color: #00558c; font-weight: bold; margin-top:2.4em;}
+    .swiper { padding: 1rem 0 2.6rem; overflow: visible; position: relative; }
+    .swiper-slide { display: flex; justify-content: center; height: auto;}
+    .swiper-button-prev, .swiper-button-next {
+      position: absolute; top: 50%; font-size: 2rem; color: #00558c; background: none; border: none;
+      z-index: 10; transform: translateY(-50%); transition: all 0.2s ease;
+    }
+    .swiper-button-prev { left: 0; transform: translateX(-100%) translateY(-50%);}
+    .swiper-button-next { right: 0; transform: translateX(100%) translateY(-50%);}
+    @media (max-width: 760px) {
+      .swiper-button-prev, .swiper-button-next { transform: translateY(-50%) !important; font-size: 1.4rem;}
+      .swiper-button-prev { left: 2%; }
+      .swiper-button-next { right: 2%; }
+    }
+    .card {
+      width: 90%; max-width: 320px; background: white; border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.08); overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s; height: 100%;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.13);}
+    .card-body { padding: 1.5rem; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+    .card-title { color: #00558c; font-weight: bold; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .card-text { font-size: 0.98rem; color: #444; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; min-height:3.6em;}
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  </style>
+</head>
+<body>
+<main class="container">
+  <section>
+    <div class="main-header-full">
+      <h2 class="main-header"><i class="fas fa-chalkboard-teacher"></i>&nbsp;AI規劃師考試 免費複習講座總覽</h2>
+    </div>
+    <!-- 近期免費講座 -->
+    <h4 class="text-danger fw-bold "><i class="far fa-star"></i>&nbsp;近期免費講座</h4>
+    <div class="swiper mySwiper">
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-wrapper"></div>
+    </div>
+    <!-- 推廣專區 -->
+    <div class="mt-5 mb-3 text-center"></div>
+    <h4 class="blue-bold-text"><i class="fas fa-bullhorn"></i> 推廣專區</h4>
+    <div class="swiper techSwiper">
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-wrapper"></div>
+    </div>
+    <!-- 歷屆講座回顧 -->
+    <h4 class="blue-bold-text"><i class="far fa-calendar-check"></i>&nbsp;歷屆複習講座回顧</h4>
+    <div class="swiper promoSwiper">
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-wrapper"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<!-- 資料來源 -->
 <script src="https://roc-chtai.github.io/central/test/free-class/main/data.js"></script>
+<script>
+// 2. JS：用資料覆蓋卡片，超過3筆自動新增，不足3保留敬請期待
+function renderLecturesFill() {
+  const mapping = {
+    latest: document.querySelector('.mySwiper .swiper-wrapper'),
+    promo: document.querySelector('.techSwiper .swiper-wrapper'),
+    history: document.querySelector('.promoSwiper .swiper-wrapper'),
+  };
+
+  Object.entries(mapping).forEach(([key, wrapper]) => {
+    const arr = (window.LECTURES_DATA && window.LECTURES_DATA[key]) || [];
+    // 先清空
+    wrapper.innerHTML = '';
+    // 至少三張卡片
+    const minCard = 3;
+    for (let i = 0; i < Math.max(arr.length, minCard); i++) {
+      const item = arr[i] || {
+        title: "敬請期待",
+        desc: "近期講座資訊將於此公布，敬請鎖定。",
+        btn: { text: "敬請期待", url: "#", color: "secondary" }
+      };
+      const newSlide = document.createElement('div');
+      newSlide.className = 'swiper-slide';
+      newSlide.innerHTML = `
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">${item.title}</h5>
+            <p class="card-text">${item.desc}</p>
+            <a class="btn btn-${item.btn.color} fw-bold mt-3"
+               href="${item.btn.url}" target="_blank">${item.btn.text}</a>
+          </div>
+        </div>
+      `;
+      wrapper.appendChild(newSlide);
+    }
+  });
+}
+document.addEventListener("DOMContentLoaded", function() {
+  renderLecturesFill();
+
+  // 3. Swiper 啟動
+  new Swiper('.mySwiper', {
+    navigation: { nextEl: '.mySwiper .swiper-button-next', prevEl: '.mySwiper .swiper-button-prev' },
+    loop: true, spaceBetween: 24, grabCursor: true,
+    breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
+  });
+  new Swiper('.promoSwiper', {
+    navigation: { nextEl: '.promoSwiper .swiper-button-next', prevEl: '.promoSwiper .swiper-button-prev' },
+    loop: true, spaceBetween: 24, grabCursor: true,
+    breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
+  });
+  new Swiper('.techSwiper', {
+    navigation: { nextEl: '.techSwiper .swiper-button-next', prevEl: '.techSwiper .swiper-button-prev' },
+    loop: true, spaceBetween: 24, grabCursor: true,
+    breakpoints: { 0: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
+  });
+});
+</script>
+</body>
+</html>
