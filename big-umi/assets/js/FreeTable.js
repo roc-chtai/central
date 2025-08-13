@@ -145,7 +145,7 @@
       mode,
       columns: normalizeColumns(
         Array.isArray(opts.columns) && opts.columns.length ? opts.columns.slice()
-        : ['高考科目','普考科目','分數比重','名額']
+        : ['考科','科目(分數占比)','名額']
       ),
       groups: [] // {id, name, icon, sizeClass}
     };
@@ -174,7 +174,7 @@
         <div class="d-flex flex-wrap align-items-end gap-2">
           <div class="flex-grow-1" style="max-width:320px;">
             <label class="form-label small mb-1">新增類組名稱</label>
-            <input type="text" class="form-control form-control-sm" id="${cid}-group-name" placeholder="例如：共同科目／文組">
+            <input type="text" class="form-control form-control-sm" id="${cid}-group-name" placeholder="例如：文組/營運職">
           </div>
 
           <div>
