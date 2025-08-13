@@ -11,6 +11,13 @@
 /* USER 模式：隱藏維護控件 */
 .tap-subjects[data-mode="USER"] .ts-admin{ display:none !important; }
 
+/* 確保百分比欄位不消失 */
+.tap-subjects .ts-col-item { align-items: center; }
+.tap-subjects .ts-col-item .input-group {
+  width: 25% !important;           
+  box-sizing: border-box;
+}
+
 /* 手機卡片式（≤576px） */
 @media (max-width:576px){
   .tap-subjects thead{ display:none; }
