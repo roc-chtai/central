@@ -132,6 +132,10 @@
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
+  if (host._tap_subjects) {
+    // console.log('TAPSubjectsKit: already mounted on this host — returning existing instance.');
+    return host._tap_subjects;
+  }
 
     const mode    = ((host.dataset.mode || opts.mode || DEFAULT_MODE)+'').toUpperCase()==='ADMIN' ? 'ADMIN' : 'USER';
     const faClass = host.dataset.fa || opts.faClass || DEFAULT_FA;
