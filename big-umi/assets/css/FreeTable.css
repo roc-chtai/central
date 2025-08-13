@@ -1,0 +1,35 @@
+/* 只作用於插件容器 */
+.tap-subjects{ overflow-x:hidden; }
+
+/* 錨點按鈕列（只有按鈕） */
+.tap-subjects .ts-anchors .btn{ margin-right:.25rem; margin-bottom:.25rem; }
+
+/* 表格：固定寬 & 可換行，避免水平卷軸 */
+.tap-subjects .ts-table{ table-layout:fixed; width:100%; word-break:break-word; }
+.tap-subjects th, .tap-subjects td{ white-space: normal; }
+
+/* 名額欄位：窄、字小 */
+.tap-subjects .ts-col-quota{ width: 90px; }
+.tap-subjects .ts-quota-cell{ font-size: .9rem; }
+
+/* USER 模式：隱藏維護控件 */
+.tap-subjects[data-mode="USER"] .ts-admin{ display:none !important; }
+
+/* 手機卡片式（≤576px） */
+@media (max-width:576px){
+  .tap-subjects thead{ display:none; }
+  .tap-subjects .ts-table,
+  .tap-subjects .ts-table tbody,
+  .tap-subjects .ts-table tr,
+  .tap-subjects .ts-table td{ display:block; width:100%; }
+  .tap-subjects .ts-table tr{
+    border:1px solid #eef3f7; border-radius:10px; padding:6px; margin-bottom:10px;
+  }
+  .tap-subjects .ts-table td{
+    display:flex; gap:10px; justify-content:space-between; align-items:flex-start; padding:.55rem .5rem;
+  }
+  .tap-subjects .ts-table td::before{
+    content: attr(data-label);
+    font-weight:700; color:#4a5c70; flex:0 0 42%; max-width:42%;
+  }
+}
