@@ -8,10 +8,6 @@
 .tap-subjects .ts-table{ table-layout:fixed; width:100%; word-break:break-word; }
 .tap-subjects th, .tap-subjects td{ white-space: normal; }
 
-/* 名額欄位：窄、字小 */
-.tap-subjects .ts-col-quota{ width: 90px; }
-.tap-subjects .ts-quota-cell{ font-size: .9rem; }
-
 /* USER 模式：隱藏維護控件 */
 .tap-subjects[data-mode="USER"] .ts-admin{ display:none !important; }
 
