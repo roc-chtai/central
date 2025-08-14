@@ -178,7 +178,7 @@
       mode,                             // 'ADMIN' | 'USER'
       sharedColumns: normalizeColumns(
         Array.isArray(opts.columns) && opts.columns.length ? opts.columns.slice()
-        : ['高考科目','普考科目','分數比重','名額']
+        : ['請輸入表頭','請輸入表頭','請輸入表頭','請輸入表頭']
       ),
       groups: [] // {id, name, icon, sizeClass, columns|null}
     };
