@@ -1,78 +1,14 @@
 /*!
- * FreeTable.js — TAP Subjects Plugin (auto ADMIN/USER detection, per-group locked columns, anchors, icon picker)
- * v2.4
- * 
- * 使用方式：
- *   1) 自動掛載：<div data-tap-plugin="subjects"></div>
- *   2) 手動掛載：TAPSubjectsKit.mount('#subjectsPlugin', { columns:[...] })
- * 
- * 模式自動判定順序（任一命中即回傳）：
- *   opts.mode / data-mode
- *   window.TAP_DETECT_MODE()   // 建議在頁面上實作；CodePen 用 MODE 常數回傳
- *   window.XOOPS_IS_ADMIN === true
- *   window.MODE                // 若你僅有常數 MODE 也會吃
- *   window.TAP_SUBJECTS_DEFAULT_MODE
- *   預設 'USER'
+ * FreeTable.js (Subjects Plugin) — v2.5.0
+ * - Admin 有「鎖定欄位（顯示編欄）」按鈕，預設不顯示編欄，按了才顯示
+ * - 支援 addGroup 的 locks：{ deleteRows?:boolean, deleteGroup?:boolean }
+ * - USER 模式看不到任何編輯 UI
  */
 
 (function (global) {
   'use strict';
 
-  // ===================== Config & Utils =====================
-  const DEFAULT_FA   = global.TAP_SUBJECTS_FA_CLASS || 'fa-solid'; // FA6 預設
-  const THEME_COLOR  = 'var(--main-red)';
-  const ICON_SET = [
-    '', 'fa-book', 'fa-users', 'fa-gavel', 'fa-briefcase', 'fa-stethoscope',
-    'fa-flask', 'fa-cog', 'fa-chart-line', 'fa-university', 'fa-user-graduate', 'fa-scale-balanced'
-  ];
-
-  let INST = 0;
-  const makeId = (p='ts') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
-  const t  = (s)=> (s==null ? '' : String(s));
-  const $$ = (root, sel)=> Array.from((root instanceof Element?root:document).querySelectorAll(sel));
-  const swap = (arr,i,j)=>{ const tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; };
-
-  function h(tag, cls, html){
-    const el = document.createElement(tag);
-    if (cls)  el.className = cls;
-    if (html!=null) el.innerHTML = html;
-    return el;
-  }
-
-  function normalizeColumns(cols){
-    if (!Array.isArray(cols) || !cols.length) return [];
-    let out = cols.map(c => (typeof c === 'string')
-      ? { label: c, width: 0 }
-      : { label: String(c.label || ''), width: Number(c.width) || 0 }
-    );
-    if (!out.some(c => c.width > 0)) {
-      const per = Math.round(100 / out.length);
-      out = out.map((c,i)=> ({ label:c.label, width: i===out.length-1 ? (100 - per*(out.length-1)) : per }));
-    } else {
-      const sum = out.reduce((a,b)=> a + (b.width||0), 0) || 100;
-      out = out.map(c=>{
-        const w = Math.max(5, Math.round(100 * (c.width||0) / sum));
-        return { label:c.label, width:w };
-      });
-      let diff = 100 - out.reduce((a,b)=> a+b.width,0);
-      if (diff !== 0) out[out.length-1].width += diff;
-    }
-    return out;
-  }
-
-  function applyColgroup(table, columns){
-    const cols = normalizeColumns(columns || []);
-    let cg = table.querySelector('colgroup');
-    if (!cg) { cg = document.createElement('colgroup'); table.insertBefore(cg, table.firstChild); }
-    cg.innerHTML = '';
-    cols.forEach(c=>{
-      const col = document.createElement('col');
-      col.style.width = (c.width||0) + '%';
-      cg.appendChild(col);
-    });
-  }
-
-  // 模式自動判定
+  // ===== Mode resolver（與前版一致）=====
   function resolveMode(host, opts, global){
     const explicit = (opts && opts.mode) || (host && host.dataset && host.dataset.mode);
     if (explicit) {
@@ -95,281 +31,261 @@
     return 'USER';
   }
 
-  // ===================== Icon Picker (minimal) =====================
-  if (!document.getElementById('ts-iconpicker-style')) {
-    const st = document.createElement('style');
-    st.id = 'ts-iconpicker-style';
-    st.textContent = `
-      .ts-ip-wrap{position:relative; display:inline-block;}
-      .ts-ip-btn{display:inline-flex; align-items:center; gap:.4rem;}
-      .ts-ip-menu{
-        position:absolute; z-index:1050; top:100%; left:0;
-        background:#fff; border:1px solid #e9ecef; border-radius:10px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08); padding:10px; margin-top:6px;
-        width:300px; max-height:260px; overflow:auto;
-      }
-      .ts-ip-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px;}
-      .ts-ip-item{
-        display:flex; justify-content:center; align-items:center;
-        width:44px; height:40px; border:1px solid #eee; border-radius:8px;
-        cursor:pointer; transition:.15s;
-      }
-      .ts-ip-item:hover{transform:translateY(-1px); border-color:#ddd;}
-      .ts-ip-item.active{border-color:var(--main-red); box-shadow:0 0 0 2px rgba(234,112,102,.15);}
-      .ts-ip-none{font-size:12px; color:#6c757d;}
-    `;
-    document.head.appendChild(st);
+  const DEFAULT_FA  = global.TAP_SUBJECTS_FA_CLASS || 'fa-solid';
+  const THEME_COLOR = 'var(--main-red)';
+
+  let INST = 0;
+  const uid = (p='ts') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
+  const t  = s => (s==null ? '' : String(s));
+  const $$ = (root, sel)=> Array.from((root instanceof Element?root:document).querySelectorAll(sel));
+
+  // 均分/正規化欄寬
+  function normalizeColumns(cols){
+    if (!Array.isArray(cols) || !cols.length) return [];
+    let out = cols.map(c => (typeof c === 'string')
+      ? { label: c, width: 0 }
+      : { label: String(c.label || ''), width: Number(c.width) || 0 }
+    );
+    // 全沒給寬 → 均分
+    if (!out.some(c => c.width > 0)) {
+      const per = Math.round(100 / out.length);
+      out = out.map((c,i)=> ({ label:c.label, width: i===out.length-1 ? (100 - per*(out.length-1)) : per }));
+    } else {
+      const sum = out.reduce((a,b)=> a + (b.width||0), 0) || 100;
+      out = out.map(c=>{
+        const w = Math.max(5, Math.round(100 * (c.width||0) / sum));
+        return { label:c.label, width:w };
+      });
+      let diff = 100 - out.reduce((a,b)=> a+b.width,0);
+      if (diff !== 0) out[out.length-1].width += diff;
+    }
+    return out;
   }
+  const swap = (arr,i,j)=>{ const tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; };
 
-  function createIconPicker({ faClass=DEFAULT_FA, value='' } = {}) {
-    const wrap = h('div','ts-ip-wrap');
-    const btn  = h('button','btn btn-outline-secondary btn-sm ts-ip-btn');
-    btn.type = 'button';
-    btn.innerHTML = value
-      ? `<i class="${faClass} ${value}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-      : `<span class="ts-ip-none">選擇圖示（可不選）</span>`;
-    const menu = h('div','ts-ip-menu d-none');
-    const grid = h('div','ts-ip-grid');
-    ICON_SET.forEach(ic=>{
-      const cell = h('div','ts-ip-item'+(ic===value?' active':''), ic ? `<i class="${faClass} ${ic}" style="color:${THEME_COLOR};"></i>` : `<span class="ts-ip-none">無</span>`);
-      cell.dataset.icon = ic;
-      grid.appendChild(cell);
-    });
-    menu.appendChild(grid);
-    wrap.appendChild(btn); wrap.appendChild(menu);
-
-    const open  = ()=>{ menu.classList.remove('d-none'); document.addEventListener('click', onDoc); };
-    const close = ()=>{ menu.classList.add('d-none');   document.removeEventListener('click', onDoc); };
-    const onDoc = e => { if (!wrap.contains(e.target)) close(); };
-
-    let current = value || '';
-    btn.addEventListener('click', e=>{ e.stopPropagation(); menu.classList.contains('d-none') ? open() : close(); });
-    grid.addEventListener('click', e=>{
-      const cell = e.target.closest('.ts-ip-item'); if(!cell) return;
-      current = cell.dataset.icon || '';
-      grid.querySelectorAll('.ts-ip-item').forEach(i=>i.classList.toggle('active', i===cell));
-      btn.innerHTML = current
-        ? `<i class="${faClass} ${current}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-        : `<span class="ts-ip-none">選擇圖示（可不選）</span>`;
-      close();
-      wrap.dispatchEvent(new CustomEvent('icon:change',{ detail:{ icon: current }}));
-    });
-
-    return { root:wrap, get:()=>current, set:(v='')=>{
-      current=v||'';
-      grid.querySelectorAll('.ts-ip-item').forEach(i=>i.classList.toggle('active', i.dataset.icon===current));
-      btn.innerHTML = current
-        ? `<i class="${faClass} ${current}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-        : `<span class="ts-ip-none">選擇圖示（可不選）</span>`;
-    }};
-  }
-
-  // ===================== Core: mount =====================
+  // ===== 主掛載 =====
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
-    if (host._tap_subjects) return host._tap_subjects; // guard: avoid double init
+    if (host._tap_subjects) return host._tap_subjects; // 防重複
 
     const mode    = resolveMode(host, opts, global);
     const faClass = host.dataset.fa || opts.faClass || DEFAULT_FA;
 
     const state = {
-      id: makeId('ts'),
-      mode,                             // 'ADMIN' | 'USER'
-      sharedColumns: normalizeColumns(
+      id: uid('ts'),
+      mode,
+      showColEditor: !!opts.showColEditor,   // 新增：編欄面板是否顯示
+      columns: normalizeColumns(
         Array.isArray(opts.columns) && opts.columns.length ? opts.columns.slice()
-        : ['請輸入表頭','請輸入表頭','請輸入表頭','請輸入表頭']
+        : ['高考科目','普考科目','分數比重','名額']
       ),
-      groups: [] // {id, name, icon, sizeClass, columns|null}
+      groups: [] // { id, name, icon, sizeClass, lockedColumns, locks:{deleteRows,deleteGroup} }
     };
 
-    // 容器與模式標記
     host.innerHTML = '';
     host.classList.add('tap-subjects');
     host.setAttribute('data-mode', state.mode);
 
-    // ---- Anchors（按插入順序顯示）----
-    const anchors = h('div','ts-anchors d-flex flex-wrap gap-2 mb-3');
+    // 錨點列（只有按鈕）
+    const anchors = document.createElement('div');
+    anchors.className = 'ts-anchors d-flex flex-wrap gap-2 mb-3';
     host.appendChild(anchors);
 
-    // ---- Admin 設定卡（僅 ADMIN 才渲染）----
-    let cfg = null;
-    if (state.mode === 'ADMIN') {
-      cfg = h('div','card mb-3 ts-admin');
-      const cid = state.id;
-      cfg.innerHTML = `
-        <div class="card-header bg-white border-bottom border-danger fw-bold">類組欄位設定（不限數量）與新增類組</div>
-        <div class="card-body">
-          <div class="d-flex flex-wrap align-items-end gap-2 mb-2">
-            <button type="button" class="btn btn-outline-danger btn-sm" id="${cid}-add-col">新增欄位</button>
-            <span class="text-muted small">欄位順序 = 表頭順序；可直接設定每欄寬度（%）</span>
-          </div>
-          <div id="${cid}-col-list" class="d-flex flex-column gap-2 mb-3"></div>
-
-          <div class="d-flex flex-wrap align-items-end gap-2">
-            <div class="flex-grow-1" style="max-width:320px;">
-              <label class="form-label small mb-1">新增類組名稱</label>
-              <input type="text" class="form-control form-control-sm" id="${cid}-group-name" placeholder="例如：共同科目／文組">
-            </div>
-
-            <div>
-              <label class="form-label small mb-1">字級</label>
-              <select class="form-select form-select-sm" id="${cid}-size">
-                <option value="fs-6">小字</option>
-                <option value="fs-5" selected>中字</option>
-                <option value="fs-4">大字</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="form-label small mb-1">圖示</label>
-              <div id="${cid}-iconpicker"></div>
-            </div>
-
-            <button type="button" class="btn btn-danger btn-sm" id="${cid}-add-group">新增類組</button>
-          </div>
-        </div>`;
-      host.appendChild(cfg);
-
-      // 欄位設定編輯 UI
-      const colList   = cfg.querySelector(`#${cid}-col-list`);
-      const btnAddCol = cfg.querySelector(`#${cid}-add-col`);
-      function renderColList(){
-        colList.innerHTML = '';
-        state.sharedColumns.forEach((col, idx)=>{
-          const row = h('div','d-flex align-items-center gap-2 ts-col-item');
-          row.innerHTML = `
-            <input type="text" class="form-control form-control-sm ts-col-label" value="${t(col.label).replace(/"/g,'&quot;')}" placeholder="欄位名稱">
-            <div class="input-group input-group-sm" style="width:110px;">
-              <input type="number" class="form-control ts-col-width" min="5" max="100" step="5" value="${col.width}">
-              <span class="input-group-text">%</span>
-            </div>
-            <div class="btn-group btn-group-sm">
-              <button type="button" class="btn btn-light ts-col-up">▲</button>
-              <button type="button" class="btn btn-light ts-col-down">▼</button>
-              <button type="button" class="btn btn-outline-danger ts-col-del">刪</button>
-            </div>
-          `;
-          colList.appendChild(row);
-
-          const labelInp = row.querySelector('.ts-col-label');
-          const widthInp = row.querySelector('.ts-col-width');
-
-          labelInp.addEventListener('input', ()=>{
-            state.sharedColumns[idx].label = labelInp.value;
-            $$(groupsWrap,'.ts-block').forEach(updateHeadersForShared);
-          });
-
-          widthInp.addEventListener('input', ()=>{
-            state.sharedColumns[idx].width = Number(widthInp.value) || 0;
-            state.sharedColumns = normalizeColumns(state.sharedColumns);
-            renderColList();
-            applyColgroupsToAllShared();
-          });
-
-          row.querySelector('.ts-col-up').addEventListener('click', ()=>{
-            if (idx===0) return;
-            swap(state.sharedColumns, idx, idx-1);
-            $$(groupsWrap,'.ts-block').forEach(block=>{
-              if (!block._group.columns) swapColumns(block, idx, idx-1);
-            });
-            renderColList(); applyColgroupsToAllShared();
-          });
-          row.querySelector('.ts-col-down').addEventListener('click', ()=>{
-            if (idx>=state.sharedColumns.length-1) return;
-            swap(state.sharedColumns, idx, idx+1);
-            $$(groupsWrap,'.ts-block').forEach(block=>{
-              if (!block._group.columns) swapColumns(block, idx, idx+1);
-            });
-            renderColList(); applyColgroupsToAllShared();
-          });
-          row.querySelector('.ts-col-del').addEventListener('click', ()=>{
-            if (state.sharedColumns.length<=1) return;
-            state.sharedColumns.splice(idx,1);
-            state.sharedColumns = normalizeColumns(state.sharedColumns);
-            $$(groupsWrap,'.ts-block').forEach(block=>{
-              if (!block._group.columns) deleteColumn(block, idx);
-            });
-            renderColList(); applyColgroupsToAllShared();
-          });
-        });
-      }
-      btnAddCol.addEventListener('click', ()=>{
-        state.sharedColumns.push({ label:'新欄位', width: 0 });
-        state.sharedColumns = normalizeColumns(state.sharedColumns);
-        $$(groupsWrap,'.ts-block').forEach(block=>{
-          if (!block._group.columns) appendColumn(block,'新欄位');
-        });
-        renderColList(); applyColgroupsToAllShared();
-      });
-      renderColList();
-
-      function applyColgroupsToAllShared(){
-        $$(groupsWrap,'.ts-block').forEach(tbl=>{
-          if (!tbl._group.columns) applyColgroup(tbl.querySelector('table.ts-table'), state.sharedColumns);
-        });
-      }
-
-      // 新增類組（標題字級 + icon）
-      const sizeSel    = cfg.querySelector(`#${cid}-size`);
-      const iconPicker = createIconPicker({ faClass:faClass, value:'' });
-      cfg.querySelector(`#${cid}-iconpicker`).appendChild(iconPicker.root);
-
-      cfg.querySelector(`#${cid}-add-group`).addEventListener('click', ()=>{
-        const name = (cfg.querySelector(`#${cid}-group-name`).value || '').trim() || '未命名類組';
-        createGroup(name, { sizeClass: sizeSel.value || 'fs-5', icon: iconPicker.get() || '' });
-        cfg.querySelector(`#${cid}-group-name`).value = '';
+    // Admin 控制列：鎖定欄位（顯示編欄）
+    let adminBar = null;
+    if (state.mode==='ADMIN'){
+      adminBar = document.createElement('div');
+      adminBar.className = 'd-flex align-items-center gap-2 mb-2 ts-admin';
+      adminBar.innerHTML = `
+        <button type="button" class="btn btn-outline-danger btn-sm" id="${state.id}-toggle-cols">
+          <i class="${faClass} ${state.showColEditor?'fa-lock':'fa-lock-open'} me-1"></i>
+          ${state.showColEditor?'關閉編欄':'鎖定欄位（顯示編欄）'}
+        </button>
+      `;
+      host.appendChild(adminBar);
+      adminBar.querySelector(`#${state.id}-toggle-cols`).addEventListener('click', ()=>{
+        state.showColEditor = !state.showColEditor;
+        renderColsPanel();
       });
     }
+
+    // 欄位設定卡（可顯示/隱藏）
+    const cfgCols = document.createElement('div');
+    cfgCols.className = 'card mb-3 ts-admin';
+    cfgCols.innerHTML = `
+      <div class="card-header bg-white border-bottom border-danger fw-bold">欄位設定</div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap align-items-end gap-2 mb-2">
+          <button type="button" class="btn btn-outline-danger btn-sm" id="${state.id}-add-col">新增欄位</button>
+          <span class="text-muted small">欄位順序 = 表頭順序；可設定每欄寬度（%）</span>
+        </div>
+        <div id="${state.id}-col-list" class="d-flex flex-column gap-2 mb-1"></div>
+      </div>`;
+    host.appendChild(cfgCols);
+
+    // 新增類組卡（一直存在，但 USER 隱藏）
+    const cfgGroup = document.createElement('div');
+    cfgGroup.className = 'card mb-3 ts-admin';
+    cfgGroup.innerHTML = `
+      <div class="card-header bg-white border-bottom border-danger fw-bold">新增類組</div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap align-items-end gap-2">
+          <div class="flex-grow-1" style="max-width:320px;">
+            <label class="form-label small mb-1">類組名稱</label>
+            <input type="text" class="form-control form-control-sm" id="${state.id}-group-name" placeholder="例如：共同科目／文組">
+          </div>
+          <div>
+            <label class="form-label small mb-1">字級</label>
+            <select class="form-select form-select-sm" id="${state.id}-size">
+              <option value="fs-6">小字</option>
+              <option value="fs-5" selected>中字</option>
+              <option value="fs-4">大字</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm" id="${state.id}-add-group">新增類組</button>
+        </div>
+        <div class="small text-muted mt-2">提示：若想讓此表「欄位與欄寬固定」，請建立後用上方「欄位設定」調整好，再用程式帶 columns 參數建立（或用 getJSON/保存）。</div>
+      </div>`;
+    host.appendChild(cfgGroup);
 
     // 類組容器
-    const groupsWrap = h('div','ts-groups');
+    const groupsWrap = document.createElement('div');
+    groupsWrap.className = 'ts-groups';
     host.appendChild(groupsWrap);
 
-    // ===================== Group Helpers =====================
-    function labelsOf(columns){
-      return normalizeColumns(columns).map(c=>c.label);
-    }
+    // ===== 欄位設定面板 =====
+    const colList   = cfgCols.querySelector(`#${state.id}-col-list`);
+    const btnAddCol = cfgCols.querySelector(`#${state.id}-add-col`);
 
-    function renderAnchors(){
-      anchors.innerHTML = '';
-      state.groups.forEach(g=>{
-        const a = document.createElement('a');
-        a.className = 'btn btn-outline-danger btn-sm';
-        a.href = `#${g.id}`;
-        a.innerHTML = g.icon
-          ? `<i class="${faClass} ${g.icon} me-1" style="color:${THEME_COLOR};"></i>${t(g.name)}`
-          : t(g.name);
-        anchors.appendChild(a);
+    function applyColgroup(table, columns){
+      const cols = normalizeColumns(columns || []);
+      let cg = table.querySelector('colgroup');
+      if (!cg) { cg = document.createElement('colgroup'); table.insertBefore(cg, table.firstChild); }
+      cg.innerHTML = '';
+      cols.forEach(c=>{
+        const col = document.createElement('col');
+        col.style.width = (c.width||0) + '%';
+        cg.appendChild(col);
       });
     }
+    const applyColgroupsToAll = ()=> {
+      $$(groupsWrap,'.ts-block:not([data-locked="1"]) table.ts-table').forEach(tbl => applyColgroup(tbl, state.columns));
+    };
 
-    function updateHeadersForShared(block){
-      if (block._group.columns) return; // locked group 不吃 shared header
+    function renderColList(){
+      colList.innerHTML = '';
+      state.columns.forEach((col, idx)=>{
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center gap-2 ts-col-item';
+        row.innerHTML = `
+          <input type="text" class="form-control form-control-sm ts-col-label" value="${t(col.label).replace(/"/g,'&quot;')}" placeholder="欄位名稱">
+          <div class="input-group input-group-sm" style="width:100px;">
+            <input type="number" class="form-control ts-col-width" min="5" max="100" step="5" value="${col.width}">
+            <span class="input-group-text">%</span>
+          </div>
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-light ts-col-up">▲</button>
+            <button type="button" class="btn btn-light ts-col-down">▼</button>
+            <button type="button" class="btn btn-outline-danger ts-col-del">刪</button>
+          </div>
+        `;
+        colList.appendChild(row);
+
+        const labelInp = row.querySelector('.ts-col-label');
+        const widthInp = row.querySelector('.ts-col-width');
+
+        labelInp.addEventListener('input', ()=>{
+          state.columns[idx].label = labelInp.value;
+          // 套到所有未鎖欄的表
+          $$(groupsWrap,'.ts-block:not([data-locked="1"])').forEach(updateHeaders);
+        });
+
+        widthInp.addEventListener('input', ()=>{
+          state.columns[idx].width = Number(widthInp.value) || 0;
+          state.columns = normalizeColumns(state.columns);
+          renderColList();
+          applyColgroupsToAll();
+        });
+
+        row.querySelector('.ts-col-up').addEventListener('click', ()=>{
+          if (idx===0) return;
+          swap(state.columns, idx, idx-1);
+          $$(groupsWrap,'.ts-block:not([data-locked="1"])').forEach(b=>swapColumns(b, idx, idx-1));
+          renderColList(); applyColgroupsToAll();
+        });
+        row.querySelector('.ts-col-down').addEventListener('click', ()=>{
+          if (idx>=state.columns.length-1) return;
+          swap(state.columns, idx, idx+1);
+          $$(groupsWrap,'.ts-block:not([data-locked="1"])').forEach(b=>swapColumns(b, idx, idx+1));
+          renderColList(); applyColgroupsToAll();
+        });
+        row.querySelector('.ts-col-del').addEventListener('click', ()=>{
+          if (state.columns.length<=1) return;
+          state.columns.splice(idx,1);
+          state.columns = normalizeColumns(state.columns);
+          $$(groupsWrap,'.ts-block:not([data-locked="1"])').forEach(b=>deleteColumn(b, idx));
+          renderColList(); applyColgroupsToAll();
+        });
+      });
+    }
+    btnAddCol.addEventListener('click', ()=>{
+      state.columns.push({ label:'新欄位', width: 0 });
+      state.columns = normalizeColumns(state.columns);
+      $$(groupsWrap,'.ts-block:not([data-locked="1"])').forEach(b=>appendColumn(b,'新欄位'));
+      renderColList(); applyColgroupsToAll();
+    });
+    renderColList();
+
+    function renderColsPanel(){
+      // 切換按鈕文案與圖示
+      const btn = adminBar?.querySelector(`#${state.id}-toggle-cols`);
+      if (btn){
+        btn.innerHTML = `
+          <i class="${faClass} ${state.showColEditor?'fa-lock':'fa-lock-open'} me-1"></i>
+          ${state.showColEditor?'關閉編欄':'鎖定欄位（顯示編欄）'}
+        `;
+      }
+      cfgCols.style.display = state.showColEditor ? '' : 'none';
+    }
+    renderColsPanel();
+
+    // ===== 新增類組 =====
+    cfgGroup.querySelector(`#${state.id}-add-group`)?.addEventListener('click', ()=>{
+      const name = (cfgGroup.querySelector(`#${state.id}-group-name`).value||'').trim() || '未命名類組';
+      const sizeClass = cfgGroup.querySelector(`#${state.id}-size`).value || 'fs-5';
+      addGroup(name, { sizeClass });
+      cfgGroup.querySelector(`#${state.id}-group-name`).value = '';
+    });
+
+    function updateHeaders(block){
       const tr = block.querySelector('thead tr'); if(!tr) return;
+      const localCols = block.dataset.locked==='1'
+        ? JSON.parse(block.dataset.localColumns||'[]')
+        : state.columns;
+
       tr.innerHTML='';
-      state.sharedColumns.forEach(c=>{
+      localCols.forEach(c=>{
         const th=document.createElement('th');
         th.innerHTML = t(c.label);
         tr.appendChild(th);
       });
       const rows = block.querySelectorAll('tbody tr');
       rows.forEach(trEl=>{
-        while(trEl.children.length > state.sharedColumns.length) trEl.removeChild(trEl.lastElementChild);
-        while(trEl.children.length < state.sharedColumns.length){
+        while(trEl.children.length > localCols.length) trEl.removeChild(trEl.lastElementChild);
+        while(trEl.children.length < localCols.length){
           const td=document.createElement('td');
           td.contentEditable = state.mode==='ADMIN';
           td.spellcheck=false;
           trEl.appendChild(td);
         }
-        state.sharedColumns.forEach((c,i)=>{
+        localCols.forEach((c,i)=>{
           const td = trEl.children[i];
           td.setAttribute('data-label', t(c.label));
         });
       });
-      applyColgroup(block.querySelector('table.ts-table'), state.sharedColumns);
+      applyColgroup(block.querySelector('table.ts-table'), localCols);
     }
-
     function swapColumns(block, i, j){
       const tr = block.querySelector('thead tr'), ths = Array.from(tr.children);
       if (ths[i] && ths[j]) tr.insertBefore(ths[j], ths[i]);
@@ -377,7 +293,9 @@
         const tds = Array.from(trEl.children);
         if (tds[i] && tds[j]) trEl.insertBefore(tds[j], tds[i]);
       });
-      const labels = (block._group.columns ? labelsOf(block._group.columns) : labelsOf(state.sharedColumns));
+      const labels = (block.dataset.locked==='1'
+        ? JSON.parse(block.dataset.localColumns||'[]')
+        : state.columns).map(c=>c.label);
       block.querySelectorAll('tbody tr').forEach(trEl=>{
         Array.from(trEl.children).forEach((td, idx)=> td.setAttribute('data-label', labels[idx]||''));
       });
@@ -387,8 +305,8 @@
       block.querySelectorAll('tbody tr').forEach(trEl=>{
         const td = trEl.querySelector(`td:nth-child(${idx+1})`); if(td) td.remove();
       });
-      const cols = block._group.columns ? block._group.columns : state.sharedColumns;
-      applyColgroup(block.querySelector('table.ts-table'), cols);
+      applyColgroup(block.querySelector('table.ts-table'),
+        (block.dataset.locked==='1' ? JSON.parse(block.dataset.localColumns||'[]') : state.columns));
     }
     function appendColumn(block, name){
       const tr = block.querySelector('thead tr');
@@ -400,149 +318,40 @@
         td.spellcheck=false;
         trEl.appendChild(td);
       });
-      const cols = block._group.columns ? block._group.columns : state.sharedColumns;
-      applyColgroup(block.querySelector('table.ts-table'), cols);
+      applyColgroup(block.querySelector('table.ts-table'),
+        (block.dataset.locked==='1' ? JSON.parse(block.dataset.localColumns||'[]') : state.columns));
     }
 
-    // 小型欄位編輯器（僅鎖定欄位的 group 顯示「編欄」）
-    function buildColsInlineEditor(block){
-      if (!block._group.columns) return null;
-      const holder = h('div','p-2 border-top d-none ts-admin ts-cols-editor');
-      const cols = normalizeColumns(block._group.columns);
-      cols.forEach((c, idx)=>{
-        const row = h('div','d-flex align-items-center gap-2 mb-2');
-        row.innerHTML = `
-          <input type="text" class="form-control form-control-sm ts-gcol-label" value="${t(c.label).replace(/"/g,'&quot;')}" placeholder="欄位名稱">
-          <div class="input-group input-group-sm" style="width:110px;">
-            <input type="number" class="form-control ts-gcol-width" min="5" max="100" step="5" value="${c.width}">
-            <span class="input-group-text">%</span>
-          </div>
-          <div class="btn-group btn-group-sm">
-            <button type="button" class="btn btn-light ts-gcol-up">▲</button>
-            <button type="button" class="btn btn-light ts-gcol-down">▼</button>
-            <button type="button" class="btn btn-outline-danger ts-gcol-del">刪</button>
-          </div>
-        `;
-        holder.appendChild(row);
-
-        const labelInp = row.querySelector('.ts-gcol-label');
-        const widthInp = row.querySelector('.ts-gcol-width');
-
-        labelInp.addEventListener('input', ()=>{
-          cols[idx].label = labelInp.value;
-          block._group.columns = normalizeColumns(cols);
-          updateHeadersForLocked(block);
-        });
-        widthInp.addEventListener('input', ()=>{
-          cols[idx].width = Number(widthInp.value) || 0;
-          block._group.columns = normalizeColumns(cols);
-          applyColgroup(block.querySelector('table.ts-table'), block._group.columns);
-        });
-
-        row.querySelector('.ts-gcol-up').addEventListener('click', ()=>{
-          if (idx===0) return;
-          swap(cols, idx, idx-1);
-          block._group.columns = normalizeColumns(cols);
-          rebuildLockedHeader(block);
-          buildColsInlineEditorRefresh(block, holder);
-        });
-        row.querySelector('.ts-gcol-down').addEventListener('click', ()=>{
-          if (idx>=cols.length-1) return;
-          swap(cols, idx, idx+1);
-          block._group.columns = normalizeColumns(cols);
-          rebuildLockedHeader(block);
-          buildColsInlineEditorRefresh(block, holder);
-        });
-        row.querySelector('.ts-gcol-del').addEventListener('click', ()=>{
-          if (cols.length<=1) return;
-          cols.splice(idx,1);
-          block._group.columns = normalizeColumns(cols);
-          rebuildLockedHeader(block, true);
-          buildColsInlineEditorRefresh(block, holder);
-        });
+    function renderAnchors(){
+      anchors.innerHTML = '';
+      state.groups.forEach(g=>{
+        const a = document.createElement('a');
+        a.className = 'btn btn-outline-danger btn-sm';
+        a.href = `#${g.id}`;
+        a.innerHTML = t(g.name);
+        anchors.appendChild(a);
       });
-
-      const addBtnRow = h('div','');
-      addBtnRow.innerHTML = `
-        <button type="button" class="btn btn-outline-danger btn-sm">新增欄位</button>
-      `;
-      addBtnRow.querySelector('button').addEventListener('click', ()=>{
-        cols.push({ label:'新欄位', width:0 });
-        block._group.columns = normalizeColumns(cols);
-        rebuildLockedHeader(block, true);
-        buildColsInlineEditorRefresh(block, holder);
-      });
-      holder.appendChild(addBtnRow);
-      return holder;
-    }
-    function buildColsInlineEditorRefresh(block, holder){
-      holder.replaceWith(buildColsInlineEditor(block));
-    }
-    function rebuildLockedHeader(block, addBlankCells){
-      const cols = normalizeColumns(block._group.columns);
-      const tr = block.querySelector('thead tr'); tr.innerHTML='';
-      cols.forEach(c=>{
-        const th = document.createElement('th');
-        th.innerHTML = t(c.label);
-        tr.appendChild(th);
-      });
-      const tbody = block.querySelector('tbody');
-      tbody.querySelectorAll('tr').forEach(trEl=>{
-        while(trEl.children.length > cols.length) trEl.removeChild(trEl.lastElementChild);
-        while(trEl.children.length < cols.length){
-          const td = document.createElement('td');
-          td.setAttribute('data-label', t(cols[trEl.children.length]?.label || ''));
-          td.contentEditable = state.mode==='ADMIN';
-          td.spellcheck=false;
-          if (addBlankCells) td.textContent = '';
-          trEl.appendChild(td);
-        }
-        cols.forEach((c,i)=>{
-          const td = trEl.children[i];
-          td.setAttribute('data-label', t(c.label));
-        });
-      });
-      applyColgroup(block.querySelector('table.ts-table'), cols);
-    }
-    function updateHeadersForLocked(block){
-      const cols = normalizeColumns(block._group.columns);
-      const tr = block.querySelector('thead tr'); if(!tr) return;
-      tr.innerHTML='';
-      cols.forEach(c=>{
-        const th=document.createElement('th');
-        th.innerHTML = t(c.label);
-        tr.appendChild(th);
-      });
-      block.querySelectorAll('tbody tr').forEach(trEl=>{
-        cols.forEach((c,i)=>{
-          const td = trEl.children[i];
-          if (td) td.setAttribute('data-label', t(c.label));
-        });
-      });
-      applyColgroup(block.querySelector('table.ts-table'), cols);
     }
 
-    // 建立 group 卡片
-    function createGroup(name, { sizeClass='fs-5', icon='' } = {}, rows, columns){
-      const gid  = makeId('g');
-      const card = h('div','card mb-4 shadow-sm ts-block');
+    // 新增「卡片」
+    function addGroup(name, opts={}, rows, localColumns){
+      const gid  = uid('g');
+      const card = document.createElement('div');
+      card.className = 'card mb-4 shadow-sm ts-block';
       card.id = `${state.id}-${gid}`;
 
-      const groupMeta = { id: card.id, name, icon, sizeClass, columns: Array.isArray(columns) && columns.length ? normalizeColumns(columns) : null };
-      card._group = groupMeta;
+      const sizeClass = opts.sizeClass || 'fs-5';
+      const lockedColumns = Array.isArray(localColumns) && localColumns.length;
+      const locks = Object.assign({ deleteRows:true, deleteGroup:true }, opts.locks||{});
 
-      const title = icon
-        ? `<i class="${faClass} ${icon} me-2" style="color:${THEME_COLOR};"></i><span class="${sizeClass}">${t(name)}</span>`
-        : `<span class="${sizeClass}">${t(name)}</span>`;
+      card.setAttribute('data-locked', lockedColumns ? '1' : '0');
+      if (lockedColumns) card.dataset.localColumns = JSON.stringify(normalizeColumns(localColumns));
 
-      // 鎖定欄位才顯示「編欄」；且僅 ADMIN 有 admin 區塊
-      const editColsBtn = groupMeta.columns ? `<button type="button" class="btn btn-sm btn-secondary ts-btn-edit-cols ts-admin">編欄</button>` : '';
-
+      // 抬頭（新增/刪除列）
       card.innerHTML = `
         <div class="card-header bg-white border-bottom border-danger fw-bold d-flex justify-content-between align-items-center">
-          <span class="ts-title">${title}</span>
+          <span class="ts-title ${sizeClass}">${t(name)}</span>
           <div class="d-flex gap-2 ts-admin">
-            ${editColsBtn}
             <button type="button" class="btn btn-sm btn-danger ts-btn-add-row">新增列</button>
             <button type="button" class="btn btn-sm btn-danger ts-btn-del-row">刪除列</button>
           </div>
@@ -553,16 +362,14 @@
             <thead class="table-danger"><tr></tr></thead>
             <tbody></tbody>
           </table>
-          ${groupMeta.columns ? '' : '' }
         </div>`;
 
       groupsWrap.appendChild(card);
 
-      const useCols = groupMeta.columns ? groupMeta.columns : state.sharedColumns;
-
       // 表頭
       const tr = card.querySelector('thead tr');
-      useCols.forEach(c=>{
+      const headerCols = lockedColumns ? normalizeColumns(localColumns) : state.columns;
+      headerCols.forEach(c=>{
         const th = document.createElement('th');
         th.innerHTML = t(c.label);
         tr.appendChild(th);
@@ -572,7 +379,7 @@
       const tbody = card.querySelector('tbody');
       function addRowFromArray(arr){
         const r = document.createElement('tr');
-        (groupMeta.columns ? groupMeta.columns : state.sharedColumns).forEach((c,i)=>{
+        headerCols.forEach((c,i)=>{
           const td = document.createElement('td');
           td.setAttribute('data-label', t(c.label));
           td.contentEditable = state.mode==='ADMIN';
@@ -584,42 +391,37 @@
       }
       if (Array.isArray(rows) && rows.length){
         rows.forEach(addRowFromArray);
-      } else {
-        if (state.mode==='ADMIN') addRowFromArray([]);
+      } else if (state.mode==='ADMIN') {
+        addRowFromArray([]);
       }
 
-      // 欄寬
-      applyColgroup(card.querySelector('table.ts-table'), useCols);
+      // 套欄寬
+      applyColgroup(card.querySelector('table.ts-table'), headerCols);
 
-      // inline 編欄區（僅鎖定欄位 group 有）
-      if (groupMeta.columns) {
-        const editor = buildColsInlineEditor(card);
-        if (editor) card.querySelector('.card-body').appendChild(editor);
+      // 記錄
+      state.groups.push({ id: card.id, name, sizeClass, lockedColumns, locks });
+
+      // UI：若不允許刪列，隱藏該鈕
+      if (state.mode==='ADMIN' && locks.deleteRows === false){
+        const delBtn = card.querySelector('.ts-btn-del-row');
+        if (delBtn) delBtn.style.display = 'none';
       }
 
-      // 記錄 & 錨點
-      state.groups.push(groupMeta);
       renderAnchors();
-
       if (state.mode==='USER') lockAsUser(card);
-
       return card;
     }
 
-    // ===================== Events (single delegate per host) =====================
+    // 事件委派：新增/刪除列
     host.addEventListener('click', (e)=>{
-      // 切換鎖定 group 的「編欄」面板
-      if (e.target.classList.contains('ts-btn-edit-cols')) {
-        const block = e.target.closest('.ts-block');
-        const p = block.querySelector('.ts-cols-editor');
-        if (p) p.classList.toggle('d-none');
-        return;
-      }
-      // 新增列
       if (e.target.classList.contains('ts-btn-add-row')){
         const block = e.target.closest('.ts-block');
+        const id = block.id;
+        const meta = state.groups.find(g=>g.id===id) || {};
+        const cols = (block.dataset.locked==='1'
+          ? JSON.parse(block.dataset.localColumns||'[]')
+          : state.columns);
         const tbody = block.querySelector('tbody');
-        const cols = block._group.columns ? block._group.columns : state.sharedColumns;
         const tr = document.createElement('tr');
         cols.forEach(c=>{
           const td = document.createElement('td');
@@ -631,101 +433,109 @@
         tbody.appendChild(tr);
         return;
       }
-      // 刪除列（刪到 0 列時自動刪掉整張表與錨點）
       if (e.target.classList.contains('ts-btn-del-row')){
         const block = e.target.closest('.ts-block');
+        const id = block.id;
+        const meta = state.groups.find(g=>g.id===id) || {};
+        if (meta.locks && meta.locks.deleteRows === false) {
+          // 禁刪列
+          return;
+        }
         const tbody = block.querySelector('tbody');
         const rows = Array.from(tbody.querySelectorAll('tr'));
         if (!rows.length) return;
-        rows[rows.length-1].remove();
-        if (!tbody.children.length){
-          const id = block.id;
+
+        // 如果刪到 0 列，檢查是否允許刪整張表
+        if (rows.length === 1) {
+          if (meta.locks && meta.locks.deleteGroup === false) {
+            // 不允許刪整張表 → 直接擋下
+            return;
+          }
+          // 允許 → 刪表 + 移除錨點
+          rows[0].remove();
           block.remove();
           const idx = state.groups.findIndex(g=>g.id===id);
           if (idx>-1) state.groups.splice(idx,1);
           renderAnchors();
+          return;
         }
+
+        // 一般刪最後一列
+        rows[rows.length-1].remove();
         return;
       }
     });
 
-    // ===================== Mode Lock/Unlock =====================
+    // USER 鎖定
     function lockAsUser(scope){
       (scope||host).querySelectorAll('.ts-admin').forEach(n=> n.style.display='none');
       (scope||host).querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
       host.setAttribute('data-mode','USER');
     }
-    function unlockAsAdmin(scope){
-      (scope||host).querySelectorAll('.ts-admin').forEach(n=> n.style.display='');
-      (scope||host).querySelectorAll('td').forEach(td=> td.setAttribute('contenteditable','true'));
-      host.setAttribute('data-mode','ADMIN');
-    }
     if (state.mode==='USER') lockAsUser();
 
-    // ===================== Public API =====================
+    // ===== 對外 API =====
     function getJSON(){
       const groupsData = state.groups.map(g=>{
         const card = document.getElementById(g.id);
-        const tblCols = g.columns ? g.columns : state.sharedColumns;
         const rows = [];
         card.querySelectorAll('tbody tr').forEach(tr=>{
           const arr = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim());
           if (arr.some(v => v !== '')) rows.push(arr);
         });
-        return { name:g.name, icon:g.icon, sizeClass:g.sizeClass, columns: tblCols, rows };
+        const cols = (card.dataset.locked==='1'
+          ? JSON.parse(card.dataset.localColumns||'[]')
+          : state.columns);
+        return { name:g.name, sizeClass:g.sizeClass, lockedColumns:!!g.lockedColumns, columns: cols, rows, locks: g.locks||{} };
       });
-      return {
-        schemaVersion: 3,
-        updatedAt: Date.now(),
-        sharedColumns: state.sharedColumns.map(c => ({ label:c.label, width:c.width })),
-        groups: groupsData
-      };
+      return { schemaVersion: 3, updatedAt: Date.now(), columns: state.columns, groups: groupsData };
     }
 
     function setJSON(data={}){
-      if (Array.isArray(data.sharedColumns) && data.sharedColumns.length) {
-        state.sharedColumns = normalizeColumns(data.sharedColumns);
-      } else if (Array.isArray(data.columns) && data.columns.length) {
-        // 向後相容
-        state.sharedColumns = normalizeColumns(data.columns);
+      // 全域欄
+      if (Array.isArray(data.columns) && data.columns.length) {
+        state.columns = normalizeColumns(data.columns);
       }
-      // 重建
+      // 清空並重建
       groupsWrap.innerHTML=''; state.groups=[];
       (data.groups||[]).forEach(g=>{
-        createGroup(g.name||'未命名類組', { sizeClass:g.sizeClass||'fs-5', icon:g.icon||'' }, g.rows||[], g.columns||null);
+        addGroup(g.name||'未命名類組',
+          { sizeClass:g.sizeClass||'fs-5', locks: g.locks||{} },
+          g.rows||[],
+          g.lockedColumns ? (g.columns||[]) : null
+        );
       });
       renderAnchors();
-      // 套 shared colgroup 到非鎖定的
-      $$(groupsWrap,'.ts-block').forEach(block=>{
-        if (!block._group.columns) applyColgroup(block.querySelector('table.ts-table'), state.sharedColumns);
-      });
+      renderColList();
+      applyColgroupsToAll();
     }
 
     function setMode(next){
       const v = String(next||'USER').toUpperCase()==='ADMIN' ? 'ADMIN' : 'USER';
       state.mode = v;
       if (v==='USER') lockAsUser();
-      else unlockAsAdmin();
+      else { host.querySelectorAll('td').forEach(td=> td.contentEditable=true); host.querySelectorAll('.ts-admin').forEach(n=> n.style.display=''); renderColsPanel(); }
     }
 
-    function addGroupPublic(name, opts, rows, columns){ return createGroup(name, opts||{}, rows, columns); }
-
-    const api = { getJSON, setJSON, setMode, addGroup: addGroupPublic };
+    const api = {
+      getJSON, setJSON, setMode,
+      addGroup: (name, opts, rows, columns)=> addGroup(name, opts||{}, rows, columns)
+    };
     host._tap_subjects = api;
     return api;
   }
 
-  // ===================== Autoload =====================
+  // 自動掛載
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="subjects"]').forEach(node=>{
       if (node._tap_subjects) return;
-      mount(node, {}); // 模式自動判定
+      mount(node, {});
     });
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', autoload);
   else autoload();
 
-  // export
+  // 導出
   global.TAPSubjectsKit = { mount };
 
 })(window);
