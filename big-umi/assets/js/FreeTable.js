@@ -1,11 +1,10 @@
 /*!
- * TAPSubjectsKit — 自訂表格（可重用插件）
+ * TAPSubjectsKit — 高普考科目自訂表格（可重用插件）
+ * 需要：Font Awesome（建議 v6，這裡預設 class = fa-solid）
  * 召喚：
  *   <div data-tap-plugin="subjects" data-mode="ADMIN"></div>
  *   // 或
  *   const api = TAPSubjectsKit.mount('#subjectsPlugin', { mode:'ADMIN' });
- *
- * 需要外部資源：Font Awesome（6 建議），本檔只塞 class
  *
  * 全域可選設定（需在本檔前）：
  *   window.TAP_SUBJECTS_DEFAULT_MODE = 'ADMIN' | 'USER'
@@ -41,14 +40,14 @@
       ? { label: c, width: 0 }
       : { label: String(c.label || ''), width: Number(c.width) || 0 }
     );
-    // 若全部沒給寬度 → 均分
+    // 若全部沒給寬度 → 均分（至少 5%）
     if (!out.some(c => c.width > 0)) {
       const per = Math.max(5, Math.round(100 / out.length));
       out = out.map((c,i)=> ({ label:c.label, width: i===out.length-1 ? (100 - per*(out.length-1)) : per }));
     } else {
       const sum = out.reduce((a,b)=> a + (b.width||0), 0) || 100;
       out = out.map(c=>{
-        const w = Math.max(5, Math.round(100 * (c.width||0) / sum)); // 每欄至少 5%
+        const w = Math.max(5, Math.round(100 * (c.width||0) / sum));
         return { label:c.label, width:w };
       });
       // 調整差值使總和=100
@@ -322,6 +321,19 @@
     });
 
     // ====== 產生群組卡片 ======
+    function updateLockUI(block){
+      const g = getGroup(block); if (!g) return;
+      const toggleBtn = block.querySelector('.ts-btn-toggle-lock');
+      const editBtn   = block.querySelector('.ts-btn-edit-columns');
+      if (g.locked){
+        if (toggleBtn) toggleBtn.textContent = '解鎖（跟隨全域）';
+        if (editBtn)   editBtn.style.display = '';
+      } else {
+        if (toggleBtn) toggleBtn.textContent = '鎖定欄位';
+        if (editBtn)   editBtn.style.display = 'none';
+      }
+    }
+
     function createGroup(name, { sizeClass='fs-5', icon='' } = {}, rows, columns){
       const gid  = makeId('g');
       const card = h('div','card mb-4 shadow-sm ts-block');
@@ -336,7 +348,7 @@
           <span class="ts-title">${title}</span>
           <div class="d-flex gap-2 ts-admin">
             <button type="button" class="btn btn-sm btn-outline-secondary ts-btn-toggle-lock">鎖定欄位</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary ts-btn-edit-columns">編欄</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary ts-btn-edit-columns" style="display:none;">編欄</button>
             <button type="button" class="btn btn-sm btn-danger ts-btn-add-row">新增列</button>
             <button type="button" class="btn btn-sm btn-danger ts-btn-del-row">刪除列</button>
           </div>
@@ -384,11 +396,13 @@
       // 套欄寬
       applyColgroup(card.querySelector('table.ts-table'), getColumnsForBlock(card));
 
-      // 錨點
-      state.groups.sort((a,b)=> (a.name||'').localeCompare(b.name||'')); // 可改：目前按名稱排序
+      // **錨點順序 = 插入順序**（不再排序）
       renderAnchors();
 
       if (state.mode==='USER') lockAsUser(card);
+
+      // 「編欄」僅在鎖定時顯示
+      updateLockUI(card);
       return card;
     }
 
@@ -509,21 +523,20 @@
         if (g.locked){
           g.locked = false;
           g.columns = [];
-          e.target.textContent = '鎖定欄位';
         } else {
           g.locked = true;
           g.columns = cloneCols( getColumnsForBlock(block) );
-          e.target.textContent = '解鎖（跟隨全域）';
         }
         updateHeaders(block);
         applyColgroup(block.querySelector('table.ts-table'), getColumnsForBlock(block));
+        updateLockUI(block);
         return;
       }
-      // 快速編欄（prompt）
+      // 快速編欄（prompt）— 僅在鎖定狀態才會顯示/可用
       if (e.target.classList.contains('ts-btn-edit-columns')){
         const block = e.target.closest('.ts-block');
         const current = getColumnsForBlock(block).map(c => `${c.label}:${c.width}`).join(',');
-        const input = prompt('請輸入欄位（格式：標題:寬%, 逗號分隔）\n例如：項目:30,科目名稱:70', current);
+        const input = prompt('請輸入欄位（格式：標題:寬%，逗號分隔）\n例如：項目:30,科目名稱:70', current);
         if (input === null) return; // cancel
         const cols = input.split(',').map(s=>{
           const p = s.split(':').map(x=>x.trim());
@@ -533,10 +546,9 @@
         if (g){
           g.locked = true;               // 編欄視為自訂 → 鎖定
           g.columns = normalizeColumns(cols);
-          const btn = block.querySelector('.ts-btn-toggle-lock');
-          if (btn) btn.textContent = '解鎖（跟隨全域）';
           updateHeaders(block);
           applyColgroup(block.querySelector('table.ts-table'), getColumnsForBlock(block));
+          updateLockUI(block);
         }
         return;
       }
@@ -587,11 +599,7 @@
                                  { sizeClass:g.sizeClass||'fs-5', icon:g.icon||'' },
                                  g.rows||[],
                                  (g.locked && Array.isArray(g.columns) && g.columns.length) ? g.columns : undefined);
-        // 顯示按鈕狀態
-        if (g.locked){
-          const btn = card.querySelector('.ts-btn-toggle-lock');
-          if (btn) btn.textContent = '解鎖（跟隨全域）';
-        }
+        if (g.locked) updateLockUI(card);
       });
       applyColgroupsToAll();
     }
@@ -606,7 +614,10 @@
       }
     }
 
-    function addGroupPublic(name, opts){ return createGroup(name, opts||{}, []); }
+    // 新公開：可帶 rows 與 columns（columns 代表鎖定欄位）
+    function addGroupPublic(name, opts={}, rows=[], columns){
+      return createGroup(name, opts||{}, rows||[], columns);
+    }
 
     if (opts.data) setJSON(opts.data);
 
