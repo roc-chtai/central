@@ -1,10 +1,6 @@
 /*!
- * FreeAccordion.js — TAP Qualify Plugin
- * v1.2.0
- * - Subheading inserts above tables/remarks (never below tables)
- * - Delete-accordion / Delete-table aligned right
- * - Remark is always pinned to the bottom
- * - Delete category button
+ * 召喚方法
+ * - <div id="qualifyPlugin" data-tap-plugin="qualify"></div>
  */
 
 (function (global) {
