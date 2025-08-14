@@ -8,9 +8,10 @@
 .tap-subjects .ts-table{ table-layout:fixed; width:100%; word-break:break-word; }
 .tap-subjects th, .tap-subjects td{ white-space: normal; }
 
-/* USER 模式：隱藏維護控件 */
-.tap-subjects[data-mode="USER"] .ts-admin{ display:none !important; }
-
+/* USER 模式一律隱藏所有管理 UI */
+.tap-subjects[data-mode="USER"] .ts-admin { 
+  display: none !important;
+}
 /* 確保百分比欄位不消失 */
 .tap-subjects .ts-col-item { align-items: center; }
 .tap-subjects .ts-col-item .input-group {
