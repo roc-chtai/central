@@ -1,30 +1,28 @@
 /*!
- *
- * 召喚方式：
+ * TAPSubjectsKit — 自訂表格（可重用插件）
+ * 召喚：
  *   <div data-tap-plugin="subjects" data-mode="ADMIN"></div>
- * 或 JS：
- *   TAPSubjectsKit.mount('#subjectsPlugin', { mode:'ADMIN' })
+ *   // 或
+ *   const api = TAPSubjectsKit.mount('#subjectsPlugin', { mode:'ADMIN' });
  *
- * 需要的外部資源：
- *   - Font Awesome
+ * 需要外部資源：Font Awesome（6 建議），本檔只塞 class
  *
  * 全域可選設定（需在本檔前）：
  *   window.TAP_SUBJECTS_DEFAULT_MODE = 'ADMIN' | 'USER'
- *   window.TAP_SUBJECTS_FA_CLASS     = 'fas' | 'fa-solid' ...
+ *   window.TAP_SUBJECTS_FA_CLASS     = 'fa-solid' | 'fas' ...
  */
-
 (function (global) {
   'use strict';
 
   // ====== 基本設定 ======
   const DEFAULT_MODE = (global.TAP_SUBJECTS_DEFAULT_MODE || 'ADMIN').toUpperCase();
-  const DEFAULT_FA   = global.TAP_SUBJECTS_FA_CLASS || 'fas'; // FA5 'fas'；FA6 用 'fa-solid'
-  const THEME_COLOR  = 'var(--main-red)';
+  const DEFAULT_FA   = global.TAP_SUBJECTS_FA_CLASS || 'fa-solid'; // FA6: fa-solid；FA5: fas
+  const THEME_COLOR  = 'var(--main-red, #ea7066)';
 
   // 常用 icon 候選（可自行增減）
   const ICON_SET = [
     '', 'fa-book', 'fa-users', 'fa-gavel', 'fa-briefcase', 'fa-stethoscope',
-    'fa-flask', 'fa-cog', 'fa-chart-line', 'fa-university', 'fa-user-graduate', 'fa-scale-balanced'
+    'fa-flask', 'fa-cog', 'fa-chart-line', 'fa-landmark', 'fa-user-graduate', 'fa-scale-balanced'
   ];
 
   // ====== 小工具 ======
@@ -34,6 +32,7 @@
   const t  = (s)=> (s==null ? '' : String(s));
   const $$ = (root, sel)=> Array.from((root instanceof Element?root:document).querySelectorAll(sel));
   const swap = (arr,i,j)=>{ const tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; };
+  const cloneCols = (cols=[]) => cols.map(c => ({ label: String(c.label||''), width: Number(c.width)||0 }));
 
   // 將 columns 規格統一為 [{label, width%}] 並正規化百分比
   function normalizeColumns(cols){
@@ -44,7 +43,7 @@
     );
     // 若全部沒給寬度 → 均分
     if (!out.some(c => c.width > 0)) {
-      const per = Math.round(100 / out.length);
+      const per = Math.max(5, Math.round(100 / out.length));
       out = out.map((c,i)=> ({ label:c.label, width: i===out.length-1 ? (100 - per*(out.length-1)) : per }));
     } else {
       const sum = out.reduce((a,b)=> a + (b.width||0), 0) || 100;
@@ -59,7 +58,7 @@
     return out;
   }
 
-  // ====== Icon Picker（內建最小樣式） ======
+  // ====== Icon Picker（極簡內建樣式） ======
   if (!document.getElementById('ts-iconpicker-style')) {
     const st = document.createElement('style');
     st.id = 'ts-iconpicker-style';
@@ -79,7 +78,7 @@
         cursor:pointer; transition:.15s;
       }
       .ts-ip-item:hover{transform:translateY(-1px); border-color:#ddd;}
-      .ts-ip-item.active{border-color:var(--main-red); box-shadow:0 0 0 2px rgba(234,112,102,.15);}
+      .ts-ip-item.active{border-color:var(--main-red,#ea7066); box-shadow:0 0 0 2px rgba(234,112,102,.15);}
       .ts-ip-none{font-size:12px; color:#6c757d;}
     `;
     document.head.appendChild(st);
@@ -132,10 +131,9 @@
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
-  if (host._tap_subjects) {
-    // console.log('TAPSubjectsKit: already mounted on this host — returning existing instance.');
-    return host._tap_subjects;
-  }
+
+    // Guard：同一 host 若已 mount，直接回傳 instance（避免重複綁事件）
+    if (host._tap_subjects) return host._tap_subjects;
 
     const mode    = ((host.dataset.mode || opts.mode || DEFAULT_MODE)+'').toUpperCase()==='ADMIN' ? 'ADMIN' : 'USER';
     const faClass = host.dataset.fa || opts.faClass || DEFAULT_FA;
@@ -145,9 +143,9 @@
       mode,
       columns: normalizeColumns(
         Array.isArray(opts.columns) && opts.columns.length ? opts.columns.slice()
-        : ['考科','科目(分數占比)','名額']
+        : ['高考科目','普考科目','分數比重','名額']
       ),
-      groups: [] // {id, name, icon, sizeClass}
+      groups: [] // {id, name, icon, sizeClass, locked, columns?, rows?}
     };
 
     // 容器骨架
@@ -155,7 +153,7 @@
     host.classList.add('tap-subjects');
     host.setAttribute('data-mode', state.mode);
 
-    // 錨點列（只有按鈕，不顯示「快速定位」文字）
+    // 錨點列（只放按鈕，不顯示文字）
     const anchors = h('div','ts-anchors d-flex flex-wrap gap-2 mb-3');
     host.appendChild(anchors);
 
@@ -167,14 +165,14 @@
       <div class="card-body">
         <div class="d-flex flex-wrap align-items-end gap-2 mb-2">
           <button type="button" class="btn btn-outline-danger btn-sm" id="${cid}-add-col">新增欄位</button>
-          <span class="text-muted small">欄位順序 = 表頭順序；可直接設定每欄寬度（%）</span>
+          <span class="text-muted small">欄位順序=表頭順序；可直接設定每欄寬度（%）</span>
         </div>
         <div id="${cid}-col-list" class="d-flex flex-column gap-2 mb-3"></div>
 
         <div class="d-flex flex-wrap align-items-end gap-2">
           <div class="flex-grow-1" style="max-width:320px;">
             <label class="form-label small mb-1">新增類組名稱</label>
-            <input type="text" class="form-control form-control-sm" id="${cid}-group-name" placeholder="例如：文組/營運職">
+            <input type="text" class="form-control form-control-sm" id="${cid}-group-name" placeholder="例如：共同科目／文組">
           </div>
 
           <div>
@@ -200,9 +198,15 @@
     const groupsWrap = h('div','ts-groups');
     host.appendChild(groupsWrap);
 
-    // ====== 欄位設定區 ======
-    const colList   = cfg.querySelector(`#${cid}-col-list`);
-    const btnAddCol = cfg.querySelector(`#${cid}-add-col`);
+    // ====== group / columns 相關 ======
+    function getGroup(block){
+      const id = block?.id; return state.groups.find(g => g.id === id);
+    }
+    function getColumnsForBlock(block){
+      const g = getGroup(block);
+      if (g && g.locked && Array.isArray(g.columns) && g.columns.length) return g.columns;
+      return state.columns;
+    }
 
     function applyColgroup(table, columns){
       const cols = normalizeColumns(columns || []);
@@ -216,8 +220,15 @@
       });
     }
     const applyColgroupsToAll = ()=> {
-      $$(groupsWrap,'.ts-block table.ts-table').forEach(tbl => applyColgroup(tbl, state.columns));
+      $$(groupsWrap,'.ts-block table.ts-table').forEach(tbl => {
+        const block = tbl.closest('.ts-block');
+        applyColgroup(tbl, getColumnsForBlock(block));
+      });
     };
+
+    // ====== 欄位設定 UI ======
+    const colList   = cfg.querySelector(`#${cid}-col-list`);
+    const btnAddCol = cfg.querySelector(`#${cid}-add-col`);
 
     function renderColList(){
       colList.innerHTML = '';
@@ -240,11 +251,16 @@
         const labelInp = row.querySelector('.ts-col-label');
         const widthInp = row.querySelector('.ts-col-width');
 
+        // 標題改變 → 更新所有「未鎖定」表頭
         labelInp.addEventListener('input', ()=>{
           state.columns[idx].label = labelInp.value;
-          $$(groupsWrap,'.ts-block').forEach(updateHeaders);
+          $$(groupsWrap,'.ts-block').forEach(b=>{
+            const g = getGroup(b); if (g && g.locked) return;
+            updateHeaders(b);
+          });
         });
 
+        // 寬度改變 → 正規化，並對每張表套 colgroup（鎖定用自己的欄寬）
         widthInp.addEventListener('input', ()=>{
           state.columns[idx].width = Number(widthInp.value) || 0;
           state.columns = normalizeColumns(state.columns);
@@ -255,20 +271,30 @@
         row.querySelector('.ts-col-up').addEventListener('click', ()=>{
           if (idx===0) return;
           swap(state.columns, idx, idx-1);
-          $$(groupsWrap,'.ts-block').forEach(b=>swapColumns(b, idx, idx-1));
+          // DOM swap 僅對未鎖定的表
+          $$(groupsWrap,'.ts-block').forEach(b=>{
+            const g = getGroup(b); if (g && g.locked) return;
+            swapColumns(b, idx, idx-1);
+          });
           renderColList(); applyColgroupsToAll();
         });
         row.querySelector('.ts-col-down').addEventListener('click', ()=>{
           if (idx>=state.columns.length-1) return;
           swap(state.columns, idx, idx+1);
-          $$(groupsWrap,'.ts-block').forEach(b=>swapColumns(b, idx, idx+1));
+          $$(groupsWrap,'.ts-block').forEach(b=>{
+            const g = getGroup(b); if (g && g.locked) return;
+            swapColumns(b, idx, idx+1);
+          });
           renderColList(); applyColgroupsToAll();
         });
         row.querySelector('.ts-col-del').addEventListener('click', ()=>{
           if (state.columns.length<=1) return;
           state.columns.splice(idx,1);
           state.columns = normalizeColumns(state.columns);
-          $$(groupsWrap,'.ts-block').forEach(b=>deleteColumn(b, idx));
+          $$(groupsWrap,'.ts-block').forEach(b=>{
+            const g = getGroup(b); if (g && g.locked) return;
+            deleteColumn(b, idx);
+          });
           renderColList(); applyColgroupsToAll();
         });
       });
@@ -276,7 +302,10 @@
     btnAddCol.addEventListener('click', ()=>{
       state.columns.push({ label:'新欄位', width: 0 });
       state.columns = normalizeColumns(state.columns);
-      $$(groupsWrap,'.ts-block').forEach(b=>appendColumn(b,'新欄位'));
+      $$(groupsWrap,'.ts-block').forEach(b=>{
+        const g = getGroup(b); if (g && g.locked) return;
+        appendColumn(b,'新欄位');
+      });
       renderColList(); applyColgroupsToAll();
     });
     renderColList();
@@ -293,7 +322,7 @@
     });
 
     // ====== 產生群組卡片 ======
-    function createGroup(name, { sizeClass='fs-5', icon='' } = {}, rows){
+    function createGroup(name, { sizeClass='fs-5', icon='' } = {}, rows, columns){
       const gid  = makeId('g');
       const card = h('div','card mb-4 shadow-sm ts-block');
       card.id = `${state.id}-${gid}`;
@@ -306,6 +335,8 @@
         <div class="card-header bg-white border-bottom border-danger fw-bold d-flex justify-content-between align-items-center">
           <span class="ts-title">${title}</span>
           <div class="d-flex gap-2 ts-admin">
+            <button type="button" class="btn btn-sm btn-outline-secondary ts-btn-toggle-lock">鎖定欄位</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary ts-btn-edit-columns">編欄</button>
             <button type="button" class="btn btn-sm btn-danger ts-btn-add-row">新增列</button>
             <button type="button" class="btn btn-sm btn-danger ts-btn-del-row">刪除列</button>
           </div>
@@ -320,20 +351,21 @@
 
       groupsWrap.appendChild(card);
 
+      // 記錄：預設不鎖；有傳 columns 則視為自訂欄位（鎖定）
+      const groupCols = Array.isArray(columns) && columns.length ? normalizeColumns(columns) : [];
+      state.groups.push({ id: card.id, name, icon, sizeClass, locked: !!(columns && columns.length), columns: groupCols });
+
       // 表頭
-      const tr = card.querySelector('thead tr');
-      tr.innerHTML = '';
-      state.columns.forEach(c=>{
-        const th = document.createElement('th');
-        th.innerHTML = t(c.label);
-        tr.appendChild(th);
+      const tr = card.querySelector('thead tr'); tr.innerHTML='';
+      getColumnsForBlock(card).forEach(c=>{
+        const th=document.createElement('th'); th.innerHTML = t(c.label); tr.appendChild(th);
       });
 
       // 內容列
       const tbody = card.querySelector('tbody');
       function addRowFromArray(arr){
         const r = document.createElement('tr');
-        state.columns.forEach((c,i)=>{
+        getColumnsForBlock(card).forEach((c,i)=>{
           const td = document.createElement('td');
           td.setAttribute('data-label', t(c.label));
           td.contentEditable = state.mode==='ADMIN';
@@ -350,22 +382,22 @@
       }
 
       // 套欄寬
-      applyColgroup(card.querySelector('table.ts-table'), state.columns);
+      applyColgroup(card.querySelector('table.ts-table'), getColumnsForBlock(card));
 
-      // 記錄 & 錨點
-      state.groups.push({ id: card.id, name, icon, sizeClass });
+      // 錨點
+      state.groups.sort((a,b)=> (a.name||'').localeCompare(b.name||'')); // 可改：目前按名稱排序
       renderAnchors();
 
       if (state.mode==='USER') lockAsUser(card);
-
       return card;
     }
 
-    // ====== 表頭/欄位操作 ======
+    // ====== 表頭/欄位操作（針對單一 block） ======
     function updateHeaders(block){
+      const cols = getColumnsForBlock(block);
       const tr = block.querySelector('thead tr'); if(!tr) return;
       tr.innerHTML='';
-      state.columns.forEach(c=>{
+      cols.forEach(c=>{
         const th=document.createElement('th');
         th.innerHTML = t(c.label);
         tr.appendChild(th);
@@ -373,20 +405,20 @@
       const rows = block.querySelectorAll('tbody tr');
       rows.forEach(trEl=>{
         // 欄數修正
-        while(trEl.children.length > state.columns.length) trEl.removeChild(trEl.lastElementChild);
-        while(trEl.children.length < state.columns.length){
+        while(trEl.children.length > cols.length) trEl.removeChild(trEl.lastElementChild);
+        while(trEl.children.length < cols.length){
           const td=document.createElement('td');
           td.contentEditable = state.mode==='ADMIN';
           td.spellcheck=false;
           trEl.appendChild(td);
         }
         // data-label 修正
-        state.columns.forEach((c,i)=>{
+        cols.forEach((c,i)=>{
           const td = trEl.children[i];
           td.setAttribute('data-label', t(c.label));
         });
       });
-      applyColgroup(block.querySelector('table.ts-table'), state.columns);
+      applyColgroup(block.querySelector('table.ts-table'), cols);
     }
 
     function swapColumns(block, i, j){
@@ -397,7 +429,7 @@
         if (tds[i] && tds[j]) trEl.insertBefore(tds[j], tds[i]);
       });
       // 重算 data-label
-      const labels = state.columns.map(c=>c.label);
+      const labels = getColumnsForBlock(block).map(c=>c.label);
       block.querySelectorAll('tbody tr').forEach(trEl=>{
         Array.from(trEl.children).forEach((td, idx)=> td.setAttribute('data-label', labels[idx]||''));
       });
@@ -407,7 +439,7 @@
       block.querySelectorAll('tbody tr').forEach(trEl=>{
         const td = trEl.querySelector(`td:nth-child(${idx+1})`); if(td) td.remove();
       });
-      applyColgroup(block.querySelector('table.ts-table'), state.columns);
+      applyColgroup(block.querySelector('table.ts-table'), getColumnsForBlock(block));
     }
     function appendColumn(block, name){
       const tr = block.querySelector('thead tr');
@@ -419,42 +451,8 @@
         td.spellcheck=false;
         trEl.appendChild(td);
       });
-      applyColgroup(block.querySelector('table.ts-table'), state.columns);
+      applyColgroup(block.querySelector('table.ts-table'), getColumnsForBlock(block));
     }
-
-    // ====== 卡片內事件（新增/刪除列） ======
-    host.addEventListener('click', (e)=>{
-      if (e.target.classList.contains('ts-btn-add-row')){
-        const block = e.target.closest('.ts-block');
-        const tbody = block.querySelector('tbody');
-        const tr = document.createElement('tr');
-        state.columns.forEach(c=>{
-          const td = document.createElement('td');
-          td.setAttribute('data-label', t(c.label));
-          td.contentEditable = state.mode==='ADMIN';
-          td.spellcheck=false;
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-        return;
-      }
-      if (e.target.classList.contains('ts-btn-del-row')){
-        const block = e.target.closest('.ts-block');
-        const tbody = block.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        if (!rows.length) return;
-        rows[rows.length-1].remove();
-        if (!tbody.children.length){
-          // 列刪光 → 刪整張表 + 錨點
-          const id = block.id;
-          block.remove();
-          const idx = state.groups.findIndex(g=>g.id===id);
-          if (idx>-1) state.groups.splice(idx,1);
-          renderAnchors();
-        }
-        return;
-      }
-    });
 
     // ====== 錨點 ======
     function renderAnchors(){
@@ -470,7 +468,81 @@
       });
     }
 
-    // ====== USER 模式：鎖定 ======
+    // ====== 卡片內事件（新增/刪除列、鎖定、編欄） ======
+    host.addEventListener('click', (e)=>{
+      // 新增列
+      if (e.target.classList.contains('ts-btn-add-row')){
+        const block = e.target.closest('.ts-block');
+        const tbody = block.querySelector('tbody');
+        const tr = document.createElement('tr');
+        getColumnsForBlock(block).forEach(c=>{
+          const td = document.createElement('td');
+          td.setAttribute('data-label', t(c.label));
+          td.contentEditable = state.mode==='ADMIN';
+          td.spellcheck=false;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+        return;
+      }
+      // 刪除列（空了就刪表 + 錨點）
+      if (e.target.classList.contains('ts-btn-del-row')){
+        const block = e.target.closest('.ts-block');
+        const tbody = block.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        if (!rows.length) return;
+        rows[rows.length-1].remove();
+        if (!tbody.children.length){
+          const id = block.id;
+          block.remove();
+          const idx = state.groups.findIndex(g=>g.id===id);
+          if (idx>-1) state.groups.splice(idx,1);
+          renderAnchors();
+        }
+        return;
+      }
+      // 鎖定/解鎖欄位
+      if (e.target.classList.contains('ts-btn-toggle-lock')){
+        const block = e.target.closest('.ts-block'); if (!block) return;
+        const g = getGroup(block); if (!g) return;
+
+        if (g.locked){
+          g.locked = false;
+          g.columns = [];
+          e.target.textContent = '鎖定欄位';
+        } else {
+          g.locked = true;
+          g.columns = cloneCols( getColumnsForBlock(block) );
+          e.target.textContent = '解鎖（跟隨全域）';
+        }
+        updateHeaders(block);
+        applyColgroup(block.querySelector('table.ts-table'), getColumnsForBlock(block));
+        return;
+      }
+      // 快速編欄（prompt）
+      if (e.target.classList.contains('ts-btn-edit-columns')){
+        const block = e.target.closest('.ts-block');
+        const current = getColumnsForBlock(block).map(c => `${c.label}:${c.width}`).join(',');
+        const input = prompt('請輸入欄位（格式：標題:寬%, 逗號分隔）\n例如：項目:30,科目名稱:70', current);
+        if (input === null) return; // cancel
+        const cols = input.split(',').map(s=>{
+          const p = s.split(':').map(x=>x.trim());
+          return { label: p[0]||'欄位', width: Number(p[1])||0 };
+        });
+        const g = getGroup(block);
+        if (g){
+          g.locked = true;               // 編欄視為自訂 → 鎖定
+          g.columns = normalizeColumns(cols);
+          const btn = block.querySelector('.ts-btn-toggle-lock');
+          if (btn) btn.textContent = '解鎖（跟隨全域）';
+          updateHeaders(block);
+          applyColgroup(block.querySelector('table.ts-table'), getColumnsForBlock(block));
+        }
+        return;
+      }
+    });
+
+    // ====== USER 模式：鎖定編輯 UI ======
     function lockAsUser(scope){
       (scope||host).querySelectorAll('.ts-admin').forEach(n=> n.style.display='none');
       (scope||host).querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
@@ -482,14 +554,21 @@
       const groupsData = state.groups.map(g=>{
         const card = document.getElementById(g.id);
         const rows = [];
-        card.querySelectorAll('tbody tr').forEach(tr=>{
-          const arr = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim());
-          if (arr.some(v => v !== '')) rows.push(arr);
-        });
-        return { name:g.name, icon:g.icon, sizeClass:g.sizeClass, rows };
+        if (card) {
+          card.querySelectorAll('tbody tr').forEach(tr=>{
+            const arr = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim());
+            if (arr.some(v => v !== '')) rows.push(arr);
+          });
+        }
+        return {
+          name: g.name, icon: g.icon, sizeClass: g.sizeClass,
+          locked: !!g.locked,
+          columns: g.locked ? cloneCols(g.columns) : null,
+          rows
+        };
       });
       return {
-        schemaVersion: 2,
+        schemaVersion: 3,
         updatedAt: Date.now(),
         columns: state.columns.map(c => ({ label:c.label, width:c.width })),
         groups: groupsData
@@ -497,16 +576,23 @@
     }
 
     function setJSON(data={}){
-      if (Array.isArray(data.columns) && data.columns.length) {
+      if (Array.isArray(data.columns) && data.columns.length)
         state.columns = normalizeColumns(data.columns);
-      }
-      renderColList();
 
+      renderColList();
       groupsWrap.innerHTML=''; state.groups=[];
+
       (data.groups||[]).forEach(g=>{
-        createGroup(g.name||'未命名類組', { sizeClass:g.sizeClass||'fs-5', icon:g.icon||'' }, g.rows||[]);
+        const card = createGroup(g.name||'未命名類組',
+                                 { sizeClass:g.sizeClass||'fs-5', icon:g.icon||'' },
+                                 g.rows||[],
+                                 (g.locked && Array.isArray(g.columns) && g.columns.length) ? g.columns : undefined);
+        // 顯示按鈕狀態
+        if (g.locked){
+          const btn = card.querySelector('.ts-btn-toggle-lock');
+          if (btn) btn.textContent = '解鎖（跟隨全域）';
+        }
       });
-      renderAnchors();
       applyColgroupsToAll();
     }
 
@@ -514,7 +600,10 @@
       state.mode = String(next).toUpperCase()==='ADMIN' ? 'ADMIN':'USER';
       host.setAttribute('data-mode', state.mode);
       if (state.mode==='USER') lockAsUser();
-      else { host.querySelectorAll('td').forEach(td=> td.contentEditable=true); host.querySelectorAll('.ts-admin').forEach(n=> n.style.display=''); }
+      else {
+        host.querySelectorAll('td').forEach(td=> td.contentEditable=true);
+        host.querySelectorAll('.ts-admin').forEach(n=> n.style.display='');
+      }
     }
 
     function addGroupPublic(name, opts){ return createGroup(name, opts||{}, []); }
@@ -526,7 +615,7 @@
     return api;
   }
 
-  // ====== 自動掛載 ======
+  // ====== 自動掛載（data-tap-plugin="subjects"） ======
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="subjects"]').forEach(node=>{
       if (node._tap_subjects) return;
