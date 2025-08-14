@@ -1,10 +1,10 @@
 /*!
- * FreeAccordion.js — TAP Qualify Plugin (updated)
- * v1.1.0
- * - Insert list under the LAST subheading in the same accordion item
- * - Auto-delete empty subheading / list item on Enter or blur
- * - Delete accordion button
- * - Insert remark button fixed (shows placeholder and focuses)
+ * FreeAccordion.js — TAP Qualify Plugin
+ * v1.2.0
+ * - Subheading inserts above tables/remarks (never below tables)
+ * - Delete-accordion / Delete-table aligned right
+ * - Remark is always pinned to the bottom
+ * - Delete category button
  */
 
 (function (global) {
@@ -24,7 +24,7 @@
   const h  = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
   const insertAfter = (newNode, refNode)=> refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
 
-  // ===== Mode resolve (same as FreeTable)
+  // ===== Mode resolve (same策略跟 FreeTable 一樣)
   function resolveMode(host, opts, global){
     const explicit = (opts && opts.mode) || (host && host.dataset && host.dataset.mode);
     if (explicit) {
@@ -171,8 +171,11 @@
       const card = h('div','mb-3');
       const iconHtml = icon ? `<i class="${faClass} ${icon} me-2" style="color:${THEME_COLOR};"></i>` : '';
       card.innerHTML = `
-        <div class="mb-3 fw-bold fs-5" style="letter-spacing:1px;">
-          ${iconHtml}${t(title)}
+        <div class="d-flex align-items-center mb-2" style="gap:.5rem;">
+          <div class="fw-bold fs-5" style="letter-spacing:1px;">${iconHtml}${t(title)}</div>
+          <div class="ms-auto qa-admin">
+            <button type="button" class="btn btn-outline-dark btn-sm qa-cat-del">刪除類別</button>
+          </div>
         </div>
 
         <div class="d-flex align-items-end gap-2 mb-2 qa-admin">
@@ -188,12 +191,21 @@
       catsWrap.appendChild(card);
       state.categories.push({ id: catId, node: card, title, icon, accId });
 
+      // 增加手風琴
       const addBtn = card.querySelector('.qa-acc-add');
       if (addBtn) addBtn.addEventListener('click', ()=>{
         const titleInput = card.querySelector('.qa-acc-title');
         const ttl = (titleInput.value||'').trim() || '未命名手風琴';
         addAccordion(card, accId, ttl);
         titleInput.value = '';
+      });
+
+      // 刪除類別
+      const delCatBtn = card.querySelector('.qa-cat-del');
+      if (delCatBtn) delCatBtn.addEventListener('click', ()=>{
+        const idx = state.categories.findIndex(c => c.node === card);
+        if (idx > -1) state.categories.splice(idx,1);
+        card.remove();
       });
 
       if (state.mode==='USER') lockAsUser(card);
@@ -218,12 +230,16 @@
         <div id="${cid}" class="accordion-collapse collapse"
           aria-labelledby="${hid}" data-bs-parent="#${accId}">
           <div class="accordion-body bg-light pt-2 pb-3 px-2">
-            <div class="d-flex flex-wrap gap-2 mb-2 qa-admin">
-              <button type="button" class="btn btn-outline-danger btn-sm qa-insert-sub">插入標題</button>
-              <button type="button" class="btn btn-outline-danger btn-sm qa-insert-li">插入項目</button>
-              <button type="button" class="btn btn-outline-danger btn-sm qa-insert-table">插入表格(雙欄)</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm qa-insert-remark">新增備註</button>
-              <button type="button" class="btn btn-outline-dark btn-sm qa-acc-del">刪除手風琴</button>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2 qa-admin">
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <button type="button" class="btn btn-outline-danger btn-sm qa-insert-sub">插入標題</button>
+                <button type="button" class="btn btn-outline-danger btn-sm qa-insert-li">插入項目</button>
+                <button type="button" class="btn btn-outline-danger btn-sm qa-insert-table">插入表格(雙欄)</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm qa-insert-remark">新增備註</button>
+              </div>
+              <div class="ms-auto">
+                <button type="button" class="btn btn-outline-dark btn-sm qa-acc-del">刪除手風琴</button>
+              </div>
             </div>
             <div class="qa-content"></div>
           </div>
@@ -234,10 +250,25 @@
       return { id: cid, node: item };
     }
 
-    // ===== content helpers (wrapped blocks)
+    // ===== content helpers
     function findContentRoot(accObj){
       const el = (accObj && accObj.node) ? accObj.node : accObj;
       return el.querySelector('.qa-content');
+    }
+    function ensureRemarkAtBottom(root){
+      const r = root.querySelector('.qa-block-remark');
+      if (r) root.appendChild(r);
+    }
+    // 找出「可以放標題」的最後一個錨點（非表格、非備註）
+    function findLastNonTableNonRemark(root){
+      const blocks = Array.from(root.children);
+      for (let i=blocks.length-1; i>=0; i--){
+        const b = blocks[i];
+        if (!b.classList.contains('qa-block-table') && !b.classList.contains('qa-block-remark')) {
+          return b;
+        }
+      }
+      return null;
     }
 
     function insertSubheading(accObj, text){
@@ -247,12 +278,17 @@
       el.contentEditable = (state.mode==='ADMIN');
       el.textContent = t(text || '請輸入副標');
       wrap.appendChild(el);
-      root.appendChild(wrap);
+
+      const anchor = findLastNonTableNonRemark(root);
+      if (anchor) insertAfter(wrap, anchor);
+      else root.insertBefore(wrap, root.firstChild);
+
       el.focus();
+      ensureRemarkAtBottom(root);
       return wrap;
     }
 
-    // Insert list item under LAST subheading (if exists), else at end
+    // Insert list item under LAST subheading (if exists), else at end (上方標題後面的清單，避免跑到備註下面)
     function insertListItem(accObj, text){
       const root = findContentRoot(accObj); if(!root) return null;
       const subs = $all(root, '.qa-block-sub');
@@ -264,15 +300,18 @@
         if (nextSibling && nextSibling.classList.contains('qa-block-list')) {
           targetListWrap = nextSibling;
         } else {
-          // create new list after this sub
           targetListWrap = createListWrap();
           insertAfter(targetListWrap, lastSub);
         }
       } else {
-        // no subheading: use last list or create at end
+        // 若沒有副標，仍放在內容末端，但在備註上方
         const lists = $all(root, '.qa-block-list');
         targetListWrap = lists.length ? lists[lists.length-1] : createListWrap();
-        if (!lists.length) root.appendChild(targetListWrap);
+        if (!lists.length) {
+          const remark = root.querySelector('.qa-block-remark');
+          if (remark) root.insertBefore(targetListWrap, remark);
+          else root.appendChild(targetListWrap);
+        }
       }
 
       const ul = targetListWrap.querySelector('ul');
@@ -281,6 +320,7 @@
       li.textContent = t(text || '請輸入項目');
       ul.appendChild(li);
       li.focus();
+      ensureRemarkAtBottom(root);
       return li;
 
       function createListWrap(){
@@ -299,18 +339,22 @@
       const tableId = uid('tbl');
       tableWrap.innerHTML = `
         <div class="d-flex align-items-center gap-2 mb-2 qa-admin">
-          <span class="small text-muted">欄寬：</span>
-          <div class="input-group input-group-sm" style="width:90px;">
-            <input type="number" class="form-control qa-w-left" min="10" max="90" step="1" value="${leftWidth}">
-            <span class="input-group-text">%</span>
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted">欄寬：</span>
+            <div class="input-group input-group-sm" style="width:90px;">
+              <input type="number" class="form-control qa-w-left" min="10" max="90" step="1" value="${leftWidth}">
+              <span class="input-group-text">%</span>
+            </div>
+            <div class="input-group input-group-sm" style="width:90px;">
+              <input type="number" class="form-control qa-w-right" min="10" max="90" step="1" value="${rightWidth}">
+              <span class="input-group-text">%</span>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm qa-tbl-addrow">+ 列</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm qa-tbl-delrow">- 列</button>
           </div>
-          <div class="input-group input-group-sm" style="width:90px;">
-            <input type="number" class="form-control qa-w-right" min="10" max="90" step="1" value="${rightWidth}">
-            <span class="input-group-text">%</span>
+          <div class="ms-auto">
+            <button type="button" class="btn btn-outline-dark btn-sm qa-tbl-del">刪除表格</button>
           </div>
-          <button type="button" class="btn btn-outline-danger btn-sm qa-tbl-addrow">+ 列</button>
-          <button type="button" class="btn btn-outline-secondary btn-sm qa-tbl-delrow">- 列</button>
-          <button type="button" class="btn btn-outline-dark btn-sm qa-tbl-del">刪除表格</button>
         </div>
         <table id="${tableId}" class="table table-bordered align-middle small mb-0">
           <colgroup>
@@ -332,7 +376,12 @@
         </table>
       `;
       wrap.appendChild(tableWrap);
-      findContentRoot(accObj).appendChild(wrap);
+
+      // 表格插入位置：如果有備註，放在備註前；否則直接 append
+      const remark = root.querySelector('.qa-block-remark');
+      if (remark) root.insertBefore(wrap, remark); else root.appendChild(wrap);
+
+      ensureRemarkAtBottom(root);
       return wrap;
     }
 
@@ -358,18 +407,22 @@
       }
       const span = w.querySelector('.qa-remark-text');
       span.textContent = t(text || '請輸入備註');
-      w.style.display = ''; // always show when creating
+      w.style.display = '';
+      ensureRemarkAtBottom(root);
       span.focus();
       return w;
     }
 
-    // ===== Event delegation =====
+    // ===== Event delegation
     host.addEventListener('input', (e)=>{
       // dynamic remark hide when empty
       if (e.target.classList.contains('qa-remark-text')) {
         const r = e.target.closest('.qa-block-remark');
         const txt = (e.target.textContent||'').trim();
         r.style.display = txt ? '' : 'none';
+        // 保持在底部
+        const root = e.target.closest('.qa-content');
+        if (root) ensureRemarkAtBottom(root);
       }
       // table widths live update
       if (e.target.classList.contains('qa-w-left') || e.target.classList.contains('qa-w-right')) {
@@ -468,7 +521,13 @@
         return;
       }
       if (e.target.classList.contains('qa-tbl-del')) {
-        const w = e.target.closest('.qa-table-wrap'); if (w) w.closest('.qa-block-table').remove(); return;
+        const wrap = e.target.closest('.qa-block-table');
+        if (wrap) {
+          const root = wrap.closest('.qa-content');
+          wrap.remove();
+          if (root) ensureRemarkAtBottom(root);
+        }
+        return;
       }
     });
 
@@ -487,7 +546,7 @@
     }
     if (state.mode==='USER') lockAsUser();
 
-    // JSON serialize/restore — preserve block order
+    // JSON serialize/restore — preserve order
     function getJSON(){
       const categories = state.categories.map(c=>{
         const card = c.node;
@@ -551,6 +610,9 @@
               insertRemark(acc, b.text||'');
             }
           });
+          // 每個手風琴 restore 完，把備註固定到底
+          const root = findContentRoot(acc);
+          if (root) ensureRemarkAtBottom(root);
         });
       });
       if (state.mode==='USER') lockAsUser();
