@@ -2,6 +2,7 @@
  * TAPSubjectsKit — 高普考科目自訂表格（可重用插件）
  * 需要：Font Awesome（建議 v6，這裡預設 class = fa-solid）
  * 召喚：
+ *  <div id="subjectsPlugin"></div>
  *   <div data-tap-plugin="subjects" data-mode="ADMIN"></div>
  *   // 或
  *   const api = TAPSubjectsKit.mount('#subjectsPlugin', { mode:'ADMIN' });
