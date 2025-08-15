@@ -1,6 +1,6 @@
 /*!
  * TAPSubjectsKit — 高普考科目自訂表格（可重用插件 / XOOPS Admin 版）
- * v2.5.x
+ * v2.5.x (patch: keep editor open on refresh)
  *
  * 召喚：
  *   <div data-tap-plugin="subjects"></div>  // 自動掛載（會自動判定 ADMIN/USER）
@@ -365,6 +365,7 @@
         while(trEl.children.length > state.sharedColumns.length) trEl.removeChild(trEl.lastElementChild);
         while(trEl.children.length < state.sharedColumns.length){
           const td=document.createElement('td');
+          td.setAttribute('data-label', t(state.sharedColumns[trEl.children.length]?.label || ''));
           td.contentEditable = state.mode==='ADMIN';
           td.spellcheck=false;
           trEl.appendChild(td);
@@ -502,8 +503,12 @@
       return holder;
     }
 
+    // FIX: refreshColsEditor 保留展開/收起狀態
     function refreshColsEditor(block, holder){
+      const wasHidden = holder.classList.contains('d-none');
       const next = buildColsInlineEditor(block);
+      if (!next) return;
+      if (!wasHidden) next.classList.remove('d-none');
       holder.replaceWith(next);
     }
 
@@ -643,91 +648,91 @@
       return card;
     }
 
-   // ===== 事件（單一委派）=====
-host.addEventListener('click', (e)=>{
+    // ===== 事件（單一委派）=====
+    host.addEventListener('click', (e)=>{
 
-  // 鎖定/解鎖欄位
-  if (e.target.classList.contains('ts-btn-toggle-lock')) {
-    const block = e.target.closest('.ts-block');
-    const g = block._group;
-    if (g.locked) {
-      // 解鎖：改用 sharedColumns
-      g.locked = false;
-      g.columns = null;
-      updateHeadersForShared(block);
-      applyColgroup(block.querySelector('table.ts-table'), state.sharedColumns);
-    } else {
-      // 鎖定：複製目前有效欄位做為群組 columns
-      g.locked = true;
-      g.columns = cloneCols(state.sharedColumns);
-      rebuildLockedHeader(block, false);
-      applyColgroup(block.querySelector('table.ts-table'), g.columns);
-      // 若沒有專屬編欄面板就建立一次
-      let editor = block.querySelector('.ts-cols-editor');
-      if (!editor) {
-        editor = buildColsInlineEditor(block);
-        if (editor) block.querySelector('.card-body').appendChild(editor);
+      // FIX: 若點擊發生在欄位編輯器內，直接略過委派邏輯（避免誤關面板）
+      if (e.target.closest('.ts-cols-editor')) return;
+
+      // 鎖定/解鎖欄位
+      if (e.target.classList.contains('ts-btn-toggle-lock')) {
+        const block = e.target.closest('.ts-block');
+        const g = block._group;
+        if (g.locked) {
+          // 解鎖：改用 sharedColumns
+          g.locked = false;
+          g.columns = null;
+          updateHeadersForShared(block);
+          applyColgroup(block.querySelector('table.ts-table'), state.sharedColumns);
+        } else {
+          // 鎖定：複製目前有效欄位做為群組 columns
+          g.locked = true;
+          g.columns = cloneCols(state.sharedColumns);
+          rebuildLockedHeader(block, false);
+          applyColgroup(block.querySelector('table.ts-table'), g.columns);
+          // 若沒有專屬編欄面板就建立一次
+          let editor = block.querySelector('.ts-cols-editor');
+          if (!editor) {
+            editor = buildColsInlineEditor(block);
+            if (editor) block.querySelector('.card-body').appendChild(editor);
+          }
+        }
+        updateLockUI(block);
+        return;
       }
-    }
-    updateLockUI(block);
-    return;
-  }
 
-  // 顯示/收起「編欄」面板（僅鎖定狀態有此鈕）
-  // 兼容舊 class 名：ts-btn-edit-columns
-  if (
-    e.target.classList.contains('ts-btn-edit-cols') ||
-    e.target.classList.contains('ts-btn-edit-columns')
-  ) {
-    e.stopPropagation(); // 不讓外層任何點擊監聽到
-    const block = e.target.closest('.ts-block');
-    let editor = block.querySelector('.ts-cols-editor');
-    if (!editor) {
-      editor = buildColsInlineEditor(block);
-      if (editor) block.querySelector('.card-body').appendChild(editor);
-    }
-    if (editor) editor.classList.toggle('d-none');
-    return;
-  }
+      // 顯示/收起「編欄」面板（僅鎖定狀態有此鈕）
+      // 兼容舊 class 名：ts-btn-edit-columns
+      if (
+        e.target.classList.contains('ts-btn-edit-cols') ||
+        e.target.classList.contains('ts-btn-edit-columns')
+      ) {
+        e.stopPropagation(); 
+        const block = e.target.closest('.ts-block');
+        let editor = block.querySelector('.ts-cols-editor');
+        if (!editor) {
+          editor = buildColsInlineEditor(block);
+          if (editor) block.querySelector('.card-body').appendChild(editor);
+        }
+        if (editor) editor.classList.toggle('d-none');
+        return;
+      }
 
-  // 新增列
-  if (e.target.classList.contains('ts-btn-add-row')){
-    const block = e.target.closest('.ts-block');
-    const tbody = block.querySelector('tbody');
-    const cols = block._group.locked ? block._group.columns : state.sharedColumns;
-    const tr = document.createElement('tr');
-    cols.forEach(c=>{
-      const td = document.createElement('td');
-      td.setAttribute('data-label', t(c.label));
-      td.contentEditable = state.mode==='ADMIN';
-      td.spellcheck=false;
-      tr.appendChild(td);
+      // 新增列
+      if (e.target.classList.contains('ts-btn-add-row')){
+        const block = e.target.closest('.ts-block');
+        const tbody = block.querySelector('tbody');
+        const cols = block._group.locked ? block._group.columns : state.sharedColumns;
+        const tr = document.createElement('tr');
+        cols.forEach(c=>{
+          const td = document.createElement('td');
+          td.setAttribute('data-label', t(c.label));
+          td.contentEditable = state.mode==='ADMIN';
+          td.spellcheck=false;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+        return;
+      }
+
+      // 刪除列（刪到 0 會刪整張表 & 錨點）
+      if (e.target.classList.contains('ts-btn-del-row')){
+        const block = e.target.closest('.ts-block');
+        const tbody = block.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        if (!rows.length) return;
+        rows[rows.length-1].remove();
+        if (!tbody.children.length){
+          const id = block.id;
+          block.remove();
+          const idx = state.groups.findIndex(g=>g.id===id);
+          if (idx>-1) state.groups.splice(idx,1);
+          renderAnchors();
+        }
+        return;
+      }
     });
-    tbody.appendChild(tr);
-    return;
-  }
 
-  // 刪除列（刪到 0 會刪整張表 & 錨點）
-  if (e.target.classList.contains('ts-btn-del-row')){
-    const block = e.target.closest('.ts-block');
-    const tbody = block.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    if (!rows.length) return;
-    rows[rows.length-1].remove();
-    if (!tbody.children.length){
-      const id = block.id;
-      block.remove();
-      const idx = state.groups.findIndex(g=>g.id===id);
-      if (idx>-1) state.groups.splice(idx,1);
-      renderAnchors();
-    }
-    return;
-  }
-});
-
-host.addEventListener('click', (e)=>{
-  if (e.target.closest('.ts-cols-editor')) e.stopPropagation();
-});
 
     // ===== 模式切換 =====
     function lockAsUser(scope){
