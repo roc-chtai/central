@@ -725,7 +725,9 @@ host.addEventListener('click', (e)=>{
   }
 });
 
-
+host.addEventListener('click', (e)=>{
+  if (e.target.closest('.ts-cols-editor')) e.stopPropagation();
+});
 
     // ===== 模式切換 =====
     function lockAsUser(scope){
