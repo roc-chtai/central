@@ -1,124 +1,39 @@
 /*!
- * 召喚方法
- * - <div id="qualifyPlugin" data-tap-plugin="qualify"></div>
+ * TAPQualifyKit — 報考資格手風琴（FreeTop 版 / FA5）
+ * 召喚：
+ *   <div id="qualifyPlugin" data-tap-plugin="qualify"></div>
+ *
+ * 依賴：
+ *   - window.FreeTop（請先載入 /assets/js/FreeTop.js）
+ *   - Font Awesome 5（預設 'fas'）
+ *
+ * 支援：
+ *   - data-mode / opts.mode / FreeTop.resolveMode()（含 XOOPS 判定）
+ *   - data-fa 指定 FA 前綴（預設 'fas'；也可 'far'、'fab'）
+ *   - 前台自動吃資料：data-json-var / data-json-script / data-json-local
  */
 
 (function (global) {
   'use strict';
 
-  const DEFAULT_FA  = global.TAP_SUBJECTS_FA_CLASS || 'fa-solid';
-  const THEME_COLOR = 'var(--main-red)';
-  const ICON_SET = [
-    '', 'fa-id-card-alt', 'fa-users', 'fa-gavel', 'fa-briefcase', 'fa-stethoscope',
-    'fa-flask', 'fa-cog', 'fa-chart-line', 'fa-university', 'fa-user-graduate', 'fa-scale-balanced'
-  ];
-
-  let INST = 0;
-  const uid = (p='qa') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
+  // ===== 設定（顏色、工具）=====
+  const THEME_COLOR = 'var(--main-red)'; // 統一主題紅
+  let   INST = 0;
+  const uid  = (p='qa') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
   const $all = (root, sel)=> Array.from((root instanceof Element?root:document).querySelectorAll(sel));
-  const t  = (s)=> (s==null ? '' : String(s));
-  const h  = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
+  const t    = (s)=> (s==null ? '' : String(s));
+  const h    = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
   const insertAfter = (newNode, refNode)=> refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
 
-  // ===== Mode resolve (same策略跟 FreeTable 一樣)
-  function resolveMode(host, opts, global){
-    const explicit = (opts && opts.mode) || (host && host.dataset && host.dataset.mode);
-    if (explicit) {
-      const v = String(explicit).toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    if (typeof global.TAP_DETECT_MODE === 'function') {
-      const v = String(global.TAP_DETECT_MODE() || '').toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    if (global.XOOPS_IS_ADMIN === true) return 'ADMIN';
-    if (typeof global.MODE === 'string') {
-      const v = global.MODE.toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    if (typeof global.TAP_SUBJECTS_DEFAULT_MODE === 'string') {
-      const v = global.TAP_SUBJECTS_DEFAULT_MODE.toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    return 'USER';
-  }
-
-  // ===== Icon Picker (minimal)
-  if (!document.getElementById('qa-iconpicker-style')) {
-    const st = document.createElement('style');
-    st.id = 'qa-iconpicker-style';
-    st.textContent = `
-      .qa-ip-wrap{position:relative; display:inline-block;}
-      .qa-ip-btn{display:inline-flex; align-items:center; gap:.4rem;}
-      .qa-ip-menu{
-        position:absolute; z-index:1050; top:100%; left:0;
-        background:#fff; border:1px solid #e9ecef; border-radius:10px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08); padding:10px; margin-top:6px;
-        width:300px; max-height:260px; overflow:auto;
-      }
-      .qa-ip-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px;}
-      .qa-ip-item{
-        display:flex; justify-content:center; align-items:center;
-        width:44px; height:40px; border:1px solid #eee; border-radius:8px;
-        cursor:pointer; transition:.15s;
-      }
-      .qa-ip-item:hover{transform:translateY(-1px); border-color:#ddd;}
-      .qa-ip-item.active{border-color:var(--main-red); box-shadow:0 0 0 2px rgba(234,112,102,.15);}
-      .qa-ip-none{font-size:12px; color:#6c757d;}
-    `;
-    document.head.appendChild(st);
-  }
-  function iconPicker({ faClass=DEFAULT_FA, value='' } = {}){
-    const wrap = h('div','qa-ip-wrap');
-    const btn  = h('button','btn btn-outline-secondary btn-sm qa-ip-btn');
-    btn.type = 'button';
-    btn.innerHTML = value
-      ? `<i class="${faClass} ${value}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-      : `<span class="qa-ip-none">選擇圖示（可不選）</span>`;
-    const menu = h('div','qa-ip-menu d-none');
-    const grid = h('div','qa-ip-grid');
-    ICON_SET.forEach(ic=>{
-      const cell = h('div','qa-ip-item'+(ic===value?' active':''), ic ? `<i class="${faClass} ${ic}" style="color:${THEME_COLOR};"></i>` : `<span class="qa-ip-none">無</span>`);
-      cell.dataset.icon = ic;
-      grid.appendChild(cell);
-    });
-    menu.appendChild(grid);
-    wrap.appendChild(btn); wrap.appendChild(menu);
-
-    const open  = ()=>{ menu.classList.remove('d-none'); document.addEventListener('click', onDoc); };
-    const close = ()=>{ menu.classList.add('d-none');   document.removeEventListener('click', onDoc); };
-    const onDoc = e => { if (!wrap.contains(e.target)) close(); };
-
-    let current = value || '';
-    btn.addEventListener('click', e=>{ e.stopPropagation(); menu.classList.contains('d-none') ? open() : close(); });
-    grid.addEventListener('click', e=>{
-      const cell = e.target.closest('.qa-ip-item'); if(!cell) return;
-      current = cell.dataset.icon || '';
-      grid.querySelectorAll('.qa-ip-item').forEach(i=>i.classList.toggle('active', i===cell));
-      btn.innerHTML = current
-        ? `<i class="${faClass} ${current}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-        : `<span class="qa-ip-none">選擇圖示（可不選）</span>`;
-      close();
-      wrap.dispatchEvent(new CustomEvent('icon:change',{ detail:{ icon: current }}));
-    });
-
-    return { root:wrap, get:()=>current, set:(v='')=>{
-      current=v||'';
-      grid.querySelectorAll('.qa-ip-item').forEach(i=>i.classList.toggle('active', i.dataset.icon===current));
-      btn.innerHTML = current
-        ? `<i class="${faClass} ${current}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-        : `<span class="qa-ip-none">選擇圖示（可不選）</span>`;
-    }};
-  }
-
-  // ===== Core mount
+  // ===== 主掛載 =====
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
     if (host._tap_qualify) return host._tap_qualify;
 
-    const mode    = resolveMode(host, opts, global);
-    const faClass = host.dataset.fa || opts.faClass || DEFAULT_FA;
+    // 改用 FreeTop 的統一判定/參數
+    const mode    = FreeTop.resolveMode(host, opts, global);        // 'ADMIN' | 'USER'
+    const faClass = FreeTop.getFaClass(host, opts, global);         // 預設 'fas'（FA5）
 
     const state = { id: uid('qa'), mode, categories: [] };
 
@@ -126,12 +41,22 @@
     host.classList.add('tap-qualify');
     host.setAttribute('data-mode', state.mode);
 
-    // Admin: add category panel
+    // ===== Admin：新增「類別」控制面板 =====
     let cfg = null;
     if (state.mode === 'ADMIN') {
       cfg = h('div','card mb-3 qa-admin');
       const cid = state.id;
-      const ip = iconPicker({ faClass, value:'' });
+
+      // 改用 FreeTop.iconPicker（單一 icon 清單；FA5 名稱）
+      const ip = FreeTop.iconPicker({
+        faClass,
+        value: '',
+        icons: FreeTop.getIconSet(), // 內建常用清單（含 '' = 無）
+        prefix: 'qa',
+        themeVar: '--main-red',
+        fallback: '#ea7066'
+      });
+
       cfg.innerHTML = `
         <div class="card-header bg-white border-bottom border-danger fw-bold">新增類別區塊</div>
         <div class="card-body">
@@ -148,6 +73,7 @@
           </div>
         </div>`;
       host.appendChild(cfg);
+
       cfg.querySelector(`#${cid}-cat-icon`).appendChild(ip.root);
       cfg.querySelector(`#${cid}-cat-add`).addEventListener('click', ()=>{
         const title = (cfg.querySelector(`#${cid}-cat-title`).value||'').trim() || '未命名類別';
@@ -157,9 +83,11 @@
       });
     }
 
+    // 類別容器
     const catsWrap = h('div','qa-categories');
     host.appendChild(catsWrap);
 
+    // ===== 建立類別卡片 =====
     function addCategory(title, { icon='' } = {}){
       const catId = uid('cat');
       const accId = uid('acc');
@@ -208,6 +136,7 @@
       return { id: catId, node: card, accId };
     }
 
+    // ===== 在某類別下新增手風琴 =====
     function addAccordion(catNode, accId, title){
       const acc = catNode.querySelector('#'+CSS.escape(accId));
       const hid = uid('heading');
@@ -246,7 +175,7 @@
       return { id: cid, node: item };
     }
 
-    // ===== content helpers
+    // ===== 內容小工具 =====
     function findContentRoot(accObj){
       const el = (accObj && accObj.node) ? accObj.node : accObj;
       return el.querySelector('.qa-content');
@@ -284,7 +213,7 @@
       return wrap;
     }
 
-    // Insert list item under LAST subheading (if exists), else at end (上方標題後面的清單，避免跑到備註下面)
+    // 清單項目插入到「最後一個副標後」的清單；若無副標，放在備註上方
     function insertListItem(accObj, text){
       const root = findContentRoot(accObj); if(!root) return null;
       const subs = $all(root, '.qa-block-sub');
@@ -300,7 +229,6 @@
           insertAfter(targetListWrap, lastSub);
         }
       } else {
-        // 若沒有副標，仍放在內容末端，但在備註上方
         const lists = $all(root, '.qa-block-list');
         targetListWrap = lists.length ? lists[lists.length-1] : createListWrap();
         if (!lists.length) {
@@ -373,7 +301,7 @@
       `;
       wrap.appendChild(tableWrap);
 
-      // 表格插入位置：如果有備註，放在備註前；否則直接 append
+      // 表格插在備註上方；若無備註則 append
       const remark = root.querySelector('.qa-block-remark');
       if (remark) root.insertBefore(wrap, remark); else root.appendChild(wrap);
 
@@ -409,18 +337,17 @@
       return w;
     }
 
-    // ===== Event delegation
+    // ===== 事件委派 =====
     host.addEventListener('input', (e)=>{
-      // dynamic remark hide when empty
+      // 備註空字自動隱藏（並固定在底部）
       if (e.target.classList.contains('qa-remark-text')) {
         const r = e.target.closest('.qa-block-remark');
         const txt = (e.target.textContent||'').trim();
         r.style.display = txt ? '' : 'none';
-        // 保持在底部
         const root = e.target.closest('.qa-content');
         if (root) ensureRemarkAtBottom(root);
       }
-      // table widths live update
+      // 即時調整表格欄寬
       if (e.target.classList.contains('qa-w-left') || e.target.classList.contains('qa-w-right')) {
         const wrap = e.target.closest('.qa-table-wrap');
         const left = Math.max(10, Math.min(90, Number(wrap.querySelector('.qa-w-left').value||50)));
@@ -433,12 +360,12 @@
       }
     });
 
-    // Delete on Enter if empty (subheading / list item)
+    // 空行 Enter 刪除（副標 / 清單項目）
     host.addEventListener('keydown', (e)=>{
       if (e.key !== 'Enter') return;
       if (state.mode !== 'ADMIN') return;
 
-      // subheading
+      // 副標
       if (e.target.classList.contains('qa-sub')) {
         const txt = (e.target.textContent||'').trim();
         if (!txt) {
@@ -447,7 +374,7 @@
           if (wrap) wrap.remove();
         }
       }
-      // list item
+      // 清單項目
       if (e.target.tagName === 'LI') {
         const txt = (e.target.textContent||'').trim();
         if (!txt) {
@@ -462,15 +389,13 @@
       }
     });
 
-    // Also delete on blur if empty
+    // 失焦也清空空白節點
     host.addEventListener('blur', (e)=>{
       if (state.mode !== 'ADMIN') return;
-      // subheading
       if (e.target.classList && e.target.classList.contains('qa-sub')) {
         const wrap = e.target.closest('.qa-block-sub');
         if (wrap && !e.target.textContent.trim()) wrap.remove();
       }
-      // list item
       if (e.target.tagName === 'LI') {
         const ul = e.target.closest('ul');
         if (!e.target.textContent.trim()) {
@@ -483,6 +408,7 @@
       }
     }, true);
 
+    // 其他按鈕
     host.addEventListener('click', (e)=>{
       if (e.target.classList.contains('qa-insert-sub')) {
         const acc = e.target.closest('.accordion-item');
@@ -506,7 +432,7 @@
         return;
       }
 
-      // table tools
+      // 表格工具
       if (e.target.classList.contains('qa-tbl-addrow')) {
         const w = e.target.closest('.qa-table-wrap'); tableAddRow(w, ['', '']); return;
       }
@@ -527,7 +453,7 @@
       }
     });
 
-    // Lock/Unlock
+    // ===== 模式切換 =====
     function lockAsUser(scope){
       (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='none');
       (scope||host).querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
@@ -542,7 +468,7 @@
     }
     if (state.mode==='USER') lockAsUser();
 
-    // JSON serialize/restore — preserve order
+    // ===== JSON serialize/restore =====
     function getJSON(){
       const categories = state.categories.map(c=>{
         const card = c.node;
@@ -644,15 +570,19 @@
     return api;
   }
 
+  // ===== 自動掛載（加上前台自動吃資料）=====
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="qualify"]').forEach(node=>{
       if (node._tap_qualify) return;
-      mount(node, {});
+      const api = mount(node, {});
+      // 新增：自動從 data-json-var / data-json-script / data-json-local 載入
+      FreeTop.applyInitialJSON(node, api);
     });
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', autoload);
   else autoload();
 
+  // 對外 API
   global.TAPQualifyKit = { mount };
 
 })(window);
