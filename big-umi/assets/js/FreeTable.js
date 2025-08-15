@@ -1,3 +1,4 @@
+
 /*!
  * TAPSubjectsKit — 高普考科目自訂表格（可重用插件 / XOOPS Admin 版）
  * v2.5.x (patch: keep editor open on refresh)
@@ -428,6 +429,7 @@
         if (editBtn)   editBtn.style.display = 'none';
         if (editor)    editor.remove(); // 解鎖時直接移除專屬編輯器
       }
+      if (g?.locks?.hideUnlock && toggleBtn) toggleBtn.style.display = 'none';
     }
 
     function buildColsInlineEditor(block){
@@ -560,16 +562,18 @@
     }
 
     // ===== 產生群組卡片 =====
-    function createGroup(name, { sizeClass='fs-5', icon='' } = {}, rows, columns){
+function createGroup(name, { sizeClass='fs-5', icon='', locks={} } = {}, rows, columns){
       const gid  = makeId('g');
       const card = h('div','card mb-4 shadow-sm ts-block');
       card.id = `${state.id}-${gid}`;
+ const locksNorm = Object.assign({ deleteGroup:true, hideUnlock:false }, locks || {});
 
       const groupMeta = {
         id: card.id,
         name, icon, sizeClass,
         locked: Array.isArray(columns) && columns.length ? true : false,
         columns: Array.isArray(columns) && columns.length ? normalizeColumns(columns) : cloneCols(state.sharedColumns)
+,locks: locksNorm
       };
       if (!groupMeta.locked) groupMeta.columns = null; // 未鎖定就跟隨 shared
 
@@ -722,13 +726,16 @@
         const rows = Array.from(tbody.querySelectorAll('tr'));
         if (!rows.length) return;
         rows[rows.length-1].remove();
-        if (!tbody.children.length){
-          const id = block.id;
-          block.remove();
-          const idx = state.groups.findIndex(g=>g.id===id);
-          if (idx>-1) state.groups.splice(idx,1);
-          renderAnchors();
-        }
+      if (!tbody.children.length){
+      const preventDeleteGroup = block._group?.locks && block._group.locks.deleteGroup === false;
+      if (!preventDeleteGroup) {
+       const id = block.id;
+        block.remove();
+        const idx = state.groups.findIndex(g=>g.id===id);
+        if (idx>-1) state.groups.splice(idx,1);
+        renderAnchors();
+      }
+    }
         return;
       }
     });
@@ -814,130 +821,6 @@
     return api;
   }
 
-
-/* ===== FreeTable locks/minRows patch (only inside library) ===== */
-(function () {
-  if (!window.TAPSubjectsKit || window.TAPSubjectsKit.__locksPatched) return;
-
-  // 針對被鎖群組，隱藏「解鎖」按鈕
-  const style = document.createElement('style');
-  style.textContent = `
-  .ft-group[data-lock-delete-group="1"] [data-ft-btn="unlock"],
-  .ft-group[data-lock-delete-group="1"] .ft-btn-unlock,
-  .ft-group[data-lock-delete-group="1"] .btn-unlock { display: none !important; }
-  `;
-  document.head.appendChild(style);
-
-  const origMount = TAPSubjectsKit.mount;
-  TAPSubjectsKit.mount = function (container, opts) {
-    const api = origMount.apply(this, arguments);
-    const host = typeof container === 'string' ? document.querySelector(container) : container;
-
-    // --- 包裝 addGroup：寫入 data 屬性（lock/minRows） ---
-    if (typeof api.addGroup === 'function') {
-      const _addGroup = api.addGroup.bind(api);
-      api.addGroup = function (title, options, data, lockedCols) {
-        const gid = _addGroup(title, options, data, lockedCols);
-        queueMicrotask(() => {
-          const groups = host.querySelectorAll('.ft-group, [data-ft-group-id], [data-group-id]');
-          const el =
-            Array.from(groups).reverse().find(g => g.querySelector?.('.ft-group-title')?.textContent?.trim() === title) ||
-            groups[groups.length - 1];
-          if (!el) return;
-
-          // 相容舊語義：locks.deleteGroup === false -> 鎖住整表
-          const lockDelete =
-            options?.locks && 'deleteGroup' in options.locks ? options.locks.deleteGroup === false : false;
-          if (lockDelete) el.setAttribute('data-lock-delete-group', '1');
-
-          // 最少保留列數（建議設 1）
-          const minRows = options?.minRows ?? (lockDelete ? 1 : 0);
-          if (minRows) el.setAttribute('data-min-rows', String(minRows));
-        });
-        return gid;
-      };
-    }
-
-    // --- 擋掉刪整張表（被鎖的才擋） ---
-    if (typeof api.deleteGroup === 'function') {
-      const _delGroup = api.deleteGroup.bind(api);
-      api.deleteGroup = function (arg) {
-        const el = resolveGroupEl(arg, host);
-        if (el && el.getAttribute('data-lock-delete-group') === '1') {
-          alert('此表已鎖定，不能刪除整張表');
-          return false;
-        }
-        return _delGroup(arg);
-      };
-    }
-
-    // --- 刪列時遵守 minRows：達到下限就改為清空該列 ---
-    if (typeof api.deleteRow === 'function') {
-      const _delRow = api.deleteRow.bind(api);
-      api.deleteRow = function (rowRef) {
-        const rowEl = resolveRowEl(rowRef, host);
-        const groupEl = rowEl && rowEl.closest('.ft-group, [data-ft-group-id], [data-group-id]');
-        const min = groupEl ? parseInt(groupEl.getAttribute('data-min-rows') || '0', 10) : 0;
-
-        if (groupEl && min > 0) {
-          const rows = groupEl.querySelectorAll('tbody tr, .ft-body tr');
-          if (rows.length <= min && rows[0]) {
-            clearRow(rows[0]); // 清空但不刪除
-            return false;
-          }
-        }
-        const ret = _delRow(rowRef);
-        ensureMinRows(groupEl);
-        return ret;
-      };
-    }
-
-    // --- helpers ---
-    function resolveGroupEl(arg, hostEl) {
-      if (!arg) return null;
-      if (arg.nodeType === 1) return arg;
-      return hostEl.querySelector(
-        `.ft-group[data-ft-group-id="${arg}"], .ft-group[data-group-id="${arg}"], [data-ft-group-id="${arg}"], [data-group-id="${arg}"]`
-      );
-    }
-    function resolveRowEl(rowRef, hostEl) {
-      if (!rowRef) return null;
-      if (rowRef.nodeType === 1) return rowRef;
-      return hostEl.querySelector(`[data-ft-row-id="${rowRef}"], tr#${rowRef}`);
-    }
-    function clearRow(rowEl) {
-      rowEl?.querySelectorAll('[contenteditable], input, textarea').forEach(n => {
-        if ('value' in n) n.value = '';
-        else n.textContent = '';
-      });
-    }
-    function ensureMinRows(groupEl) {
-      if (!groupEl) return;
-      const min = parseInt(groupEl.getAttribute('data-min-rows') || '0', 10);
-      if (!min) return;
-      const body = groupEl.querySelector('tbody, .ft-body');
-      if (!body) return;
-      let rows = Array.from(body.querySelectorAll('tr'));
-      while (rows.length < min) {
-        const tr = document.createElement('tr');
-        const cols = groupEl.querySelectorAll('thead th, .ft-header .ft-col');
-        const colCount = cols.length || 2;
-        for (let i = 0; i < colCount; i++) {
-          const td = document.createElement('td');
-          td.innerHTML = '<div contenteditable="true"></div>';
-          tr.appendChild(td);
-        }
-        body.appendChild(tr);
-        rows = Array.from(body.querySelectorAll('tr'));
-      }
-    }
-
-    return api;
-  };
-
-  TAPSubjectsKit.__locksPatched = true;
-})();
-
   // ============== 自動掛載 ==============
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="subjects"]').forEach(node=>{
@@ -952,3 +835,4 @@
   global.TAPSubjectsKit = { mount };
 
 })(window);
+
