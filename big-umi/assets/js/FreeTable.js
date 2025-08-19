@@ -1,7 +1,6 @@
-
 /*!
- * TAPSubjectsKit — 高普考科目自訂表格（可重用插件 / XOOPS Admin 版）
- * v2.5.x (patch: keep editor open on refresh)
+ * TAPSubjectsKit — 高普考科目自訂表格（FreeTop 版 / FA5）
+ * v3.0.0
  *
  * 召喚：
  *   <div data-tap-plugin="subjects"></div>  // 自動掛載（會自動判定 ADMIN/USER）
@@ -10,28 +9,23 @@
  *     columns: [ {label:'考科',width:30}, {label:'科目名稱',width:54}, {label:'錄取(備取)',width:16} ]
  *   });
  *
+ * 依賴：
+ *   - window.FreeTop（請先載入 /assets/js/FreeTop.js）
+ *   - Font Awesome 5（預設 'fas'）
+ *
  * 模式自動判定（命中一個就回傳）：
  *   opts.mode / data-mode
- *   window.TAP_DETECT_MODE()          // 你可在頁面定義回傳 'ADMIN' | 'USER'
- *   window.XOOPS_IS_ADMIN === true | 1 | '1'
- *   window.MODE == 'ADMIN' | 'USER'
- *   window.TAP_SUBJECTS_DEFAULT_MODE
+ *   FreeTop.resolveMode()  // 內含 XOOPS: true/1/'1'/'true' 視為 ADMIN
  *   預設 'USER'
  *
- * ※ Font Awesome：預設使用 FA6 'fa-solid'，可用 window.TAP_SUBJECTS_FA_CLASS 覆寫
+ * ※ Font Awesome：預設使用 FA5 'fas'，可用 data-fa 或 opts.faClass 覆寫（也可 'far'、'fab'）
  */
 
 (function (global) {
   'use strict';
 
   // ============== 基本設定 & 小工具 ==============
-  const DEFAULT_FA  = global.TAP_SUBJECTS_FA_CLASS || 'fa-solid';
   const THEME_COLOR = 'var(--main-red, #ea7066)';
-
-  const ICON_SET = [
-    '', 'fa-book', 'fa-users', 'fa-gavel', 'fa-briefcase', 'fa-stethoscope',
-    'fa-flask', 'fa-cog', 'fa-chart-line', 'fa-university', 'fa-user-graduate', 'fa-scale-balanced'
-  ];
 
   let INST = 0;
   const makeId = (p='ts') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
@@ -81,107 +75,15 @@
     });
   }
 
-  // 模式判定（含 XOOPS）
-  function resolveMode(host, opts, global){
-    const explicit = (opts && opts.mode) || (host && host.dataset && host.dataset.mode);
-    if (explicit) {
-      const v = String(explicit).toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    if (typeof global.TAP_DETECT_MODE === 'function') {
-      const v = String(global.TAP_DETECT_MODE() || '').toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    // XOOPS：true / 1 / '1' 都視為 admin
-    if (global.XOOPS_IS_ADMIN === true || global.XOOPS_IS_ADMIN === 1 || global.XOOPS_IS_ADMIN === '1') return 'ADMIN';
-    if (typeof global.MODE === 'string') {
-      const v = global.MODE.toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    if (typeof global.TAP_SUBJECTS_DEFAULT_MODE === 'string') {
-      const v = global.TAP_SUBJECTS_DEFAULT_MODE.toUpperCase();
-      if (v==='ADMIN' || v==='USER') return v;
-    }
-    return 'USER';
-  }
-
-  // ============== Icon Picker（極簡） ==============
-  if (!document.getElementById('ts-iconpicker-style')) {
-    const st = document.createElement('style');
-    st.id = 'ts-iconpicker-style';
-    st.textContent = `
-      .ts-ip-wrap{position:relative; display:inline-block;}
-      .ts-ip-btn{display:inline-flex; align-items:center; gap:.4rem;}
-      .ts-ip-menu{
-        position:absolute; z-index:1050; top:100%; left:0;
-        background:#fff; border:1px solid #e9ecef; border-radius:10px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08); padding:10px; margin-top:6px;
-        width:300px; max-height:260px; overflow:auto;
-      }
-      .ts-ip-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px;}
-      .ts-ip-item{
-        display:flex; justify-content:center; align-items:center;
-        width:44px; height:40px; border:1px solid #eee; border-radius:8px;
-        cursor:pointer; transition:.15s;
-      }
-      .ts-ip-item:hover{transform:translateY(-1px); border-color:#ddd;}
-      .ts-ip-item.active{border-color:var(--main-red,#ea7066); box-shadow:0 0 0 2px rgba(234,112,102,.15);}
-      .ts-ip-none{font-size:12px; color:#6c757d;}
-    `;
-    document.head.appendChild(st);
-  }
-
-  function createIconPicker({ faClass=DEFAULT_FA, value='' } = {}) {
-    const wrap = h('div','ts-ip-wrap');
-    const btn  = h('button','btn btn-outline-secondary btn-sm ts-ip-btn');
-    btn.type = 'button';
-    btn.innerHTML = value
-      ? `<i class="${faClass} ${value}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-      : `<span class="ts-ip-none">選擇圖示（可不選）</span>`;
-    const menu = h('div','ts-ip-menu d-none');
-    const grid = h('div','ts-ip-grid');
-    ICON_SET.forEach(ic=>{
-      const cell = h('div','ts-ip-item'+(ic===value?' active':''), ic ? `<i class="${faClass} ${ic}" style="color:${THEME_COLOR};"></i>` : `<span class="ts-ip-none">無</span>`);
-      cell.dataset.icon = ic;
-      grid.appendChild(cell);
-    });
-    menu.appendChild(grid);
-    wrap.appendChild(btn); wrap.appendChild(menu);
-
-    const open  = ()=>{ menu.classList.remove('d-none'); document.addEventListener('click', onDoc); };
-    const close = ()=>{ menu.classList.add('d-none');   document.removeEventListener('click', onDoc); };
-    const onDoc = e => { if (!wrap.contains(e.target)) close(); };
-
-    let current = value || '';
-    btn.addEventListener('click', e=>{ e.stopPropagation(); menu.classList.contains('d-none') ? open() : close(); });
-    grid.addEventListener('click', e=>{
-      const cell = e.target.closest('.ts-ip-item'); if(!cell) return;
-      current = cell.dataset.icon || '';
-      grid.querySelectorAll('.ts-ip-item').forEach(i=>i.classList.toggle('active', i===cell));
-      btn.innerHTML = current
-        ? `<i class="${faClass} ${current}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-        : `<span class="ts-ip-none">選擇圖示（可不選）</span>`;
-      close();
-      wrap.dispatchEvent(new CustomEvent('icon:change',{ detail:{ icon: current }}));
-    });
-
-    return { root:wrap, get:()=>current, set:(v='')=>{
-      current=v||'';
-      grid.querySelectorAll('.ts-ip-item').forEach(i=>i.classList.toggle('active', i.dataset.icon===current));
-      btn.innerHTML = current
-        ? `<i class="${faClass} ${current}" style="color:${THEME_COLOR};"></i><span>更換圖示</span>`
-        : `<span class="ts-ip-none">選擇圖示（可不選）</span>`;
-    }};
-  }
-
   // ============== 主掛載 ==============
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
     if (host._tap_subjects) return host._tap_subjects; // 防重複
 
-    const mode    = resolveMode(host, opts, global);
-    const faClass = host.dataset.fa || opts.faClass || DEFAULT_FA;
+    // 改用 FreeTop 的統一判定/參數（含 XOOPS）
+    const mode    = FreeTop.resolveMode(host, opts, global);        // 'ADMIN' | 'USER'
+    const faClass = FreeTop.getFaClass(host, opts, global);         // 預設 'fas'（FA5）
 
     const state = {
       id: makeId('ts'),
@@ -206,6 +108,17 @@
     if (state.mode === 'ADMIN') {
       cfg = h('div','card mb-3 ts-admin');
       const cid = state.id;
+
+      // 通用 Icon Picker（FreeTop；FA5 名稱；單一清單）
+      const iconPicker = FreeTop.iconPicker({
+        faClass,
+        value: '',
+        icons: FreeTop.getIconSet(),
+        prefix: 'ts',
+        themeVar: '--main-red',
+        fallback: '#ea7066'
+      });
+
       cfg.innerHTML = `
         <div class="card-header bg-white border-bottom border-danger fw-bold">類組欄位設定（不限數量）與新增類組</div>
         <div class="card-body">
@@ -321,8 +234,7 @@
       }
 
       // 新增類組
-      const sizeSel    = cfg.querySelector(`#${cid}-size`);
-      const iconPicker = createIconPicker({ faClass:faClass, value:'' });
+      const sizeSel = cfg.querySelector(`#${cid}-size`);
       cfg.querySelector(`#${cid}-iconpicker`).appendChild(iconPicker.root);
 
       cfg.querySelector(`#${cid}-add-group`).addEventListener('click', ()=>{
@@ -562,18 +474,18 @@
     }
 
     // ===== 產生群組卡片 =====
-function createGroup(name, { sizeClass='fs-5', icon='', locks={} } = {}, rows, columns){
+    function createGroup(name, { sizeClass='fs-5', icon='', locks={} } = {}, rows, columns){
       const gid  = makeId('g');
       const card = h('div','card mb-4 shadow-sm ts-block');
       card.id = `${state.id}-${gid}`;
- const locksNorm = Object.assign({ deleteGroup:true, hideUnlock:false }, locks || {});
+      const locksNorm = Object.assign({ deleteGroup:true, hideUnlock:false }, locks || {});
 
       const groupMeta = {
         id: card.id,
         name, icon, sizeClass,
         locked: Array.isArray(columns) && columns.length ? true : false,
-        columns: Array.isArray(columns) && columns.length ? normalizeColumns(columns) : cloneCols(state.sharedColumns)
-,locks: locksNorm
+        columns: Array.isArray(columns) && columns.length ? normalizeColumns(columns) : cloneCols(state.sharedColumns),
+        locks: locksNorm
       };
       if (!groupMeta.locked) groupMeta.columns = null; // 未鎖定就跟隨 shared
 
@@ -726,16 +638,16 @@ function createGroup(name, { sizeClass='fs-5', icon='', locks={} } = {}, rows, c
         const rows = Array.from(tbody.querySelectorAll('tr'));
         if (!rows.length) return;
         rows[rows.length-1].remove();
-      if (!tbody.children.length){
-      const preventDeleteGroup = block._group?.locks && block._group.locks.deleteGroup === false;
-      if (!preventDeleteGroup) {
-       const id = block.id;
-        block.remove();
-        const idx = state.groups.findIndex(g=>g.id===id);
-        if (idx>-1) state.groups.splice(idx,1);
-        renderAnchors();
-      }
-    }
+        if (!tbody.children.length){
+          const preventDeleteGroup = block._group?.locks && block._group.locks.deleteGroup === false;
+          if (!preventDeleteGroup) {
+            const id = block.id;
+            block.remove();
+            const idx = state.groups.findIndex(g=>g.id===id);
+            if (idx>-1) state.groups.splice(idx,1);
+            renderAnchors();
+          }
+        }
         return;
       }
     });
@@ -821,11 +733,13 @@ function createGroup(name, { sizeClass='fs-5', icon='', locks={} } = {}, rows, c
     return api;
   }
 
-  // ============== 自動掛載 ==============
+  // ============== 自動掛載（加上前台自動吃資料） ==============
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="subjects"]').forEach(node=>{
       if (node._tap_subjects) return;
-      mount(node, {}); // 自動判定模式
+      const api = mount(node, {}); // 自動判定模式
+      // 新增：自動從 data-json-var / data-json-script / data-json-local 載入
+      FreeTop.applyInitialJSON(node, api);
     });
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', autoload);
@@ -835,4 +749,3 @@ function createGroup(name, { sizeClass='fs-5', icon='', locks={} } = {}, rows, c
   global.TAPSubjectsKit = { mount };
 
 })(window);
-
