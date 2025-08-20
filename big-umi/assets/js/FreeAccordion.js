@@ -4,10 +4,11 @@
  * 依賴：window.FreeTop（/assets/js/FreeTop.js），Font Awesome 5
  * 外掛樣式：Accordion.css（本外掛用），Table.css（表格 RWD 共用）
  */
+
+
 (function (global) {
   'use strict';
 
-  const THEME_COLOR = 'var(--main-red, #ea7066)';
   let   INST = 0;
   const uid  = (p='qa') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
   const t    = (s)=> (s==null ? '' : String(s));
@@ -15,9 +16,9 @@
   const h    = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
   const insertAfter = (n, ref)=> ref.parentNode.insertBefore(n, ref.nextSibling);
 
-  // ====== 共用灰底面板（工具列 + 內容容器）======
+  // ========== 共用灰底面板（工具列 + 內容容器） ==========
   function buildPane(isAdmin){
-    const pane = h('div','qa-pane bg-light pt-2 pb-3 px-2');
+    const pane = h('div','qa-pane pt-2 pb-3 px-2');
     const tools = h('div','d-flex flex-wrap align-items-center gap-2 mb-2 qa-admin', `
       <div class="d-flex flex-wrap align-items-center gap-2">
         <button type="button" class="btn btn-outline-danger btn-sm qa-insert-sub">插入標題</button>
@@ -35,7 +36,7 @@
     return pane;
   }
 
-  // ====== 內容小工具 ======
+  // ========== 內容小工具 ==========
   function findContentRoot(entry){
     const el = entry && entry.nodeType ? entry : (entry && entry.node);
     return (el || entry).querySelector('.qa-content');
@@ -103,7 +104,7 @@
     w.style.display=''; ensureRemarkAtBottom(root); span.focus(); return w;
   }
 
-  // ====== 動態表格（+列/-列、+欄/-欄、欄寬%）======
+  // ========== 動態表格（+列/-列、+欄/-欄、欄寬%） ==========
   function insertTableFlex(entry, admin, colCount=2){
     const root = findContentRoot(entry); if(!root) return null;
     const wrap = h('div','qa-block qa-block-tableflex mb-2');
@@ -127,8 +128,7 @@
     const widthsPanel = h('div','qa-tflex-widths-panel d-none mb-2');
 
     const table = document.createElement('table');
-    // ✅ 用 ts-table，讓 Table.css 一套吃 FreeAccordion + FreeTable
-    table.className = 'table table-bordered align-middle small mb-0 ts-table';
+    table.className = 'table table-bordered align-middle small mb-0 ts-table'; // 重要：ts-table → 吃 Table.css
     const cg = document.createElement('colgroup');
     const thead = document.createElement('thead'); thead.className = 'table-danger';
     const tbody = document.createElement('tbody');
@@ -203,14 +203,14 @@
     if (!admin) holder.style.display='none';
   }
 
-  // ====== 主掛載 ======
+  // ========== 主掛載 ==========
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
     if (host._tap_qualify) return host._tap_qualify;
 
-    const mode    = FreeTop.resolveMode(host, opts, global);
-    const faClass = FreeTop.getFaClass(host, opts, global);
+    const mode    = FreeTop.resolveMode(host, opts, global);   // 'ADMIN' | 'USER'
+    const faClass = FreeTop.getFaClass(host, opts, global);    // 'fas'（FA5）
 
     const state = { id: uid('qa'), mode, categories: [], orderSeq: 0 };
 
@@ -218,7 +218,7 @@
     host.classList.add('tap-qualify');
     host.setAttribute('data-mode', state.mode);
 
-    // ===== 新增類別區塊（上方）=====
+    // 上方「新增類別」卡（僅 ADMIN）
     let cfg = null;
     if (state.mode === 'ADMIN') {
       cfg = h('div','card mb-3 qa-admin');
@@ -252,11 +252,11 @@
 
     const catsWrap = h('div','qa-categories'); host.appendChild(catsWrap);
 
-    // ===== 類別卡片 =====
+    // 類別卡片
     function addCategory(title, { icon='' } = {}){
       const catId = uid('cat');
-      const card = h('div','mb-3 qa-category');
-      const iconHtml = icon ? `<i class="${faClass} ${icon} me-2" style="color:${THEME_COLOR};"></i>` : '';
+      const card = h('div','qa-category mb-3');
+      const iconHtml = icon ? `<i class="${faClass} ${icon} me-2" style="color:var(--main-red,#ea7066);"></i>` : '';
 
       card.innerHTML = `
         <div class="d-flex align-items-center mb-2" style="gap:.5rem;">
@@ -267,7 +267,6 @@
           </div>
         </div>
 
-        <!-- 新增內容區塊 -->
         <div class="d-flex align-items-end gap-2 mb-2 qa-admin">
           <div class="flex-grow-1" style="max-width:360px;">
             <label class="form-label small mb-1">新增內容標題</label>
@@ -277,7 +276,6 @@
           <button type="button" class="btn btn-danger btn-sm qa-add-card">插入卡片</button>
         </div>
 
-        <!-- 內容列表（手風琴 / 卡片） -->
         <div class="qa-entries"></div>
       `;
       catsWrap.appendChild(card);
@@ -285,7 +283,6 @@
       const cat = { id: catId, node: card, title, icon, orderMode:'insert' };
       state.categories.push(cat);
 
-      // 刪除類別
       card.querySelector('.qa-cat-del').addEventListener('click', ()=>{
         const idx = state.categories.findIndex(c=>c.node===card);
         if (idx>-1) state.categories.splice(idx,1);
@@ -296,7 +293,7 @@
       return cat;
     }
 
-    // ===== 新增手風琴 =====
+    // 新增手風琴
     function addAccordion(catNode, title){
       const entries = catNode.querySelector('.qa-entries');
       const entry = h('div','qa-entry qa-entry-acc mb-3');
@@ -327,7 +324,7 @@
       return entry;
     }
 
-    // ===== 新增卡片（header 紅線 + 灰底 pane）======
+    // 新增卡片（卡片 header 紅線；內含同一套灰底面板）
     function addCard(catNode, title){
       const entries = catNode.querySelector('.qa-entries');
       const entry = h('div','qa-entry qa-entry-card mb-3');
@@ -351,7 +348,7 @@
       return entry;
     }
 
-    // ===== 排序切換（type：手風琴在上；insert：插入順序）======
+    // 排序切換：插入順序 / 類型（手風琴在上）
     function applyCategoryOrder(catNode){
       const modeBtn = catNode.querySelector('.qa-sort-toggle');
       const mode = modeBtn?.dataset.mode || 'insert';
@@ -371,9 +368,9 @@
       }
     }
 
-    // ===== 事件委派 =====
+    // 事件委派
     host.addEventListener('click', (e)=>{
-      // 類別新增內容
+      // 類別：新增內容
       if (e.target.classList.contains('qa-add-acc') || e.target.classList.contains('qa-add-card')){
         const cat = e.target.closest('.qa-category');
         const titleInput = cat.querySelector('.qa-entry-title');
@@ -391,7 +388,7 @@
         btn.textContent = (next === 'insert') ? '排序：插入順序' : '排序：手風琴在上';
         applyCategoryOrder(cat); return;
       }
-      // 刪除區塊（手風琴/卡片灰面板右側刪除鈕）
+      // 刪除（整塊 entry）
       if (e.target.classList.contains('qa-entry-del')){
         const entry = e.target.closest('.qa-entry'); if (entry) entry.remove(); return;
       }
@@ -453,9 +450,9 @@
       }
     });
 
-    // 欄寬數字框 → 即時套到 colgroup
+    // 內容輸入事件
     host.addEventListener('input', (e)=>{
-      if (e.target.classList.contains('qa-remark-text')) {
+      if (e.target.classList && e.target.classList.contains('qa-remark-text')) {
         const r = e.target.closest('.qa-block-remark');
         const txt = (e.target.textContent||'').trim();
         r.style.display = txt ? '' : 'none';
@@ -464,7 +461,7 @@
       if (e.target.tagName === 'TH' && e.target.closest('.qa-block-tableflex')){
         const table = e.target.closest('table'); if (table) syncTDLabels(table);
       }
-      if (e.target.classList.contains('qa-tflex-w')){
+      if (e.target.classList && e.target.classList.contains('qa-tflex-w')){
         const panel = e.target.closest('.qa-tflex-widths-panel');
         const wrap  = panel.closest('.qa-block-tableflex');
         const table = wrap.querySelector('table');
@@ -476,7 +473,7 @@
     // Enter 刪空行（副標 / li）
     host.addEventListener('keydown', (e)=>{
       if (e.key !== 'Enter' || state.mode!=='ADMIN') return;
-      if (e.target.classList.contains('qa-sub')) {
+      if (e.target.classList && e.target.classList.contains('qa-sub')) {
         const txt = (e.target.textContent||'').trim();
         if (!txt) { e.preventDefault(); const wrap = e.target.closest('.qa-block-sub'); if (wrap) wrap.remove(); }
       }
@@ -506,7 +503,7 @@
       }
     }, true);
 
-    // ===== 模式切換 =====
+    // 模式切換
     function lockAsUser(scope){
       (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='none');
       (scope||host).querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
@@ -515,12 +512,12 @@
     function unlockAsAdmin(scope){
       (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='');
       (scope||host).querySelectorAll('.qa-sub, li, th, td, .qa-remark-text, .qa-card-head')
-        .forEach(el => { if (el.closest('.tap-qualify')) el.setAttribute('contenteditable','true'); });
+        .forEach(el=>{ if (el.closest('.tap-qualify')) el.setAttribute('contenteditable','true'); });
       host.setAttribute('data-mode','ADMIN');
     }
     if (state.mode==='USER') lockAsUser();
 
-    // ===== JSON =====
+    // JSON
     function getJSON(){
       const categories = state.categories.map(c=>{
         const box = c.node.querySelector('.qa-entries');
@@ -535,7 +532,7 @@
             const title   = entry.querySelector('.qa-card-head')?.textContent.trim() || '';
             const content = entry.querySelector('.qa-content');
             const blocks  = serializeBlocks(content);
-            entries.push({ kind:'card', title, blocks }); 
+            entries.push({ kind:'card', title, blocks });
           }
         });
         const btn = c.node.querySelector('.qa-sort-toggle');
@@ -551,7 +548,7 @@
           } else if (child.classList.contains('qa-block-list')) {
             const ul = child.querySelector('ul');
             const arr = ul ? Array.from(ul.querySelectorAll('li')).map(li => (li.textContent||'').trim()) : [];
-            blocks.push({ type:'list', items: arr });
+            if (arr.length) blocks.push({ type:'list', items: arr });
           } else if (child.classList.contains('qa-block-tableflex')) {
             const table = child.querySelector('table');
             const heads = Array.from(table.querySelectorAll('thead th')).map(th=> (th.textContent||'').trim());
@@ -583,7 +580,7 @@
             const acc = addAccordion(ref.node, ent.title||'未命名手風琴');
             restoreBlocks(acc.querySelector('.qa-content'), ent.blocks||[]);
           } else if (ent.kind==='card'){
-            const card = addCard(ref.node, ent.title || '請輸入卡片標題'); 
+            const card = addCard(ref.node, ent.title || '請輸入卡片標題');
             restoreBlocks(card.querySelector('.qa-content'), ent.blocks||[]);
           }
         });
@@ -645,7 +642,7 @@
     return api;
   }
 
-  // ===== 自動掛載 + 前台自動吃資料 =====
+  // 自動掛載 + 前台自動吃資料
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="qualify"]').forEach(node=>{
       if (node._tap_qualify) return;
