@@ -1,0 +1,16 @@
+/* 僅作用於本外掛容器 */
+.tap-note{ overflow-x: hidden; }
+
+/* USER 模式隱藏管理工具列（JS 已有一次；這是雙保險） */
+.tap-note[data-mode="USER"] .note-admin{ display: none !important; }
+
+/* alert 外觀微調 */
+.tap-note .note-alert{
+  border-radius: 12px;
+}
+
+/* 列表縮排與間距，與你給的例子一致 */
+.tap-note .note-alert ul{
+  margin-bottom: 0;
+  padding-left: 1.25rem; /* = .ps-3 */
+}
