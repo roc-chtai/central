@@ -347,9 +347,7 @@
       entry.dataset.order = (++state.orderSeq).toString();
 
       entry.innerHTML = `
-        <div class="mb-3 fw-bold fs-5 qa-card-title" style="letter-spacing:1px;" ${state.mode==='ADMIN'?'contenteditable="true"':''}>
-          ${t(headingText||'請輸入文字標題')}
-        </div>
+
         <div class="card">
           <div class="card-header bg-white border-bottom border-danger fw-bold">
             <span class="qa-card-head" ${state.mode==='ADMIN'?'contenteditable="true"':''}>${t(headerText||'請輸入卡片標題')}</span>
@@ -395,7 +393,7 @@
         const titleInput = cat.querySelector('.qa-entry-title');
         const val = (titleInput.value||'').trim();
         if (e.target.classList.contains('qa-add-acc')) addAccordion(cat, val || '未命名手風琴');
-        else addCard(cat, val || '請輸入文字標題', val || '請輸入卡片標題');
+        else addCard(cat, val || '請輸入卡片標題');
         titleInput.value = '';
         return;
       }
@@ -601,7 +599,7 @@
             const acc = addAccordion(ref.node, ent.title||'未命名手風琴');
             restoreBlocks(acc.querySelector('.qa-content'), ent.blocks||[]);
           } else if (ent.kind==='card'){
-            const card = addCard(ref.node, ent.heading||'請輸入文字標題', ent.title||'請輸入卡片標題');
+            const card = addCard(ref.node, ent.title||'請輸入卡片標題');
             restoreBlocks(card.querySelector('.qa-content'), ent.blocks||[]);
           }
         });
