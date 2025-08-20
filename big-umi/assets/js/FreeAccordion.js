@@ -1,19 +1,15 @@
 /*!
- * FreeAccordion.js — 可插「手風琴/卡片」混合內容（FA5 & FreeTop 版）
- * 依賴：window.FreeTop（/assets/js/FreeTop.js） & FA5（fas/far/fab）
+ * 召喚：
+ *   <div id="qualifyPlugin" data-tap-plugin="qualify"></div>
  *
- * 功能總覽：
- * 1) XOOPS/Admin 模式判定（沿用 FreeTop.resolveMode）
- * 2) 新增類別（可選 FA5 icon），每類別下可插「手風琴」或「卡片」內容區塊
- * 3) 卡片區塊版型 = 你提供的「年齡限制卡」：header 白底 + 下框紅線 + 粗體；body 灰底
- * 4) 內容編輯工具列（灰色列）：插入「標題 / 項目 / 表格 / 備註 / 刪除」
- *    - 表格：可動態 +欄/–欄、+列/–列，欄名可改，等寬自動配置
- * 5) 排序切換：插入順序 <-> 手風琴在上/卡片在下（每類別各自切換）
- * 6) JSON 橋接（schemaVersion: 3）
- *    - items: [{ type:'accordion'|'card', title, blocks:[...] }]
- *    - blocks: subheading/list/table/remark
- *    - table: { type:'table', columns:[{label}], rows:[ [..] ] }
- *    - 舊資料相容（無 type => 當 accordion；舊 table 格式也可讀）
+ * 依賴：
+ *   - window.FreeTop（請先載入 /assets/js/FreeTop.js）
+ *   - Font Awesome 5（預設 'fas'）
+ *
+ * 支援：
+ *   - data-mode / opts.mode / FreeTop.resolveMode()（含 XOOPS 判定）
+ *   - data-fa 指定 FA 前綴（預設 'fas'；也可 'far'、'fab'）
+ *   - data-json-var / data-json-script / data-json-local（由 FreeTop.applyInitialJSON 自動注入）
  */
 
 (function(global){
