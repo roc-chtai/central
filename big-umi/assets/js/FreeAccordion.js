@@ -24,6 +24,39 @@
   const h    = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
   const insertAfter = (n, ref)=> ref.parentNode.insertBefore(n, ref.nextSibling);
 
+  // --- 表格 ---
+function ensureRwdStyle(){
+  if (document.getElementById('qa-table-rwd-style')) return;
+  const st = document.createElement('style');
+  st.id = 'qa-table-rwd-style';
+  st.textContent = `
+    /* 通用：避免長字撐破 */
+    .tap-qualify .qa-table { width:100%; word-break:break-word; }
+
+    /* 行動裝置：堆疊式 */
+    @media (max-width: 768px){
+      .tap-qualify .qa-block-tableflex table.qa-table { display:block; border:0; }
+      .tap-qualify .qa-block-tableflex table.qa-table > colgroup { display:none; }
+      .tap-qualify .qa-block-tableflex table.qa-table thead { display:none; }
+      .tap-qualify .qa-block-tableflex table.qa-table tbody { display:block; }
+      .tap-qualify .qa-block-tableflex table.qa-table tr { display:block; background:#fff; border:1px solid #dee2e6; border-radius:10px; margin-bottom:.6rem; }
+      .tap-qualify .qa-block-tableflex table.qa-table td {
+        display:block; width:100%;
+        border:0; border-bottom:1px solid #eee;
+        padding:.55rem .75rem .55rem calc(36% + .75rem);
+        position:relative;
+      }
+      .tap-qualify .qa-block-tableflex table.qa-table td:last-child { border-bottom:0; }
+      .tap-qualify .qa-block-tableflex table.qa-table td::before {
+        content: attr(data-label);
+        position:absolute; left:.75rem; top:.55rem;
+        width:34%; font-weight:600; color:#6c757d;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      }
+    }
+  `;
+  document.head.appendChild(st);
+}
   // ====== 共用灰底面板（工具列 + 內容容器）======
   function buildPane(isAdmin){
     const pane = h('div','qa-pane bg-light pt-2 pb-3 px-2');
@@ -136,7 +169,7 @@
     const widthsPanel = h('div','qa-tflex-widths-panel d-none mb-2');
 
     const table = document.createElement('table');
-    table.className = 'table table-bordered align-middle small mb-0';
+table.className = 'table table-bordered align-middle small mb-0 qa-table';
     const cg = document.createElement('colgroup');
     const thead = document.createElement('thead'); thead.className = 'table-danger';
     const tbody = document.createElement('tbody');
@@ -220,6 +253,7 @@
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
     if (host._tap_qualify) return host._tap_qualify;
+  ensureRwdStyle();
 
     const mode    = FreeTop.resolveMode(host, opts, global);   // 'ADMIN' | 'USER'
     const faClass = FreeTop.getFaClass(host, opts, global);    // 'fas'（FA5）
