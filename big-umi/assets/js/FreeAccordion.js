@@ -341,29 +341,28 @@
     }
 
     // ===== 新增卡片（上方大字 + 卡片 header 紅線）======
-    function addCard(catNode, headingText, headerText){
-      const entries = catNode.querySelector('.qa-entries');
-      const entry = h('div','qa-entry qa-entry-card mb-3');
-      entry.dataset.order = (++state.orderSeq).toString();
+   function addCard(catNode, title){
+  const entries = catNode.querySelector('.qa-entries');
+  const entry = h('div','qa-entry qa-entry-card mb-3');
+  entry.dataset.order = (++state.orderSeq).toString();
 
-      entry.innerHTML = `
+  entry.innerHTML = `
+    <div class="card">
+      <div class="card-header bg-white border-bottom border-danger fw-bold">
+        <span class="qa-card-head" ${state.mode==='ADMIN'?'contenteditable="true"':''}>${t(title || '請輸入卡片標題')}</span>
+      </div>
+      <div class="card-body">
+        ${buildPane(state.mode==='ADMIN').outerHTML}
+      </div>
+    </div>
+  `;
+  entries.appendChild(entry);
+  if (state.mode==='USER') lockAsUser(entry);
 
-        <div class="card">
-          <div class="card-header bg-white border-bottom border-danger fw-bold">
-            <span class="qa-card-head" ${state.mode==='ADMIN'?'contenteditable="true"':''}>${t(headerText||'請輸入卡片標題')}</span>
-          </div>
-          <div class="card-body">
-            ${buildPane(state.mode==='ADMIN').outerHTML}
-          </div>
-        </div>
-      `;
-      entries.appendChild(entry);
-      if (state.mode==='USER') lockAsUser(entry);
-
-      const btn = catNode.querySelector('.qa-sort-toggle');
-      if (btn && btn.dataset.mode==='type') applyCategoryOrder(catNode);
-      return entry;
-    }
+  const btn = catNode.querySelector('.qa-sort-toggle');
+  if (btn && btn.dataset.mode==='type') applyCategoryOrder(catNode);
+  return entry;
+}
 
     // ===== 排序切換（修正：type 模式先全部手風琴、再全部卡片；各自保留插入順序）======
     function applyCategoryOrder(catNode){
@@ -388,15 +387,19 @@
     // ===== 事件委派 =====
     host.addEventListener('click', (e)=>{
       // 類別新增內容
-      if (e.target.classList.contains('qa-add-acc') || e.target.classList.contains('qa-add-card')){
-        const cat = e.target.closest('.mb-3');
-        const titleInput = cat.querySelector('.qa-entry-title');
-        const val = (titleInput.value||'').trim();
-        if (e.target.classList.contains('qa-add-acc')) addAccordion(cat, val || '未命名手風琴');
-        else addCard(cat, val || '請輸入卡片標題');
-        titleInput.value = '';
-        return;
-      }
+     if (e.target.classList.contains('qa-add-acc') || e.target.classList.contains('qa-add-card')){
+  const cat = e.target.closest('.mb-3');
+  const titleInput = cat.querySelector('.qa-entry-title');
+  const val = (titleInput.value||'').trim();
+
+  if (e.target.classList.contains('qa-add-acc')) {
+    addAccordion(cat, val || '未命名手風琴');
+  } else {
+    addCard(cat, val || '請輸入卡片標題');  
+  }
+  titleInput.value = '';
+  return;
+}
       // 排序切換
       if (e.target.classList.contains('qa-sort-toggle')){
         const btn = e.target; const cat = btn.closest('.mb-3');
@@ -528,9 +531,8 @@
     }
     function unlockAsAdmin(scope){
       (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='');
-      (scope||host).querySelectorAll('.qa-sub, li, th, td, .qa-remark-text, .qa-card-title, .qa-card-head').forEach(el=>{
-        if (el.closest('.tap-qualify')) el.setAttribute('contenteditable','true');
-      });
+    (scope||host).querySelectorAll('.qa-sub, li, th, td, .qa-remark-text, .qa-card-head')
+  .forEach(el => { if (el.closest('.tap-qualify')) el.setAttribute('contenteditable','true'); });
       host.setAttribute('data-mode','ADMIN');
     }
     if (state.mode==='USER') lockAsUser();
@@ -546,18 +548,17 @@
             const content = entry.querySelector('.qa-content');
             const blocks = serializeBlocks(content);
             entries.push({ kind:'accordion', title, blocks });
-          } else if (entry.classList.contains('qa-entry-card')) {
-            const heading = entry.querySelector('.qa-card-title')?.textContent.trim() || '';
-            const title   = entry.querySelector('.qa-card-head')?.textContent.trim() || '';
-            const content = entry.querySelector('.qa-content');
-            const blocks = serializeBlocks(content);
-            entries.push({ kind:'card', heading, title, blocks });
-          }
+          }else if (entry.classList.contains('qa-entry-card')) {
+  const title   = entry.querySelector('.qa-card-head')?.textContent.trim() || '';
+  const content = entry.querySelector('.qa-content');
+  const blocks  = serializeBlocks(content);
+  entries.push({ kind:'card', title, blocks }); 
+}
         });
         const btn = c.node.querySelector('.qa-sort-toggle');
         return { title:c.title, icon:c.icon, orderMode: btn?.dataset.mode || 'insert', entries };
       });
-      return { schemaVersion: 3, updatedAt: Date.now(), categories };
+      return { schemaVersion: 4, updatedAt: Date.now(), categories };
 
       function serializeBlocks(root){
         const blocks = [];
@@ -599,9 +600,9 @@
             const acc = addAccordion(ref.node, ent.title||'未命名手風琴');
             restoreBlocks(acc.querySelector('.qa-content'), ent.blocks||[]);
           } else if (ent.kind==='card'){
-            const card = addCard(ref.node, ent.title||'請輸入卡片標題');
-            restoreBlocks(card.querySelector('.qa-content'), ent.blocks||[]);
-          }
+  const card = addCard(ref.node, ent.title || '請輸入卡片標題'); 
+  restoreBlocks(card.querySelector('.qa-content'), ent.blocks||[]);
+}
         });
 
         const btn = ref.node.querySelector('.qa-sort-toggle');
