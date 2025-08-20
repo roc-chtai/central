@@ -101,7 +101,7 @@
     let w = root.querySelector('.qa-block-remark');
     if (!w) { w = h('div','qa-block qa-block-remark small text-muted mt-2'); w.innerHTML = `※ <span class="qa-remark-text" ${admin?'contenteditable="true"':''}></span>`; root.appendChild(w); }
     const span = w.querySelector('.qa-remark-text'); span.textContent = t(text || '請輸入備註');
-    w.style.display=''; ensureRemarkAtBottom(root); span.focus(); return w;
+    w.style.display=''; ensureRemarkAtBottom(root); if (admin) span.focus(); return w;
   }
 
   // ========== 動態表格（+列/-列、+欄/-欄、欄寬%） ==========
@@ -554,14 +554,14 @@
             const heads = Array.from(table.querySelectorAll('thead th')).map(th=> (th.textContent||'').trim());
             const widths= colWidths(table);
             const rows = [];
-            table.querySelectorAll('tbody tr').forEach(tr=>{
-              const arr = Array.from(tr.querySelectorAll('td')).map(td=> (td.textContent||'').trim());
-              rows.push(arr);
-            });
+ table.querySelectorAll('tbody tr').forEach(tr=>{
+   const arr = Array.from(tr.querySelectorAll('td')).map(td=> (td.textContent||'').trim());
+   if (arr.some(v => v !== '')) rows.push(arr);
+ });
             blocks.push({ type:'table', heads, widths, rows });
           } else if (child.classList.contains('qa-block-remark')) {
-            const txt = (child.querySelector('.qa-remark-text')?.textContent||'').trim();
-            blocks.push({ type:'remark', text: txt });
+ const txt = (child.querySelector('.qa-remark-text')?.textContent||'').trim();
+ if (txt) blocks.push({ type:'remark', text: txt });
           }
         });
         return blocks;
