@@ -12,50 +12,46 @@
  *   - data-json-var / data-json-script / data-json-local（由 FreeTop.applyInitialJSON 自動注入）
  */
 
-(function(global){
+(function (global) {
   'use strict';
 
-  // ======= 基本設定 =======
-  const THEME_COLOR = 'var(--main-red, #ea7066)';
-
-  // 小工具
-  const t = s => s==null ? '' : String(s);
-  const $all = (root, sel)=> Array.from((root instanceof Element?root:document).querySelectorAll(sel));
-  const h = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
-  let INST = 0;
-  const uid = (p='qa') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
-
-  // 將某節點移到容器最後（保持 remark 置底等）
-  const insertAfter = (newNode, refNode)=> refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
-
-  // ======= 內容區塊共用：插入元件 =======
-  /** 找到區塊的內容根節點 */
-  function findContentRoot(blockEl){
-    return blockEl.querySelector('.qa-content');
+  if (!global.FreeTop) {
+    console.error('[FreeAccordion] FreeTop.js is required before this plugin.');
+    return;
   }
 
-  /** 讓備註永遠在最底 */
+  // ========== 小工具 ==========
+  const THEME_COLOR = 'var(--main-red)';
+  let INST=0;
+  const uid = (p='qa') => `${p}-${++INST}-${Math.random().toString(36).slice(2,8)}`;
+  const t   = (s)=> (s==null ? '' : String(s));
+  const h   = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
+  const $all= (root, sel)=> Array.from((root instanceof Element?root:document).querySelectorAll(sel));
+  const insertAfter = (newNode, refNode)=> refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
+
+  // 讓「備註」永遠在內容區塊底部
   function ensureRemarkAtBottom(root){
     const r = root.querySelector('.qa-block-remark');
     if (r) root.appendChild(r);
   }
-
-  /** 找到最後一個可以插「副標」的錨點（非表格/非備註） */
+  // 找「最後一個可放副標的錨點」（非表格、非備註）
   function findLastNonTableNonRemark(root){
     const blocks = Array.from(root.children);
-    for (let i=blocks.length-1;i>=0;i--){
+    for (let i=blocks.length-1; i>=0; i--){
       const b = blocks[i];
-      if (!b.classList.contains('qa-block-table') && !b.classList.contains('qa-block-remark')) return b;
+      if (!b.classList.contains('qa-block-table') && !b.classList.contains('qa-block-remark')) {
+        return b;
+      }
     }
     return null;
   }
 
-  /** 插入「副標」 */
-  function insertSubheading(blockEl, text, editable){
-    const root = findContentRoot(blockEl); if(!root) return null;
+  // ========== 內容插入（副標 / 清單 / 表格 / 備註）==========
+  function insertSubheading(host, text){
+    const root = host.querySelector('.qa-content'); if(!root) return null;
     const wrap = h('div','qa-block qa-block-sub mb-2');
-    const el = h('div','fw-bold text-danger mb-0 qa-sub');
-    el.contentEditable = !!editable;
+    const el = h('div','fw-bold text-danger mb-0 qa-sub', '');
+    el.contentEditable = host.closest('[data-mode="ADMIN"]') ? 'true' : 'false';
     el.textContent = t(text || '請輸入副標');
     wrap.appendChild(el);
 
@@ -68,9 +64,8 @@
     return wrap;
   }
 
-  /** 插入「清單項目」（會接在最後一個副標的清單之後；沒有副標就放備註上方） */
-  function insertListItem(blockEl, text, editable){
-    const root = findContentRoot(blockEl); if(!root) return null;
+  function insertListItem(host, text){
+    const root = host.querySelector('.qa-content'); if(!root) return null;
     const subs = $all(root, '.qa-block-sub');
     let targetListWrap = null;
 
@@ -95,7 +90,7 @@
 
     const ul = targetListWrap.querySelector('ul');
     const li = document.createElement('li');
-    li.contentEditable = !!editable;
+    li.contentEditable = host.closest('[data-mode="ADMIN"]') ? 'true' : 'false';
     li.textContent = t(text || '請輸入項目');
     ul.appendChild(li);
     li.focus();
@@ -110,13 +105,95 @@
     }
   }
 
-  /** 插入「備註」（單一個，空字時自動隱藏） */
-  function insertRemark(blockEl, text, editable){
-    const root = findContentRoot(blockEl); if(!root) return null;
+  // 可動態調整欄列的表格
+  function insertDynamicTable(host, { headers=['欄1','欄2'], rows=[['','']] } = {}){
+    const root = host.querySelector('.qa-content'); if(!root) return null;
+
+    const wrap = h('div','qa-block qa-block-table mb-2');
+    const tableWrap = h('div','qa-table-wrap mb-2');
+
+    const tblId = uid('tbl');
+
+    // 工具列：增刪列欄
+    const adminTools = `
+      <div class="d-flex align-items-center gap-2 mb-2 qa-admin">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button type="button" class="btn btn-outline-danger btn-sm qa-tbl-addrow">+ 列</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm qa-tbl-delrow">- 列</button>
+          <span class="vr" style="opacity:.25;"></span>
+          <button type="button" class="btn btn-outline-danger btn-sm qa-tbl-addcol">+ 欄</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm qa-tbl-delcol">- 欄</button>
+          <button type="button" class="btn btn-outline-dark btn-sm qa-tbl-del">刪除表格</button>
+        </div>
+      </div>
+    `;
+
+    tableWrap.innerHTML = `
+      ${adminTools}
+      <div class="table-responsive">
+        <table id="${tblId}" class="table table-bordered align-middle small mb-0 ts-dyn-table">
+          <colgroup></colgroup>
+          <thead class="table-danger"><tr></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    `;
+    wrap.appendChild(tableWrap);
+
+    root.appendChild(wrap);
+
+    const table = tableWrap.querySelector('table');
+    rebuildTable(table, headers, rows, host.getAttribute('data-mode')==='ADMIN');
+
+    ensureRemarkAtBottom(root);
+    return wrap;
+  }
+
+  function rebuildTable(table, headers, rows, isAdmin){
+    const thead = table.querySelector('thead tr');
+    const tbody = table.querySelector('tbody');
+    const cg    = table.querySelector('colgroup');
+
+    thead.innerHTML=''; tbody.innerHTML=''; cg.innerHTML='';
+
+    // 均分欄寬
+    const n = Math.max(1, headers.length||0);
+    for (let i=0;i<n;i++){
+      const col = document.createElement('col');
+      col.style.width = (Math.round(100/n)) + '%';
+      cg.appendChild(col);
+    }
+
+    headers.forEach(hd=>{
+      const th = document.createElement('th');
+      th.contentEditable = isAdmin ? 'true' : 'false';
+      th.textContent = t(hd || '');
+      thead.appendChild(th);
+    });
+
+    // 至少一列
+    const bodyRows = (Array.isArray(rows) && rows.length) ? rows : [ new Array(n).fill('') ];
+    bodyRows.forEach(r=>{
+      const tr = document.createElement('tr');
+      for (let i=0;i<n;i++){
+        const td = document.createElement('td');
+        td.contentEditable = isAdmin ? 'true' : 'false';
+        td.setAttribute('data-label', t(headers[i] || ''));
+        td.textContent = t(r?.[i] || '');
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    });
+  }
+
+  function insertRemark(host, text){
+    const root = host.querySelector('.qa-content'); if(!root) return null;
     let w = root.querySelector('.qa-block-remark');
+    const isAdmin = host.getAttribute('data-mode')==='ADMIN';
+
     if (!w) {
       w = h('div','qa-block qa-block-remark small text-muted mt-2');
-      w.innerHTML = `※ <span class="qa-remark-text" ${editable?'contenteditable="true"':''}></span>`;
+      w.innerHTML = `※ <span class="qa-remark-text" ${isAdmin?'contenteditable="true"':''}></span>`;
       root.appendChild(w);
     }
     const span = w.querySelector('.qa-remark-text');
@@ -127,115 +204,8 @@
     return w;
   }
 
-  /** 插入「動態表格」（可 +列/–列、+欄/–欄；thead 可編輯欄名；等寬配置） */
-  function insertFlexTable(blockEl, { cols=2, rows=1, editable } = {}){
-    const root = findContentRoot(blockEl); if(!root) return null;
-    cols = Math.max(1, Math.min(8, parseInt(cols)||2));
-    rows = Math.max(1, Math.min(50, parseInt(rows)||1));
-
-    const wrap = h('div','qa-block qa-block-table mb-2');
-    const panel = h('div','qa-admin d-flex align-items-center gap-2 mb-2');
-    panel.innerHTML = `
-      <div class="d-flex align-items-center gap-2 flex-wrap">
-        <span class="small text-muted">欄位：</span>
-        <button type="button" class="btn btn-outline-danger btn-sm qa-tbl-addcol">+ 欄</button>
-        <button type="button" class="btn btn-outline-secondary btn-sm qa-tbl-delcol">- 欄</button>
-        <span class="small text-muted ms-2">列：</span>
-        <button type="button" class="btn btn-outline-danger btn-sm qa-tbl-addrow">+ 列</button>
-        <button type="button" class="btn btn-outline-secondary btn-sm qa-tbl-delrow">- 列</button>
-      </div>
-      <div class="ms-auto">
-        <button type="button" class="btn btn-outline-dark btn-sm qa-tbl-del">刪除表格</button>
-      </div>
-    `;
-    const tableWrap = h('div','table-responsive qa-table-wrap mb-2');
-    const table = h('table','table table-bordered align-middle small mb-0');
-
-    const cg = document.createElement('colgroup');
-    const thead = h('thead','table-danger'); const thr = document.createElement('tr');
-    const tbody = document.createElement('tbody');
-
-    // 產欄
-    const applyColCount = (n)=>{
-      cg.innerHTML=''; thr.innerHTML='';
-      const width = Math.round(100 / n);
-      for (let i=0;i<n;i++){
-        const col = document.createElement('col');
-        col.style.width = width + '%';
-        cg.appendChild(col);
-
-        const th = document.createElement('th');
-        th.contentEditable = !!editable;
-        th.textContent = `欄${i+1}`;
-        thr.appendChild(th);
-      }
-      // 調整每列的 cell 數
-      Array.from(tbody.querySelectorAll('tr')).forEach(tr=>{
-        while(tr.children.length > n) tr.removeChild(tr.lastElementChild);
-        while(tr.children.length < n){
-          const td = document.createElement('td');
-          td.contentEditable = !!editable;
-          td.spellcheck = false;
-          tr.appendChild(td);
-        }
-      });
-    };
-
-    // 產列
-    const addRow = ()=>{
-      const n = thr.children.length || cols;
-      const tr = document.createElement('tr');
-      for (let i=0;i<n;i++){
-        const td = document.createElement('td');
-        td.contentEditable = !!editable;
-        td.spellcheck = false;
-        tr.appendChild(td);
-      }
-      tbody.appendChild(tr);
-    };
-
-    table.appendChild(cg);
-    thead.appendChild(thr); table.appendChild(thead);
-    table.appendChild(tbody);
-    tableWrap.appendChild(table);
-    wrap.appendChild(panel); wrap.appendChild(tableWrap);
-
-    applyColCount(cols);
-    for (let r=0;r<rows;r++) addRow();
-
-    // 事件（此表格作用域）
-    panel.addEventListener('click', (e)=>{
-      if (e.target.classList.contains('qa-tbl-addcol')){
-        applyColCount( (thr.children.length||1) + 1 ); return;
-      }
-      if (e.target.classList.contains('qa-tbl-delcol')){
-        const n = (thr.children.length||1);
-        if (n>1) applyColCount(n-1);
-        return;
-      }
-      if (e.target.classList.contains('qa-tbl-addrow')){
-        addRow(); return;
-      }
-      if (e.target.classList.contains('qa-tbl-delrow')){
-        const rows = tbody.querySelectorAll('tr');
-        if (rows.length) rows[rows.length-1].remove();
-        return;
-      }
-      if (e.target.classList.contains('qa-tbl-del')){
-        wrap.remove(); return;
-      }
-    });
-
-    // 插入到 remark 上方（若有）
-    const remark = root.querySelector('.qa-block-remark');
-    if (remark) root.insertBefore(wrap, remark); else root.appendChild(wrap);
-    ensureRemarkAtBottom(root);
-    return wrap;
-  }
-
-  // ======= 兩種內容區塊：手風琴 / 卡片 =======
-  /** 建立共同的「灰色工具列」HTML（依容器類型帶入 data-target） */
-  function buildAdminToolbar(){
+  // ========== 類別內「內容區塊」：手風琴 / 卡片 ==========
+  function buildToolsBar(){
     return `
       <div class="d-flex flex-wrap align-items-center gap-2 mb-2 qa-admin">
         <div class="d-flex flex-wrap align-items-center gap-2">
@@ -245,90 +215,158 @@
           <button type="button" class="btn btn-outline-secondary btn-sm qa-insert-remark">新增備註</button>
         </div>
         <div class="ms-auto">
-          <button type="button" class="btn btn-outline-dark btn-sm qa-block-del">刪除</button>
-        </div>
-      </div>`;
-  }
-
-  /** 新增「手風琴區塊」 */
-  function createAccordionBlock(title, { editable }){
-    const hid = uid('heading');
-    const cid = uid('collapse');
-    const wrap = h('div','qa-item qa-type-accordion mb-3');
-    wrap.innerHTML = `
-      <div class="accordion-item mb-2" style="border:none;">
-        <h2 class="accordion-header" id="${hid}">
-          <button class="accordion-button bg-danger text-white fw-bold rounded collapsed px-3 py-2"
-            type="button" data-bs-toggle="collapse" data-bs-target="#${cid}"
-            aria-expanded="false" aria-controls="${cid}">${t(title)}</button>
-        </h2>
-        <div id="${cid}" class="accordion-collapse collapse" aria-labelledby="${hid}">
-          <div class="accordion-body bg-light pt-2 pb-3 px-2">
-            ${buildAdminToolbar()}
-            <div class="qa-content"></div>
-          </div>
+          <button type="button" class="btn btn-outline-dark btn-sm qa-block-del">刪除此區塊</button>
         </div>
       </div>
     `;
-    // 在 USER 模式時關閉工具列與編輯
-    if (!editable) {
-      wrap.querySelectorAll('.qa-admin').forEach(n=> n.style.display='none');
-      wrap.querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
-    }
-    return wrap;
   }
 
-  /** 新增「卡片區塊」（年齡限制卡版型） */
-  function createCardBlock(title, { editable }){
-    const wrap = h('div','qa-item qa-type-card mb-3');
-    wrap.innerHTML = `
-      <div class="card mb-2">
-        <div class="card-header bg-white border-bottom border-danger fw-bold">
-          ${t(title)}
-        </div>
-        <div class="card-body bg-light pt-2 pb-3 px-2">
-          ${buildAdminToolbar()}
+  // 手風琴（沿用原版樣式）
+  function createAccordionBlock(catCard, accTitle){
+    const accWrap = catCard.querySelector('.qa-category-accwrap');
+    const accId = uid('acc');
+    const hid   = uid('heading');
+    const cid   = uid('collapse');
+
+    const item = h('div','accordion-item mb-2 qa-block-holder');
+    item.dataset.blockType = 'accordion';
+    item.innerHTML = `
+      <h2 class="accordion-header" id="${hid}">
+        <button class="accordion-button bg-danger text-white fw-bold rounded collapsed px-3 py-2"
+          type="button" data-bs-toggle="collapse" data-bs-target="#${cid}"
+          aria-expanded="false" aria-controls="${cid}">
+          ${t(accTitle || '未命名手風琴')}
+        </button>
+      </h2>
+      <div id="${cid}" class="accordion-collapse collapse"
+        aria-labelledby="${hid}" data-bs-parent="#${accId}">
+        <div class="accordion-body bg-light pt-2 pb-3 px-2">
+          ${buildToolsBar()}
           <div class="qa-content"></div>
         </div>
       </div>
     `;
-    if (!editable) {
-      wrap.querySelectorAll('.qa-admin').forEach(n=> n.style.display='none');
-      wrap.querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
-    }
-    return wrap;
+
+    accWrap.appendChild(item);
+    return item;
   }
 
-  // ======= 主掛載 =======
+  // 卡片（年齡限制版型：header 紅線 + 灰底 body）
+  function createCardBlock(catCard, cardTitle){
+    const listWrap = catCard.querySelector('.qa-category-cardwrap');
+
+    const card = h('div','card mb-3 shadow-sm qa-block-holder');
+    card.dataset.blockType = 'card';
+    card.innerHTML = `
+      <div class="card-header bg-white border-bottom border-danger fw-bold">
+        ${t(cardTitle || '未命名卡片')}
+      </div>
+      <div class="card-body p-0">
+        <div class="bg-light pt-2 pb-3 px-2">
+          ${buildToolsBar()}
+          <div class="qa-content"></div>
+        </div>
+      </div>
+    `;
+
+    listWrap.appendChild(card);
+    return card;
+  }
+
+  // 依排序模式重排（insert | grouped）
+  function applySort(catCard){
+    const mode = catCard.getAttribute('data-sort') || 'insert'; // insert | grouped
+    const holder = catCard.querySelector('.qa-category-holder');
+
+    // 先清空 holder
+    holder.innerHTML = '';
+
+    const accWrap  = catCard.querySelector('.qa-category-accwrap');
+    const cardWrap = catCard.querySelector('.qa-category-cardwrap');
+
+    if (mode === 'grouped') {
+      // 手風琴在上、卡片在下
+      if (accWrap) holder.appendChild(accWrap);
+      if (cardWrap) holder.appendChild(cardWrap);
+    } else {
+      // 插入順序：照 blockIndex 排
+      const accBlocks  = Array.from(accWrap.children);
+      const cardBlocks = Array.from(cardWrap.children);
+      const all = accBlocks.concat(cardBlocks).sort((a,b)=>{
+        const ka = Number(a.dataset.blockIndex||0);
+        const kb = Number(b.dataset.blockIndex||0);
+        return ka - kb;
+      });
+
+      const insertOrderedWrap = h('div','qa-insert-ordered');
+      all.forEach(node=>{
+        if (node.dataset.blockType==='accordion') {
+          // 為保持原樣，放到新的 accordion 容器中
+          accWrap.appendChild(node);
+        } else {
+          cardWrap.appendChild(node);
+        }
+      });
+      // 重新附回（accWrap 先、cardWrap 後，但內容是依 index 混排）
+      // 做法：把兩個 wrap 里的 children 依 index 交錯插入到 holder
+      const mix = accBlocks.concat(cardBlocks).sort((a,b)=>{
+        const ka = Number(a.dataset.blockIndex||0);
+        const kb = Number(b.dataset.blockIndex||0);
+        return ka - kb;
+      });
+      holder.innerHTML='';
+      mix.forEach(node=>{
+        if (node.dataset.blockType==='accordion') {
+          // 包一層保持樣式
+          const shell = catCard.querySelector('.qa-category-accshell') || h('div','qa-category-accshell');
+          if (!shell.parentNode) holder.appendChild(shell);
+          shell.appendChild(node);
+        } else {
+          const shell2 = catCard.querySelector('.qa-category-cardshell') || h('div','qa-category-cardshell');
+          if (!shell2.parentNode) holder.appendChild(shell2);
+          shell2.appendChild(node);
+        }
+      });
+      return; // 已處理
+    }
+
+    // grouped 模式時，直接把兩個 wrap 依序掛在 holder
+    holder.appendChild(accWrap);
+    holder.appendChild(cardWrap);
+  }
+
+  // ========== 主掛載 ==========
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
-    if (host._tap_accordion) return host._tap_accordion;
+    if (host._tap_qualify) return host._tap_qualify;
 
-    // 模式與 FA 類別
+    // Mode / FA 前綴（FA5）
     const mode    = FreeTop.resolveMode(host, opts, global);
     const faClass = FreeTop.getFaClass(host, opts, global); // 預設 'fas'
 
-    // 狀態
     const state = { id: uid('qa'), mode, categories: [] };
 
-    // 佈局
     host.innerHTML = '';
     host.classList.add('tap-qualify');
     host.setAttribute('data-mode', state.mode);
 
-    // ===== Admin：新增類別 =====
-    let cfgCat = null;
-    if (state.mode==='ADMIN'){
-      cfgCat = h('div','card mb-3 qa-admin');
+    // ===== Admin：新增「類別」 =====
+    let cfg = null, ip = null;
+    if (state.mode === 'ADMIN') {
+      cfg = h('div','card mb-3 qa-admin');
       const cid = state.id;
 
-      const ip = FreeTop.iconPicker({
-        faClass, value:'', icons: FreeTop.getIconSet(),
-        prefix:'qa', themeVar:'--main-red', fallback:'#ea7066'
+      ip = FreeTop.iconPicker({
+        faClass,
+        value: '',
+        icons: FreeTop.getIconSet(),
+        prefix: 'qa',
+        themeVar: '--main-red',
+        fallback: '#ea7066'
       });
 
-      cfgCat.innerHTML = `
+      cfg.innerHTML = `
         <div class="card-header bg-white border-bottom border-danger fw-bold">新增類別區塊</div>
         <div class="card-body">
           <div class="d-flex flex-wrap align-items-end gap-2">
@@ -342,106 +380,348 @@
             </div>
             <button type="button" class="btn btn-danger btn-sm" id="${cid}-cat-add">插入</button>
           </div>
-        </div>
-      `;
-      host.appendChild(cfgCat);
-      cfgCat.querySelector(`#${cid}-cat-icon`).appendChild(ip.root);
-      cfgCat.querySelector(`#${cid}-cat-add`).addEventListener('click', ()=>{
-        const title = (cfgCat.querySelector(`#${cid}-cat-title`).value||'').trim() || '未命名類別';
+        </div>`;
+      host.appendChild(cfg);
+
+      cfg.querySelector(`#${cid}-cat-icon`).appendChild(ip.root);
+      cfg.querySelector(`#${cid}-cat-add`).addEventListener('click', ()=>{
+        const title = (cfg.querySelector(`#${cid}-cat-title`).value||'').trim() || '未命名類別';
         const icon  = ip.get() || '';
         addCategory(title, { icon });
-        cfgCat.querySelector(`#${cid}-cat-title`).value = '';
+        cfg.querySelector(`#${cid}-cat-title`).value = '';
       });
     }
 
-    // 類別容器
     const catsWrap = h('div','qa-categories');
     host.appendChild(catsWrap);
 
     // ===== 類別卡片 =====
     function addCategory(title, { icon='' } = {}){
       const catId = uid('cat');
-      const card = h('div','mb-3 qa-category');
-      const iconHtml = icon ? `<i class="${faClass} ${icon} me-2" style="color:${THEME_COLOR};"></i>` : '';
+      const card  = h('div','mb-3 qa-category');
+      card.dataset.sort = 'insert'; // insert | grouped
       card.innerHTML = `
         <div class="d-flex align-items-center mb-2" style="gap:.5rem;">
-          <div class="fw-bold fs-5" style="letter-spacing:1px;">${iconHtml}${t(title)}</div>
+          <div class="fw-bold fs-5" style="letter-spacing:1px;">
+            ${icon ? `<i class="${faClass} ${icon} me-2" style="color:${THEME_COLOR};"></i>` : ''}${t(title)}
+          </div>
           <div class="ms-auto qa-admin d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-secondary btn-sm qa-sort-toggle">切換排序（目前：依插入順序）</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm qa-toggle-sort">切換排序（目前：插入順序）</button>
             <button type="button" class="btn btn-outline-dark btn-sm qa-cat-del">刪除類別</button>
           </div>
         </div>
 
-        <!-- 新增內容區塊 -->
-        <div class="card mb-2 qa-admin">
-          <div class="card-header bg-white border-bottom border-danger fw-bold">新增內容區塊</div>
-          <div class="card-body">
-            <div class="d-flex flex-wrap align-items-end gap-2">
-              <div class="flex-grow-1" style="max-width:360px;">
-                <label class="form-label small mb-1">內容標題</label>
-                <input type="text" class="form-control form-control-sm qa-item-title" placeholder="輸入標題...">
-              </div>
-              <button type="button" class="btn btn-danger btn-sm qa-add-acc">插入手風琴</button>
-              <button type="button" class="btn btn-danger btn-sm qa-add-card">插入卡片</button>
-            </div>
+        <div class="d-flex align-items-end gap-2 mb-2 qa-admin">
+          <div class="flex-grow-1" style="max-width:360px;">
+            <label class="form-label small mb-1">新增內容區塊標題</label>
+            <input type="text" class="form-control form-control-sm qa-block-title" placeholder="例：高等考試三級 / 年齡限制">
           </div>
+          <button type="button" class="btn btn-danger btn-sm qa-add-acc">插入手風琴</button>
+          <button type="button" class="btn btn-danger btn-sm qa-add-card">插入卡片</button>
         </div>
 
-        <div class="qa-blocks"></div>
+        <div class="qa-category-holder">
+          <!-- 內部有兩個容器，提供 grouped 模式直接上下排列 -->
+          <div class="accordion mb-4 qa-category-accwrap"></div>
+          <div class="qa-category-cardwrap"></div>
+        </div>
       `;
       catsWrap.appendChild(card);
 
-      const catState = { id:catId, node:card, title, icon, sortMode:'insertion' /* 或 'grouped' */ };
-      state.categories.push(catState);
+      const catMeta = { id: catId, node: card, title, icon, order:0, blockCount:0 };
+      state.categories.push(catMeta);
 
-      // 刪除類別
+      // 事件：刪除類別
       const delBtn = card.querySelector('.qa-cat-del');
       if (delBtn) delBtn.addEventListener('click', ()=>{
-        const idx = state.categories.findIndex(c=>c.node===card);
+        const idx = state.categories.findIndex(c => c.node === card);
         if (idx>-1) state.categories.splice(idx,1);
         card.remove();
       });
 
-      // 排序切換
-      const sortBtn = card.querySelector('.qa-sort-toggle');
+      // 事件：切換排序
+      const sortBtn = card.querySelector('.qa-toggle-sort');
       sortBtn?.addEventListener('click', ()=>{
-        catState.sortMode = (catState.sortMode==='insertion') ? 'grouped' : 'insertion';
-        sortBtn.textContent = `切換排序（目前：${catState.sortMode==='insertion'?'依插入順序':'手風琴在上'}）`;
-        applySort(catState);
+        const cur = card.getAttribute('data-sort') || 'insert';
+        const next = cur==='insert' ? 'grouped' : 'insert';
+        card.setAttribute('data-sort', next);
+        sortBtn.textContent = `切換排序（目前：${next==='insert'?'插入順序':'手風琴在上'}）`;
+        applySort(card);
       });
 
-      // 新增內容：手風琴 / 卡片
-      const blocksWrap = card.querySelector('.qa-blocks');
-      const titleInp   = card.querySelector('.qa-item-title');
-
+      // 事件：新增內容區塊
       card.querySelector('.qa-add-acc')?.addEventListener('click', ()=>{
-        const title = (titleInp.value||'').trim() || '未命名手風琴';
-        const blk = createAccordionBlock(title, { editable: state.mode==='ADMIN' });
-        blocksWrap.appendChild(blk);
-        titleInp.value = '';
-        applySort(catState);
+        const titleInput = card.querySelector('.qa-block-title');
+        const ttl = (titleInput.value||'').trim() || '未命名手風琴';
+        const node = createAccordionBlock(card, ttl);
+        node.dataset.blockIndex = (++catMeta.blockCount);
+        applySort(card);
+        titleInput.value='';
       });
-
       card.querySelector('.qa-add-card')?.addEventListener('click', ()=>{
-        const title = (titleInp.value||'').trim() || '未命名卡片';
-        const blk = createCardBlock(title, { editable: state.mode==='ADMIN' });
-        blocksWrap.appendChild(blk);
-        titleInp.value = '';
-        applySort(catState);
+        const titleInput = card.querySelector('.qa-block-title');
+        const ttl = (titleInput.value||'').trim() || '未命名卡片';
+        const node = createCardBlock(card, ttl);
+        node.dataset.blockIndex = (++catMeta.blockCount);
+        applySort(card);
+        titleInput.value='';
       });
 
       if (state.mode==='USER') lockAsUser(card);
-      return catState;
+      return catMeta;
     }
 
-    /** 依 sortMode 排序一個類別下的區塊 */
-    function applySort(catState){
-      const wrap = catState.node.querySelector('.qa-blocks');
-      if (!wrap) return;
-      if (catState.sortMode==='insertion') return; // 保持 DOM 既有順序
+    // ===== 內容區塊內事件（委派）=====
+    host.addEventListener('click', (e)=>{
+      const holder = e.target.closest('.qa-block-holder'); // 手風琴 or 卡片
 
-      // grouped：手風琴在上、卡片在下
-      const acc = []; const cards = [];
-      Array.from(wrap.children).forEach(child=>{
-        if (child.classList.contains('qa-type-accordion')) acc.push(child);
-        else if (child.classList.contains('qa-type-card')) cards.push
+      // 插入標題
+      if (e.target.classList.contains('qa-insert-sub')) {
+        if (holder) insertSubheading(holder);
+        return;
+      }
+      // 插入清單項目
+      if (e.target.classList.contains('qa-insert-li')) {
+        if (holder) insertListItem(holder);
+        return;
+      }
+      // 插入表格（可動態調欄列）
+      if (e.target.classList.contains('qa-insert-table')) {
+        if (holder) insertDynamicTable(holder, {});
+        return;
+      }
+      // 新增備註
+      if (e.target.classList.contains('qa-insert-remark')) {
+        if (holder) insertRemark(holder);
+        return;
+      }
+      // 刪除此區塊
+      if (e.target.classList.contains('qa-block-del')) {
+        const catCard = e.target.closest('.qa-category');
+        if (holder && catCard){
+          holder.remove();
+          applySort(catCard);
+        }
+        return;
+      }
+
+      // 動態表格：增刪列欄 / 刪表
+      if (e.target.classList.contains('qa-tbl-addrow')) {
+        const wrap = e.target.closest('.qa-table-wrap');
+        const table = wrap?.querySelector('table'); if (!table) return;
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+        const tbody = table.querySelector('tbody');
+        const tr = document.createElement('tr');
+        headers.forEach(hd=>{
+          const td = document.createElement('td');
+          td.contentEditable = (host.getAttribute('data-mode')==='ADMIN') ? 'true' : 'false';
+          td.setAttribute('data-label', hd);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+        return;
+      }
+      if (e.target.classList.contains('qa-tbl-delrow')) {
+        const wrap = e.target.closest('.qa-table-wrap');
+        const tbody = wrap?.querySelector('tbody'); if(!tbody) return;
+        const rows = tbody.querySelectorAll('tr');
+        if (rows.length) rows[rows.length-1].remove();
+        return;
+      }
+      if (e.target.classList.contains('qa-tbl-addcol')) {
+        const wrap = e.target.closest('.qa-table-wrap');
+        const table = wrap?.querySelector('table'); if (!table) return;
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+        headers.push(`欄${headers.length+1}`);
+        const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr => Array.from(tr.children).map(td=>td.textContent));
+        // 加空白值
+        rows.forEach(r => r.push(''));
+        rebuildTable(table, headers, rows, host.getAttribute('data-mode')==='ADMIN');
+        return;
+      }
+      if (e.target.classList.contains('qa-tbl-delcol')) {
+        const wrap = e.target.closest('.qa-table-wrap');
+        const table = wrap?.querySelector('table'); if (!table) return;
+        let headers = Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+        if (headers.length<=1) return;
+        headers = headers.slice(0, headers.length-1);
+        const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr => Array.from(tr.children).map(td=>td.textContent));
+        rows.forEach(r => r.splice(r.length-1,1));
+        rebuildTable(table, headers, rows, host.getAttribute('data-mode')==='ADMIN');
+        return;
+      }
+      if (e.target.classList.contains('qa-tbl-del')) {
+        const w = e.target.closest('.qa-block-table');
+        if (w) {
+          const contentRoot = w.closest('.qa-content');
+          w.remove();
+          if (contentRoot) ensureRemarkAtBottom(contentRoot);
+        }
+        return;
+      }
+    });
+
+    // 內容可編輯的清除空白節點（Enter/Blur）
+    host.addEventListener('keydown', (e)=>{
+      if (e.key !== 'Enter') return;
+      if (state.mode !== 'ADMIN') return;
+      if (e.target.classList.contains('qa-sub')) {
+        const txt = (e.target.textContent||'').trim();
+        if (!txt) {
+          e.preventDefault();
+          const wrap = e.target.closest('.qa-block-sub');
+          if (wrap) wrap.remove();
+        }
+      }
+      if (e.target.tagName === 'LI') {
+        const txt = (e.target.textContent||'').trim();
+        if (!txt) {
+          e.preventDefault();
+          const ul = e.target.closest('ul');
+          e.target.remove();
+          if (ul && !ul.querySelector('li')) {
+            const lw = ul.closest('.qa-block-list');
+            if (lw) lw.remove();
+          }
+        }
+      }
+    });
+    host.addEventListener('blur', (e)=>{
+      if (state.mode !== 'ADMIN') return;
+      if (e.target.classList && e.target.classList.contains('qa-sub')) {
+        const wrap = e.target.closest('.qa-block-sub');
+        if (wrap && !e.target.textContent.trim()) wrap.remove();
+      }
+      if (e.target.tagName === 'LI') {
+        const ul = e.target.closest('ul');
+        if (!e.target.textContent.trim()) {
+          e.target.remove();
+          if (ul && !ul.querySelector('li')) {
+            const lw = ul.closest('.qa-block-list');
+            if (lw) lw.remove();
+          }
+        }
+      }
+    }, true);
+
+    // ===== 模式切換 =====
+    function lockAsUser(scope){
+      (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='none');
+      (scope||host).querySelectorAll('[contenteditable="true"]').forEach(td=> td.setAttribute('contenteditable','false'));
+      host.setAttribute('data-mode','USER');
+    }
+    function unlockAsAdmin(scope){
+      (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='');
+      (scope||host).querySelectorAll('.qa-sub, li, th, td, .qa-remark-text').forEach(el=>{
+        if (el.closest('.tap-qualify')) el.setAttribute('contenteditable','true');
+      });
+      host.setAttribute('data-mode','ADMIN');
+    }
+    if (state.mode==='USER') lockAsUser();
+
+    // ===== JSON =====
+    function serializeBlock(holder){
+      // 取標題（手風琴按鈕 或 卡片 header）
+      let title = '';
+      if (holder.dataset.blockType==='accordion') {
+        title = holder.querySelector('.accordion-button')?.textContent.trim() || '';
+      } else {
+        title = holder.querySelector('.card-header')?.textContent.trim() || '';
+      }
+      const root = holder.querySelector('.qa-content');
+      const blocks = [];
+      Array.from(root.children).forEach(child=>{
+        if (child.classList.contains('qa-block-sub')) {
+          blocks.push({ type:'subheading', text: (child.querySelector('.qa-sub')?.textContent||'').trim() });
+        } else if (child.classList.contains('qa-block-list')) {
+          const ul = child.querySelector('ul');
+          const arr = ul ? Array.from(ul.querySelectorAll('li')).map(li => (li.textContent||'').trim()) : [];
+          blocks.push({ type:'list', items: arr });
+        } else if (child.classList.contains('qa-block-table')) {
+          const table = child.querySelector('table');
+          const headers = Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+          const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim()));
+          blocks.push({ type:'table', headers, rows });
+        } else if (child.classList.contains('qa-block-remark')) {
+          const txt = (child.querySelector('.qa-remark-text')?.textContent||'').trim();
+          blocks.push({ type:'remark', text: txt });
+        }
+      });
+      return { kind: holder.dataset.blockType, title, blocks, order: Number(holder.dataset.blockIndex||0) };
+    }
+
+    function getJSON(){
+      const categories = state.categories.map(c=>{
+        const node = c.node;
+        const blocks = [];
+        // 兩種容器內的 block
+        node.querySelectorAll('.qa-block-holder').forEach(b => blocks.push(serializeBlock(b)));
+        return { title:c.title, icon:c.icon, sortMode: node.getAttribute('data-sort') || 'insert', blocks: blocks.sort((a,b)=> a.order-b.order) };
+      });
+      return { schemaVersion: 1, updatedAt: Date.now(), categories };
+    }
+
+    function setJSON(data={}){
+      catsWrap.innerHTML=''; state.categories=[];
+      (data.categories||[]).forEach(cat=>{
+        const ref = addCategory(cat.title||'未命名類別', { icon: cat.icon||'' });
+        const card = ref.node;
+        // 設定排序模式
+        if (cat.sortMode) {
+          card.setAttribute('data-sort', cat.sortMode);
+          const btn = card.querySelector('.qa-toggle-sort');
+          if (btn) btn.textContent = `切換排序（目前：${cat.sortMode==='insert'?'插入順序':'手風琴在上'}）`;
+        }
+        // 插入 blocks
+        let idx = 0;
+        (cat.blocks||[]).forEach(b=>{
+          let holder = null;
+          if (b.kind==='accordion') holder = createAccordionBlock(card, b.title||'');
+          else if (b.kind==='card') holder = createCardBlock(card, b.title||'');
+          if (!holder) return;
+
+          holder.dataset.blockIndex = (++idx);
+          const root = holder.querySelector('.qa-content');
+
+          (b.blocks||[]).forEach(x=>{
+            if (x.type==='subheading') insertSubheading(holder, x.text||'');
+            else if (x.type==='list' && Array.isArray(x.items)) x.items.forEach(it=> insertListItem(holder, it||''));
+            else if (x.type==='table') insertDynamicTable(holder, { headers: x.headers||['欄1','欄2'], rows: x.rows||[['','']] });
+            else if (x.type==='remark') insertRemark(holder, x.text||'');
+          });
+
+          ensureRemarkAtBottom(root);
+        });
+        applySort(card);
+      });
+
+      if (state.mode==='USER') lockAsUser();
+    }
+
+    function setMode(next){
+      const v = String(next||'USER').toUpperCase()==='ADMIN' ? 'ADMIN' : 'USER';
+      state.mode = v;
+      if (v==='USER') lockAsUser();
+      else unlockAsAdmin();
+    }
+
+    const api = { setMode, getJSON, setJSON, addCategory };
+    host._tap_qualify = api;
+    return api;
+  }
+
+  // ========== 自動掛載 + 前台自動吃資料 ==========
+  function autoload(){
+    document.querySelectorAll('[data-tap-plugin="qualify"]').forEach(node=>{
+      if (node._tap_qualify) return;
+      const api = mount(node, {});
+      FreeTop.applyInitialJSON(node, api);
+    });
+  }
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', autoload);
+  else autoload();
+
+  // export
+  global.TAPQualifyKit = { mount };
+
+})(window);
