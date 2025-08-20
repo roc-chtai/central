@@ -267,7 +267,7 @@
     // ===== 類別卡片 =====
     function addCategory(title, { icon='' } = {}){
       const catId = uid('cat');
-      const card = h('div','mb-3');
+const card = h('div','mb-3 qa-category');
       const iconHtml = icon ? `<i class="${faClass} ${icon} me-2" style="color:${THEME_COLOR};"></i>` : '';
 
       card.innerHTML = `
@@ -388,7 +388,7 @@
     host.addEventListener('click', (e)=>{
       // 類別新增內容
      if (e.target.classList.contains('qa-add-acc') || e.target.classList.contains('qa-add-card')){
-  const cat = e.target.closest('.mb-3');
+const cat = e.target.closest('.qa-category');
   const titleInput = cat.querySelector('.qa-entry-title');
   const val = (titleInput.value||'').trim();
 
