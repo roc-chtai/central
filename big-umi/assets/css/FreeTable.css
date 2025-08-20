@@ -1,39 +1,59 @@
-/* 只作用於插件容器 */
-.tap-subjects{ overflow-x:hidden; }
-
-/* 錨點按鈕列（只有按鈕） */
-.tap-subjects .ts-anchors .btn{ margin-right:.25rem; margin-bottom:.25rem; }
+/* 只作用於兩個插件容器 */
+.tap-subjects, .tap-qualify{ overflow-x:hidden; }
 
 /* 表格：固定寬 & 可換行，避免水平卷軸 */
-.tap-subjects .ts-table{ table-layout:fixed; width:100%; word-break:break-word; }
-.tap-subjects th, .tap-subjects td{ white-space: normal; }
-
-/* USER 模式一律隱藏所有管理 UI */
-.tap-subjects[data-mode="USER"] .ts-admin { 
-  display: none !important;
+.tap-subjects .ts-table,
+.tap-qualify  .ts-table{
+  table-layout:fixed; width:100%; word-break:break-word;
 }
-/* 確保百分比欄位不消失 */
-.tap-subjects .ts-col-item { align-items: center; }
-.tap-subjects .ts-col-item .input-group {
+.tap-subjects th, .tap-subjects td,
+.tap-qualify  th, .tap-qualify  td{
+  white-space: normal; text-align: left; /* 文字靠左（避免資料少時靠右看起來怪） */
+}
+
+/* 百分比欄位/欄寬面板的數字框，不要擠爆版面（若 FreeTable 有 ts-col-item，可沿用） */
+.tap-subjects .ts-col-item, .tap-qualify .ts-col-item{ align-items: center; }
+.tap-subjects .ts-col-item .input-group,
+.tap-qualify  .ts-col-item .input-group{
   width: 25% !important;           
   box-sizing: border-box;
 }
 
 /* 手機卡片式（≤576px） */
 @media (max-width:576px){
-  .tap-subjects thead{ display:none; }
+  .tap-subjects .ts-table thead,
+  .tap-qualify  .ts-table thead{ display:none; }
+
   .tap-subjects .ts-table,
   .tap-subjects .ts-table tbody,
   .tap-subjects .ts-table tr,
-  .tap-subjects .ts-table td{ display:block; width:100%; }
-  .tap-subjects .ts-table tr{
-    border:1px solid #eef3f7; border-radius:10px; padding:6px; margin-bottom:10px;
+  .tap-subjects .ts-table td,
+  .tap-qualify  .ts-table,
+  .tap-qualify  .ts-table tbody,
+  .tap-qualify  .ts-table tr,
+  .tap-qualify  .ts-table td{
+    display:block; width:100%;
   }
-  .tap-subjects .ts-table td{
-    display:flex; gap:10px; justify-content:space-between; align-items:flex-start; padding:.55rem .5rem;
+
+  .tap-subjects .ts-table tr,
+  .tap-qualify  .ts-table tr{
+    border:1px solid #eef3f7; border-radius:10px; padding:6px; margin-bottom:10px; background:#fff;
   }
-  .tap-subjects .ts-table td::before{
+
+  .tap-subjects .ts-table td,
+  .tap-qualify  .ts-table td{
+    display:flex; gap:10px; justify-content:flex-start; align-items:flex-start;
+    padding:.55rem .5rem;
+    border:0; border-bottom:1px solid #eee;
+  }
+  .tap-subjects .ts-table td:last-child,
+  .tap-qualify  .ts-table td:last-child{ border-bottom:0; }
+
+  .tap-subjects .ts-table td::before,
+  .tap-qualify  .ts-table td::before{
     content: attr(data-label);
-    font-weight:700; color:#4a5c70; flex:0 0 42%; max-width:42%;
+    font-weight:700; color:#4a5c70;
+    flex:0 0 42%; max-width:42%;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
 }
