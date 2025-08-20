@@ -1,0 +1,78 @@
+/* 主題色 */
+:root{
+  --main-red: #ea7066;
+  --main-red-20: #ea706633; /* 20% 透明 */
+}
+
+/* 外掛容器 */
+.tap-qualify{ overflow-x: hidden; }
+
+/* USER 模式隱藏所有管理 UI（雙保險：JS 已隱藏一次） */
+.tap-qualify[data-mode="USER"] .qa-admin{
+  display: none !important;
+}
+
+/* —— 顏色統一（在插件容器內，把 Bootstrap 的 danger 映射到 main-red） —— */
+.tap-qualify .bg-danger{ background-color: var(--main-red) !important; border-color: var(--main-red) !important; }
+.tap-qualify .text-danger, 
+.tap-qualify .link-danger{ color: var(--main-red) !important; }
+.tap-qualify .border-danger{ border-color: var(--main-red) !important; }
+.tap-qualify .btn-outline-danger{
+  color: var(--main-red); border-color: var(--main-red);
+}
+.tap-qualify .btn-outline-danger:hover{
+  background-color: var(--main-red); color:#fff; border-color: var(--main-red);
+}
+
+/* —— 卡片 header：上方有一條主題色線 & 粗體 —— */
+.tap-qualify .card .card-header{
+  border-bottom-width: 2px;
+  font-weight: 700;
+}
+
+/* —— 灰底內容面板（工具列 + 內容） —— */
+.tap-qualify .qa-pane{
+  background: #f8f9fa; /* 比 bg-light 再穩一點的灰 */
+  border-radius: 12px;
+  padding-top: .5rem; padding-bottom: .75rem; padding-left: .5rem; padding-right: .5rem;
+}
+
+/* 工具列與內容塊的間距 */
+.tap-qualify .qa-pane .qa-admin{ margin-bottom: .5rem; }
+.tap-qualify .qa-block + .qa-block{ margin-top: .5rem; }
+
+/* 副標題（紅、粗體） */
+.tap-qualify .qa-block-sub .qa-sub{
+  color: var(--main-red);
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+/* 清單（靠左、緊湊） */
+.tap-qualify .qa-block-list ul{
+  margin: 0 0 .25rem 0;
+  padding-left: 1.1rem;
+}
+
+/* 備註（小字、灰） */
+.tap-qualify .qa-block-remark{
+  color: #6c757d;
+  font-size: .9em;
+}
+
+/* 手風琴按鈕：使用 BS 顏色 */
+.tap-qualify .accordion-button{
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+}
+.tap-qualify .accordion-button::after{ display: none !important; }
+
+/* 類別卡片上方工具按鈕列（排序切換、刪除）排版穩定 */
+.tap-qualify .qa-category > .d-flex .qa-admin{
+  display: flex; gap: .5rem;
+}
+
+/* 欄寬面板（數字框緊湊些） */
+.tap-qualify .qa-tflex-widths-panel .input-group{
+  width: 100px;
+}
