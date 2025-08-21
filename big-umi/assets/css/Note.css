@@ -14,3 +14,11 @@
   margin-bottom: 0;
   padding-left: 1.25rem; /* = .ps-3 */
 }
+
+/* 只影響 Note 外掛 */
+
+.tap-note .note-alert a,
+.tap-note .note-alert a:visited{
+  color: #d53838 !important;
+  text-decoration: underline;
+}
