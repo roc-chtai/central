@@ -60,7 +60,7 @@
       // 一個預設項目，示範可套粗體
       if (!ul.children.length) {
         const li = document.createElement('li');
-        li.innerHTML = '<strong>高普考可同時報名，但每級僅限一類科。</strong>';
+        li.innerHTML = '<strong>最新提醒：</strong> 114年度高普考，報名時程與詳細簡章，請至 考試簡章 查詢。';
         ul.appendChild(li);
       }
     }
