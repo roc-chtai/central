@@ -1,5 +1,5 @@
 /*!
- * 依賴：window.FreeTop（請先載入 /assets/js/FreeTop.js），Bootstrap
+ * 依賴：window.FreeTop
  *
  * 召喚：
  *   <div data-tap-plugin="note" data-variant="warning"></div>  // 自動掛載
@@ -51,7 +51,7 @@
     const ul = document.createElement('ul'); ul.className = 'mb-0 ps-3';
     alertBox.appendChild(ul);
 
-    // 初始：不要自動產生項目；預設隱藏黃框（等使用者「新增項目」或 setJSON 注入才顯示）
+    // 初始顯示控制：預設先隱藏
     alertBox.style.display = 'none';
 
     if (mode !== 'ADMIN') tools.style.display = 'none';
@@ -89,6 +89,17 @@
       }
     }
 
+    // ★ 初次掛載（ADMIN）且沒有任何項目時：自動帶入「原本的文字」
+    if (mode === 'ADMIN' && ul.children.length === 0) {
+      const li = document.createElement('li');
+      li.innerHTML =
+        '<strong>最新提醒：</strong> 114年度高普考預計 7 月初舉行，報名時程與詳細簡章，請至 ' +
+        '<a href="https://www.moex.gov.tw/main/exam/wFrmExamList.aspx">考試簡章</a> 查詢。';
+      ul.appendChild(li);
+      normalizeLinks(ul);
+      alertBox.style.display = ''; // 顯示
+    }
+
     // 事件（ADMIN）
     host.addEventListener('click', (e)=>{
       if (host.getAttribute('data-mode')!=='ADMIN') return;
@@ -111,7 +122,7 @@
         return;
       }
       if (e.target.classList.contains('note-add')){
-        // 首次新增：顯示 alert 並建立第一個 li
+        // 沒有任何項目 → 先顯示區塊
         const li = document.createElement('li');
         li.innerHTML = '新項目';
         ul.appendChild(li);
@@ -166,7 +177,7 @@
 
       normalizeLinks(ul);
       ensureEditable();
-      updateVisibility(); // ※ 這行確保「無項目」時整塊黃框消失
+      updateVisibility(); // 0 項目就隱藏；有項目就顯示
     }
     function setMode(next){
       const v = String(next||'USER').toUpperCase()==='ADMIN' ? 'ADMIN' : 'USER';
@@ -186,7 +197,7 @@
     document.querySelectorAll('[data-tap-plugin="note"]').forEach(node=>{
       if (node._tap_note) return;
       const api = mount(node, { variant: node.dataset.variant || 'warning' });
-      // 若你有用 FreeTop 的 JSON 注入機制，這行會自動吃：
+      // 若有使用 FreeTop 的 JSON 注入
       if (window.FreeTop && typeof FreeTop.applyInitialJSON === 'function') {
         FreeTop.applyInitialJSON(node, api);
       }
