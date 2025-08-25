@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <!-- Site Tittle -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>  </title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/kki/assets/plugins/animate/animate.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/kki/assets/plugins/fancybox/jquery.fancybox.min.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/kki/assets/plugins/isotope/isotope.min.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/kki/assets/plugins/owl-carousel/owl.carousel.min.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/kki/assets/plugins/owl-carousel/owl.theme.default.min.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/kki/assets/css/kidz.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/central/big-umi/assets/css/FreeTable.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/central/big-umi/assets/css/Accordion.css">
+<link rel="stylesheet" href="https://roc-chtai.github.io/central/big-umi/assets/css/Note.css">
+
+  <style>
+    :root {
+  --main-red: #ea7066;
+  --main-red-light: #ea706680;
+}
+
+/* sidebar 保護最大最小寬度，RWD自動全寬 */
+nav.col-md-3, nav.col-lg-2 {
+  min-width: 160px;
+  max-width: 220px;
+}
+@media (max-width: 991px) {
+  nav.col-md-3, nav.col-lg-2 {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+main.col-md-9, main.col-lg-10 {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* ====== 側邊主框 ====== */
+.sidebar-accordion {
+  border: 2px solid var(--main-red);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.08rem 0.10rem 0.20rem 0.10rem;
+  margin-bottom: 1rem;
+}
+
+/* ====== Accordion 按鈕（超緊湊扁平版）====== */
+.custom-accordion-btn {
+  background: #fff;
+  color: var(--main-red);
+  border: none;
+  font-weight: 700;
+  border-radius: 8px 8px 0 0;
+  padding: 0.38rem 0.6rem 0.38rem 1.05rem;
+  font-size: 1.02rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: unset;
+  box-shadow: none;
+  outline: none;
+  margin-bottom: 0;
+  gap: 8px;
+  white-space: nowrap;
+}
+.custom-accordion-btn:focus { box-shadow: none; outline: none; }
+.custom-accordion-btn .custom-chevron {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+.chevron-path {
+  stroke: var(--main-red);
+  transition: stroke 0.12s;
+  stroke-width: 2.4;
+}
+.custom-accordion-btn:not(.collapsed) {
+  background: var(--main-red);
+  color: #fff;
+  font-weight: 700;
+}
+.custom-accordion-btn:not(.collapsed) .chevron-path {
+  stroke: #fff;
+}
+
+/* ==== 移除 Bootstrap 預設箭頭 ==== */
+.accordion-button::after { display: none !important; }
+
+/* ======= 收緊框線 & 內容 ====== */
+.accordion-item,
+.accordion-button {
+  border: none;
+  background: transparent;
+  margin-bottom: 0;
+}
+.accordion-body { padding: 0; }
+
+/* ====== 側邊清單分隔 & 連結 ====== */
+.category-list .list-group-item {
+  color: var(--main-red);
+  font-weight: 500;
+  border: none;
+  border-bottom: 1.5px solid var(--main-red-light);
+  background: transparent;
+  transition: background 0.1s;
+  padding: 0.52rem 1.15rem 0.52rem 1.15rem;
+  font-size: 1rem;
+}
+.category-list .list-group-item:last-child {
+  border-bottom: none;
+}
+.category-list .list-group-item a {
+  color: var(--main-red);
+  text-decoration: none;
+  font-weight: 500;
+}
+.category-list .list-group-item a:hover {
+  text-decoration: underline;
+  color: #b43128;
+}
+
+/* ====== 右邊 tab 書籤主題色 ====== */
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  background-color: var(--main-red) !important;
+  color: #fff !important;
+  border-color: var(--main-red) var(--main-red) #fff !important;
+  font-weight: 600;
+}
+.nav-tabs .nav-link {
+  color: var(--main-red);
+  border-radius: 0.5rem 0.5rem 0 0;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-tabs .nav-link:hover:not(.active) {
+  background-color: #fbe5e3;
+  color: var(--main-red);
+}
+.nav-tabs {
+  border-bottom: 2px solid var(--main-red);
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
+.custom-chevron {
+  transition: transform 0.3s ease;
+}
+.accordion-button:not(.collapsed) .custom-chevron {
+  transform: rotate(180deg);
+}
+
+
+.nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+.nav-tabs {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 修正箭頭突破邊界問題 */
+.custom-accordion-btn {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-chevron svg {
+  max-width: 20px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid mt-4">
+  <div class="row">
+    <!-- 左側 Accordion 側欄 -->
+   <nav class="col-md-3 col-lg-2 mb-3">
+  <div class="accordion sidebar-accordion" id="sidebarAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed custom-accordion-btn" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          類科介紹
+          <span class="custom-chevron">
+            <!-- SVG箭頭，預設往下 -->
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path class="chevron-path" d="M6 9l5 5 5-5" stroke="#ea7066" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse"
+           aria-labelledby="headingOne" data-bs-parent="#sidebarAccordion">
+        <div class="accordion-body p-0">
+          <ul class="list-group list-group-flush category-list">
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+    <!-- 主內容區域 -->
+    <main class="col-md-9 col-lg-10">
+      <!-- 上方 Tabs 導覽 -->
+      <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="apply-tab" data-bs-toggle="tab" data-bs-target="#apply" type="button" role="tab">應考資訊</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="signup-tab" data-bs-toggle="tab" data-bs-target="#signup" type="button" role="tab">報名資格</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="subjects-tab" data-bs-toggle="tab" data-bs-target="#subjects" type="button" role="tab">考科/錄取</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="salary-tab" data-bs-toggle="tab" data-bs-target="#salary" type="button" role="tab">薪水福利</button>
+        </li>
+      
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="work-tab" data-bs-toggle="tab" data-bs-target="#work" type="button" role="tab">分發工作</button>
+        </li>
+      </ul>
+
+      <!-- Tabs內容區塊 -->
+      <div class="tab-content" id="mainTabContent">
+        
+        
+<!-- 應考資訊 -->
+<div class="tab-pane fade show active" id="apply" role="tabpanel" aria-labelledby="apply-tab">
+  <div id="Exam-note" data-tap-plugin="note" data-variant="warning"></div>
+  <div id="Exam-info" data-tap-plugin="qualify"></div>
+</div>
+
+<!-- 報名資格 -->
+<div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
+  <h3 class="fw-bold mb-4" style="color:#ea7066;">報名資格總覽</h3>
+  <div id="qualifyPlugin" data-tap-plugin="qualify"></div>
+  <!-- 你的表單 -->
+</div>
+
+<!-- 考科 / 錄取（FreeTable） -->
+<div class="tab-pane fade" id="subjects" role="tabpanel" aria-labelledby="subjects-tab">
+  <h3 class="fw-bold mb-4" style="color:#ea7066;">各個考科與錄取名額</h3>
+  <div id="subjectsPlugin" data-tap-plugin="subjects"></div>
+</div>
+
+<!-- 薪水福利 -->
+<div class="tab-pane fade" id="salary" role="tabpanel" aria-labelledby="salary-tab">
+  <h3 class="fw-bold mb-4" style="color:#ea7066;">薪水福利總覽</h3>
+  <div id="SalaryPlugin" data-tap-plugin="qualify"></div>
+</div>
+
+<!-- 分發工作 -->
+<div class="tab-pane fade" id="work" role="tabpanel" aria-labelledby="work-tab">
+  <h3 class="fw-bold mb-4" style="color:#ea7066;">各個類別分發工作</h3>
+<div id="WorkPlugin" data-tap-plugin="assign" data-anchor-list="#sidebarAccordion .category-list"></div>
+</div>
+  
+<script src="https://roc-chtai.github.io/kki/assets/plugins/jquery/jquery.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/fancybox/jquery.fancybox.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/isotope/isotope.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/images-loaded/js/imagesloaded.pkgd.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/lazyestload/lazyestload.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/owl-carousel/owl.carousel.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/revolution/js/jquery.themepunch.tools.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/revolution/js/jquery.themepunch.revolution.min.js"></script>
+<script src="https://roc-chtai.github.io/kki/assets/plugins/wow/wow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://uat.donhi.com.tw/themes/donhi2025/assets/js/kidz.js"></script>
+<script src="https://roc-chtai.github.io/central/big-umi/assets/js/FreeTop.js"></script>
+<script src="https://roc-chtai.github.io/central/big-umi/assets/js/FreeTable.js"></script>
+<script src="https://roc-chtai.github.io/central/big-umi/assets/js/FreeAccordion.js"></script>
+<script src="https://roc-chtai.github.io/central/big-umi/assets/js/FreeNote.js"></script>
+<script src="https://roc-chtai.github.io/central/big-umi/assets/js/FreeAssign.js"></script>
+  <script>
+// 切換 tab 時自動滾到內容頂部
+document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(function(tabBtn){
+  tabBtn.addEventListener('shown.bs.tab', function (event) {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+}); 
+
+
+
+// ----------------- 這一行切換模式 -----------------
+const MODE = 'ADMIN'; 
+//const MODE = 'USER';  
+window.TAP_DETECT_MODE = () => MODE;
+
+// --------------------------------------------------
+
+//以下為考試科目之共同科目
+document.addEventListener('DOMContentLoaded', () => {
+
+  const api = TAPSubjectsKit.mount('#subjectsPlugin', {
+    mode: MODE  
+  });
+
+  // 建立「共同科目」
+  const card = api.addGroup(
+    '共同科目',
+    {
+      sizeClass: 'fs-5',
+      locks: { deleteGroup: false, hideUnlock: true } // 不可刪卡、隱藏解鎖
+    },
+    [], // 不預填 rows
+    [
+      { label: '項目',     width: 30 },
+      { label: '科目名稱', width: 70 }
+    ]
+  );
+
+
+});
+//以上為考試科目之共同科目
+
+</script>
+</body>
+
+</html>
