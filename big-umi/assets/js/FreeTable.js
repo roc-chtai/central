@@ -1,6 +1,5 @@
 /*!
- * TAPSubjectsKit — 高普考科目自訂表格（FreeTop 版 / FA5）
- * v3.0.0
+
  *
  * 召喚：
  *   <div data-tap-plugin="subjects"></div>  // 自動掛載（會自動判定 ADMIN/USER）
@@ -13,12 +12,8 @@
  *   - window.FreeTop（請先載入 /assets/js/FreeTop.js）
  *   - Font Awesome 5（預設 'fas'）
  *
- * 模式自動判定（命中一個就回傳）：
- *   opts.mode / data-mode
- *   FreeTop.resolveMode()  // 內含 XOOPS: true/1/'1'/'true' 視為 ADMIN
- *   預設 'USER'
- *
- * ※ Font Awesome：預設使用 FA5 'fas'，可用 data-fa 或 opts.faClass 覆寫（也可 'far'、'fab'）
+ * CSS：
+ *   - /assets/css/FreeTable.css
  */
 
 (function (global) {
@@ -41,7 +36,7 @@
     return el;
   }
 
-  // 欄寬正規化（總和=100，最小 5%）
+  // 初始（或載入舊資料）時用：平均化 / 正規化（總和 = 100；每欄 >= 5%）
   function normalizeColumns(cols){
     if (!Array.isArray(cols) || !cols.length) return [];
     let out = cols.map(c => (typeof c === 'string')
@@ -49,7 +44,7 @@
       : { label: String(c.label || ''), width: Number(c.width) || 0 }
     );
     if (!out.some(c => c.width > 0)) {
-      const per = Math.max(5, Math.round(100 / out.length));
+      const per = Math.max(5, Math.floor(100 / out.length));
       out = out.map((c,i)=> ({ label:c.label, width: i===out.length-1 ? (100 - per*(out.length-1)) : per }));
     } else {
       const sum = out.reduce((a,b)=> a + (b.width||0), 0) || 100;
@@ -63,8 +58,22 @@
     return out;
   }
 
+  // 編輯時用：只調整「最後一欄」補滿 100%，其他欄完全不動；每欄 >= 5%
+  function adjustWithFlexibleLast(columns){
+    if (!Array.isArray(columns) || !columns.length) return [];
+    const cols = columns.map(c => ({
+      label: String(c.label || ''),
+      width: Math.max(5, Math.min(100, Math.round(Number(c.width) || 0)))
+    }));
+    if (cols.length === 1){ cols[0].width = 100; return cols; }
+    const last = cols.length - 1;
+    const sumExceptLast = cols.reduce((s,c,i)=> i===last ? s : s + c.width, 0);
+    cols[last].width = Math.max(5, 100 - sumExceptLast);
+    return cols;
+  }
+
   function applyColgroup(table, columns){
-    const cols = normalizeColumns(columns || []);
+    const cols = adjustWithFlexibleLast(columns || []); // 套用「最後一欄補滿」
     let cg = table.querySelector('colgroup');
     if (!cg) { cg = document.createElement('colgroup'); table.insertBefore(cg, table.firstChild); }
     cg.innerHTML = '';
@@ -81,7 +90,7 @@
     if (!host) return null;
     if (host._tap_subjects) return host._tap_subjects; // 防重複
 
-    // 改用 FreeTop 的統一判定/參數（含 XOOPS）
+    // 統一判定（含 XOOPS）
     const mode    = FreeTop.resolveMode(host, opts, global);        // 'ADMIN' | 'USER'
     const faClass = FreeTop.getFaClass(host, opts, global);         // 預設 'fas'（FA5）
 
@@ -164,7 +173,7 @@
           row.innerHTML = `
             <input type="text" class="form-control form-control-sm ts-col-label" value="${t(col.label).replace(/"/g,'&quot;')}" placeholder="欄位名稱">
             <div class="input-group input-group-sm" style="width:110px;">
-              <input type="number" class="form-control ts-col-width" min="5" max="100" step="5" value="${col.width}">
+              <input type="number" class="form-control ts-col-width" min="5" max="100" step="1" value="${col.width}">
               <span class="input-group-text">%</span>
             </div>
             <div class="btn-group btn-group-sm">
@@ -178,14 +187,17 @@
           const labelInp = row.querySelector('.ts-col-label');
           const widthInp = row.querySelector('.ts-col-width');
 
+          // 改欄名：更新表頭 & data-label
           labelInp.addEventListener('input', ()=>{
             state.sharedColumns[idx].label = labelInp.value;
             $$(groupsWrap,'.ts-block').forEach(updateHeadersForShared);
           });
 
+          // 改欄寬：只動最後一欄補滿
           widthInp.addEventListener('input', ()=>{
-            state.sharedColumns[idx].width = Number(widthInp.value) || 0;
-            state.sharedColumns = normalizeColumns(state.sharedColumns);
+            const val = Math.max(5, Math.min(100, Number(widthInp.value) || 0));
+            const next = state.sharedColumns.map((c,i)=> ({ label:c.label, width: i===idx ? val : c.width }));
+            state.sharedColumns = adjustWithFlexibleLast(next);
             renderColList();
             applyColgroupsToAllShared();
           });
@@ -193,6 +205,7 @@
           row.querySelector('.ts-col-up').addEventListener('click', ()=>{
             if (idx===0) return;
             swap(state.sharedColumns, idx, idx-1);
+            state.sharedColumns = adjustWithFlexibleLast(state.sharedColumns);
             $$(groupsWrap,'.ts-block').forEach(block=>{
               if (!block._group.locked) swapColumns(block, idx, idx-1);
             });
@@ -201,6 +214,7 @@
           row.querySelector('.ts-col-down').addEventListener('click', ()=>{
             if (idx>=state.sharedColumns.length-1) return;
             swap(state.sharedColumns, idx, idx+1);
+            state.sharedColumns = adjustWithFlexibleLast(state.sharedColumns);
             $$(groupsWrap,'.ts-block').forEach(block=>{
               if (!block._group.locked) swapColumns(block, idx, idx+1);
             });
@@ -209,7 +223,7 @@
           row.querySelector('.ts-col-del').addEventListener('click', ()=>{
             if (state.sharedColumns.length<=1) return;
             state.sharedColumns.splice(idx,1);
-            state.sharedColumns = normalizeColumns(state.sharedColumns);
+            state.sharedColumns = adjustWithFlexibleLast(state.sharedColumns);
             $$(groupsWrap,'.ts-block').forEach(block=>{
               if (!block._group.locked) deleteColumn(block, idx);
             });
@@ -218,8 +232,8 @@
         });
       }
       btnAddCol.addEventListener('click', ()=>{
-        state.sharedColumns.push({ label:'新欄位', width: 0 });
-        state.sharedColumns = normalizeColumns(state.sharedColumns);
+        state.sharedColumns.push({ label:'新欄位', width: 5 });
+        state.sharedColumns = adjustWithFlexibleLast(state.sharedColumns);
         $$(groupsWrap,'.ts-block').forEach(block=>{
           if (!block._group.locked) appendColumn(block,'新欄位');
         });
@@ -249,7 +263,7 @@
     host.appendChild(groupsWrap);
 
     // ===== 共用小工具 =====
-    function labelsOf(columns){ return normalizeColumns(columns).map(c=>c.label); }
+    function labelsOf(columns){ return adjustWithFlexibleLast(columns).map(c=>c.label); }
 
     function renderAnchors(){
       anchors.innerHTML = '';
@@ -339,7 +353,7 @@
       } else {
         if (toggleBtn) toggleBtn.textContent = '鎖定欄位';
         if (editBtn)   editBtn.style.display = 'none';
-        if (editor)    editor.remove(); // 解鎖時直接移除專屬編輯器
+        if (editor)    editor && editor.remove(); // 解鎖時直接移除專屬編輯器
       }
       if (g?.locks?.hideUnlock && toggleBtn) toggleBtn.style.display = 'none';
     }
@@ -349,14 +363,14 @@
       if (!g.locked) return null;
 
       const holder = h('div','p-2 border-top d-none ts-admin ts-cols-editor');
-      const cols = normalizeColumns(g.columns);
+      const cols = adjustWithFlexibleLast(g.columns);
 
       cols.forEach((c, idx)=>{
         const row = h('div','d-flex align-items-center gap-2 mb-2');
         row.innerHTML = `
           <input type="text" class="form-control form-control-sm ts-gcol-label" value="${t(c.label).replace(/"/g,'&quot;')}" placeholder="欄位名稱">
           <div class="input-group input-group-sm" style="width:110px;">
-            <input type="number" class="form-control ts-gcol-width" min="5" max="100" step="5" value="${c.width}">
+            <input type="number" class="form-control ts-gcol-width" min="5" max="100" step="1" value="${c.width}">
             <span class="input-group-text">%</span>
           </div>
           <div class="btn-group btn-group-sm">
@@ -372,33 +386,35 @@
 
         labelInp.addEventListener('input', ()=>{
           cols[idx].label = labelInp.value;
-          g.columns = normalizeColumns(cols);
+          g.columns = adjustWithFlexibleLast(cols);
           updateHeadersForLocked(block);
         });
         widthInp.addEventListener('input', ()=>{
-          cols[idx].width = Number(widthInp.value) || 0;
-          g.columns = normalizeColumns(cols);
+          const val = Math.max(5, Math.min(100, Number(widthInp.value) || 0));
+          const next = cols.map((c,i)=> ({ label:c.label, width: i===idx ? val : c.width }));
+          g.columns = adjustWithFlexibleLast(next);
           applyColgroup(block.querySelector('table.ts-table'), g.columns);
+          refreshColsEditor(block, holder); // 同步最後一欄數值
         });
 
         row.querySelector('.ts-gcol-up').addEventListener('click', ()=>{
           if (idx===0) return;
           swap(cols, idx, idx-1);
-          g.columns = normalizeColumns(cols);
+          g.columns = adjustWithFlexibleLast(cols);
           rebuildLockedHeader(block, true);
           refreshColsEditor(block, holder);
         });
         row.querySelector('.ts-gcol-down').addEventListener('click', ()=>{
           if (idx>=cols.length-1) return;
           swap(cols, idx, idx+1);
-          g.columns = normalizeColumns(cols);
+          g.columns = adjustWithFlexibleLast(cols);
           rebuildLockedHeader(block, true);
           refreshColsEditor(block, holder);
         });
         row.querySelector('.ts-gcol-del').addEventListener('click', ()=>{
           if (cols.length<=1) return;
           cols.splice(idx,1);
-          g.columns = normalizeColumns(cols);
+          g.columns = adjustWithFlexibleLast(cols);
           rebuildLockedHeader(block, true);
           refreshColsEditor(block, holder);
         });
@@ -407,8 +423,8 @@
       const addBtnRow = h('div','');
       addBtnRow.innerHTML = `<button type="button" class="btn btn-outline-danger btn-sm">新增欄位</button>`;
       addBtnRow.querySelector('button').addEventListener('click', ()=>{
-        cols.push({ label:'新欄位', width:0 });
-        g.columns = normalizeColumns(cols);
+        cols.push({ label:'新欄位', width:5 });
+        g.columns = adjustWithFlexibleLast(cols);
         rebuildLockedHeader(block, true);
         refreshColsEditor(block, holder);
       });
@@ -417,7 +433,7 @@
       return holder;
     }
 
-    // FIX: refreshColsEditor 保留展開/收起狀態
+    // 保留展開/收起狀態
     function refreshColsEditor(block, holder){
       const wasHidden = holder.classList.contains('d-none');
       const next = buildColsInlineEditor(block);
@@ -428,7 +444,7 @@
 
     function rebuildLockedHeader(block, addMissingCells){
       const g = block._group;
-      const cols = normalizeColumns(g.columns);
+      const cols = adjustWithFlexibleLast(g.columns);
       const tr = block.querySelector('thead tr'); tr.innerHTML='';
       cols.forEach(c=>{
         const th = document.createElement('th');
@@ -456,7 +472,7 @@
 
     function updateHeadersForLocked(block){
       const g = block._group;
-      const cols = normalizeColumns(g.columns);
+      const cols = adjustWithFlexibleLast(g.columns);
       const tr = block.querySelector('thead tr'); if(!tr) return;
       tr.innerHTML='';
       cols.forEach(c=>{
@@ -484,7 +500,7 @@
         id: card.id,
         name, icon, sizeClass,
         locked: Array.isArray(columns) && columns.length ? true : false,
-        columns: Array.isArray(columns) && columns.length ? normalizeColumns(columns) : cloneCols(state.sharedColumns),
+        columns: Array.isArray(columns) && columns.length ? adjustWithFlexibleLast(columns) : cloneCols(state.sharedColumns),
         locks: locksNorm
       };
       if (!groupMeta.locked) groupMeta.columns = null; // 未鎖定就跟隨 shared
@@ -567,7 +583,7 @@
     // ===== 事件（單一委派）=====
     host.addEventListener('click', (e)=>{
 
-      // FIX: 若點擊發生在欄位編輯器內，直接略過委派邏輯（避免誤關面板）
+      // 若點擊在欄位編輯器內，直接略過（避免誤關面板）
       if (e.target.closest('.ts-cols-editor')) return;
 
       // 鎖定/解鎖欄位
@@ -584,6 +600,7 @@
           // 鎖定：複製目前有效欄位做為群組 columns
           g.locked = true;
           g.columns = cloneCols(state.sharedColumns);
+          g.columns = adjustWithFlexibleLast(g.columns);
           rebuildLockedHeader(block, false);
           applyColgroup(block.querySelector('table.ts-table'), g.columns);
           // 若沒有專屬編欄面板就建立一次
@@ -603,7 +620,7 @@
         e.target.classList.contains('ts-btn-edit-cols') ||
         e.target.classList.contains('ts-btn-edit-columns')
       ) {
-        e.stopPropagation(); 
+        e.stopPropagation();
         const block = e.target.closest('.ts-block');
         let editor = block.querySelector('.ts-cols-editor');
         if (!editor) {
@@ -680,14 +697,14 @@
         return {
           name: g.name, icon: g.icon, sizeClass: g.sizeClass,
           locked: !!g.locked,
-          columns: g.locked ? cloneCols(g.columns) : null,
+          columns: g.locked ? cloneCols(adjustWithFlexibleLast(g.columns)) : null,
           rows
         };
       });
       return {
-        schemaVersion: 4,
+        schemaVersion: 5,
         updatedAt: Date.now(),
-        sharedColumns: state.sharedColumns.map(c => ({ label:c.label, width:c.width })),
+        sharedColumns: adjustWithFlexibleLast(state.sharedColumns).map(c => ({ label:c.label, width:c.width })),
         groups: groupsData
       };
     }
@@ -738,7 +755,7 @@
     document.querySelectorAll('[data-tap-plugin="subjects"]').forEach(node=>{
       if (node._tap_subjects) return;
       const api = mount(node, {}); // 自動判定模式
-      // 新增：自動從 data-json-var / data-json-script / data-json-local 載入
+      // 從 data-json-var / data-json-script / data-json-local 載入
       FreeTop.applyInitialJSON(node, api);
     });
   }
