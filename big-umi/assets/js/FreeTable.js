@@ -101,16 +101,22 @@
     const mode    = FreeTop.resolveMode(host, opts, global);        // 'ADMIN' | 'USER'
     const faClass = FreeTop.getFaClass(host, opts, global);         // 預設 'fas'（FA5）
 
-    const state = {
-      id: makeId('ts'),
-      mode, // 'ADMIN' | 'USER'
-      sharedColumns: normalizeColumns(
-        Array.isArray(opts.columns) && opts.columns.length ? opts.columns.slice()
-        : ['考科','高考科目','普考科目','分數比重','名額(備取)']
-      ),
-      groups: [] // {id, name, icon, sizeClass, locked, columns?}
-    };
-
+const state = {
+  id: makeId('ts'),
+  mode, // 'ADMIN' | 'USER'
+  sharedColumns: normalizeColumns(
+    Array.isArray(opts.columns) && opts.columns.length
+      ? opts.columns.slice()
+      : [
+          { label: '考科',       width: 23 },
+          { label: '高考科目',   width: 24 },
+          { label: '普考科目',   width: 24 },
+          { label: '分數比重',   width: 14 },
+          { label: '名額(備取)', width: 15 },
+        ]
+  ),
+  groups: [] // {id, name, icon, sizeClass, locked, columns?}
+};
     host.innerHTML = '';
     host.classList.add('tap-subjects');
     host.setAttribute('data-mode', state.mode);
