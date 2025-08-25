@@ -230,7 +230,7 @@
           <div class="d-flex flex-wrap align-items-end gap-2">
             <div class="flex-grow-1" style="max-width:360px;">
               <label class="form-label small mb-1">類別標題</label>
-              <input type="text" class="form-control form-control-sm" id="${cid}-cat-title" placeholder="例：報考資格 & 類科條件">
+              <input type="text" class="form-control form-control-sm" id="${cid}-cat-title" placeholder="例：報名時間 / 考試須知 / 報考資格 /薪資待遇 /特殊福利 ">
             </div>
             <div>
               <label class="form-label small mb-1">圖示</label>
