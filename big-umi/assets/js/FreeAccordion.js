@@ -5,7 +5,6 @@
  * 外掛樣式：Accordion.css（本外掛用），Table.css（表格 RWD 共用）
  */
 
-
 (function (global) {
   'use strict';
 
@@ -128,7 +127,7 @@
     const widthsPanel = h('div','qa-tflex-widths-panel d-none mb-2');
 
     const table = document.createElement('table');
-    table.className = 'table table-bordered align-middle small mb-0 ts-table'; // 重要：ts-table → 吃 Table.css
+    table.className = 'table table-bordered align-middle small mb-0 ts-table'; // 使用 Table.css
     const cg = document.createElement('colgroup');
     const thead = document.createElement('thead'); thead.className = 'table-danger';
     const tbody = document.createElement('tbody');
@@ -252,15 +251,17 @@
 
     const catsWrap = h('div','qa-categories'); host.appendChild(catsWrap);
 
-    // 類別卡片
+    // 類別卡片（★ 類別標題可編輯）
     function addCategory(title, { icon='' } = {}){
       const catId = uid('cat');
       const card = h('div','qa-category mb-3');
-      const iconHtml = icon ? `<i class="${faClass} ${icon} me-2" style="color:var(--main-red,#ea7066);"></i>` : '';
 
       card.innerHTML = `
         <div class="d-flex align-items-center mb-2" style="gap:.5rem;">
-          <div class="fw-bold fs-5" style="letter-spacing:1px;">${iconHtml}${t(title)}</div>
+          <div class="fw-bold fs-5" style="letter-spacing:1px;">
+            ${icon ? `<i class="${faClass} ${icon} me-2 qa-cat-icon" style="color:var(--main-red,#ea7066);"></i>` : ''}
+            <span class="qa-cat-title"${state.mode==='ADMIN'?' contenteditable="true"':''}>${t(title)}</span>
+          </div>
           <div class="ms-auto qa-admin d-flex gap-2">
             <button type="button" class="btn btn-outline-secondary btn-sm qa-sort-toggle" data-mode="insert">排序：插入順序</button>
             <button type="button" class="btn btn-outline-dark btn-sm qa-cat-del">刪除類別</button>
@@ -293,7 +294,7 @@
       return cat;
     }
 
-    // 新增手風琴
+    // 新增手風琴（★ 標題可編輯；避免編輯時誤觸收合）
     function addAccordion(catNode, title){
       const entries = catNode.querySelector('.qa-entries');
       const entry = h('div','qa-entry qa-entry-acc mb-3');
@@ -308,7 +309,7 @@
             <button class="accordion-button bg-danger text-white fw-bold rounded collapsed px-3 py-2"
               type="button" data-bs-toggle="collapse" data-bs-target="#${cid}"
               aria-expanded="false" aria-controls="${cid}">
-              ${t(title||'未命名手風琴')}
+              <span class="qa-acc-title"${state.mode==='ADMIN'?' contenteditable="true"':''}>${t(title||'未命名手風琴')}</span>
             </button>
           </h2>
           <div id="${cid}" class="accordion-collapse collapse" aria-labelledby="${hid}">
@@ -370,6 +371,12 @@
 
     // 事件委派
     host.addEventListener('click', (e)=>{
+      // ★ 避免在編輯手風琴標題時觸發收合
+      if (e.target.classList && e.target.classList.contains('qa-acc-title')){
+        e.stopPropagation(); e.preventDefault();
+        return;
+      }
+
       // 類別：新增內容
       if (e.target.classList.contains('qa-add-acc') || e.target.classList.contains('qa-add-card')){
         const cat = e.target.closest('.qa-category');
@@ -470,27 +477,52 @@
       }
     });
 
-    // Enter 刪空行（副標 / li）
+    // ★ 在可編輯標題中阻擋 Enter 產生換行；空白時套預設字
     host.addEventListener('keydown', (e)=>{
       if (e.key !== 'Enter' || state.mode!=='ADMIN') return;
-      if (e.target.classList && e.target.classList.contains('qa-sub')) {
-        const txt = (e.target.textContent||'').trim();
-        if (!txt) { e.preventDefault(); const wrap = e.target.closest('.qa-block-sub'); if (wrap) wrap.remove(); }
+      const isTitle =
+        (e.target.classList && (e.target.classList.contains('qa-cat-title') ||
+                                e.target.classList.contains('qa-acc-title') ||
+                                e.target.classList.contains('qa-card-head')));
+      const isSubOrLi =
+        (e.target.classList && e.target.classList.contains('qa-sub')) || e.target.tagName==='LI';
+
+      if (isTitle){
+        e.preventDefault();
+        e.target.blur();
+        return;
       }
-      if (e.target.tagName === 'LI') {
+
+      if (isSubOrLi) {
         const txt = (e.target.textContent||'').trim();
         if (!txt) {
           e.preventDefault();
-          const ul = e.target.closest('ul');
-          e.target.remove();
-          if (ul && !ul.querySelector('li')) { const lw = ul.closest('.qa-block-list'); if (lw) lw.remove(); }
+          if (e.target.classList && e.target.classList.contains('qa-sub')) {
+            const wrap = e.target.closest('.qa-block-sub'); if (wrap) wrap.remove();
+          } else if (e.target.tagName === 'LI') {
+            const ul = e.target.closest('ul');
+            e.target.remove();
+            if (ul && !ul.querySelector('li')) { const lw = ul.closest('.qa-block-list'); if (lw) lw.remove(); }
+          }
         }
       }
     });
 
-    // 失焦清空空白節點
+    // 失焦清空/預設
     host.addEventListener('blur', (e)=>{
       if (state.mode !== 'ADMIN') return;
+
+      // 類別/手風琴/卡片 標題：空白時用預設字
+      if (e.target.classList && e.target.classList.contains('qa-cat-title')){
+        if (!(e.target.textContent||'').trim()) e.target.textContent = '未命名類別';
+      }
+      if (e.target.classList && e.target.classList.contains('qa-acc-title')){
+        if (!(e.target.textContent||'').trim()) e.target.textContent = '未命名手風琴';
+      }
+      if (e.target.classList && e.target.classList.contains('qa-card-head')){
+        if (!(e.target.textContent||'').trim()) e.target.textContent = '請輸入卡片標題';
+      }
+
       if (e.target.classList && e.target.classList.contains('qa-sub')) {
         const wrap = e.target.closest('.qa-block-sub'); if (wrap && !e.target.textContent.trim()) wrap.remove();
       }
@@ -511,7 +543,7 @@
     }
     function unlockAsAdmin(scope){
       (scope||host).querySelectorAll('.qa-admin').forEach(n=> n.style.display='');
-      (scope||host).querySelectorAll('.qa-sub, li, th, td, .qa-remark-text, .qa-card-head')
+      (scope||host).querySelectorAll('.qa-sub, li, th, td, .qa-remark-text, .qa-card-head, .qa-cat-title, .qa-acc-title')
         .forEach(el=>{ if (el.closest('.tap-qualify')) el.setAttribute('contenteditable','true'); });
       host.setAttribute('data-mode','ADMIN');
     }
@@ -521,10 +553,14 @@
     function getJSON(){
       const categories = state.categories.map(c=>{
         const box = c.node.querySelector('.qa-entries');
+        const catTitle = c.node.querySelector('.qa-cat-title')?.textContent.trim() || c.title || '未命名類別';
+
         const entries = [];
         Array.from(box.children).forEach(entry=>{
           if (entry.classList.contains('qa-entry-acc')) {
-            const title = entry.querySelector('.accordion-button')?.textContent.trim() || '';
+            const title = entry.querySelector('.qa-acc-title')?.textContent.trim()
+                        || entry.querySelector('.accordion-button')?.textContent.trim()
+                        || '';
             const content = entry.querySelector('.qa-content');
             const blocks = serializeBlocks(content);
             entries.push({ kind:'accordion', title, blocks });
@@ -536,7 +572,7 @@
           }
         });
         const btn = c.node.querySelector('.qa-sort-toggle');
-        return { title:c.title, icon:c.icon, orderMode: btn?.dataset.mode || 'insert', entries };
+        return { title:catTitle, icon:c.icon, orderMode: btn?.dataset.mode || 'insert', entries };
       });
       return { schemaVersion: 4, updatedAt: Date.now(), categories };
 
@@ -554,14 +590,14 @@
             const heads = Array.from(table.querySelectorAll('thead th')).map(th=> (th.textContent||'').trim());
             const widths= colWidths(table);
             const rows = [];
- table.querySelectorAll('tbody tr').forEach(tr=>{
-   const arr = Array.from(tr.querySelectorAll('td')).map(td=> (td.textContent||'').trim());
-   if (arr.some(v => v !== '')) rows.push(arr);
- });
+            table.querySelectorAll('tbody tr').forEach(tr=>{
+              const arr = Array.from(tr.querySelectorAll('td')).map(td=> (td.textContent||'').trim());
+              if (arr.some(v => v !== '')) rows.push(arr);
+            });
             blocks.push({ type:'table', heads, widths, rows });
           } else if (child.classList.contains('qa-block-remark')) {
- const txt = (child.querySelector('.qa-remark-text')?.textContent||'').trim();
- if (txt) blocks.push({ type:'remark', text: txt });
+            const txt = (child.querySelector('.qa-remark-text')?.textContent||'').trim();
+            if (txt) blocks.push({ type:'remark', text: txt });
           }
         });
         return blocks;
