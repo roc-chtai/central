@@ -1,19 +1,16 @@
 /*!
- * FreeNote.js — 小提示框插件（僅背景色 + 可編輯內容 / 粗體 / 超連結）
- * 依賴：window.FreeTop（請先載入 /assets/js/FreeTop.js），Bootstrap（alert 樣式）
+ * 依賴：window.FreeTop（請先載入 /assets/js/FreeTop.js），Bootstrap
  *
  * 召喚：
  *   <div data-tap-plugin="note" data-variant="warning"></div>  // 自動掛載
  *   // 或手動：
  *   const api = TAPNoteKit.mount('#notePlugin', { variant:'warning' });
  *
- * 模式：自動由 FreeTop.resolveMode 判定（ADMIN/USER）
- * - ADMIN：顯示工具列，可編輯（支援粗體、建立/移除連結、增刪項目）
- * - USER ：只顯示
+ * 模式：由 FreeTop.resolveMode 判定（ADMIN / USER）
  *
  * JSON：
  *   api.getJSON() => { schemaVersion, variant, itemsHTML:[ "<strong>...</strong>", "..." ] }
- *   api.setJSON(data)  // 會保留 <strong> 與 <a> 標籤
+ *   api.setJSON(data)  // 保留 <strong> 與 <a> 標籤
  */
 
 (function (global) {
@@ -21,22 +18,21 @@
 
   const t = (s)=> (s==null ? '' : String(s));
   const h = (tag, cls, html)=>{ const el=document.createElement(tag); if(cls) el.className=cls; if(html!=null) el.innerHTML=html; return el; };
-
-  function within(node, root){ return !!(node && root && (node===root || root.contains(node))); }
+  const within = (node, root)=> !!(node && root && (node===root || root.contains(node)));
 
   function mount(target, opts={}){
     const host = (typeof target==='string') ? document.querySelector(target) : target;
     if (!host) return null;
     if (host._tap_note) return host._tap_note; // 防重複
 
-    const mode    = FreeTop.resolveMode(host, opts, global);                // 'ADMIN' | 'USER'
-    const variant = String(host?.dataset?.variant || opts.variant || 'warning'); // Bootstrap alert 類型
+    const mode    = FreeTop.resolveMode(host, opts, global);                   // 'ADMIN' | 'USER'
+    const variant = String(host?.dataset?.variant || opts.variant || 'warning');
 
     host.innerHTML = '';
     host.classList.add('tap-note');
     host.setAttribute('data-mode', mode);
 
-    // === 工具列（僅 ADMIN 顯示）===
+    // 工具列（僅 ADMIN 顯示）
     const tools = h('div','d-flex flex-wrap align-items-center gap-2 mb-2 note-admin', `
       <div class="btn-group btn-group-sm">
         <button type="button" class="btn btn-outline-secondary note-bold">粗體</button>
@@ -50,27 +46,19 @@
       </div>
     `);
 
-    // === 內容 ===
+    // 內容區（alert）
     const alertBox = h('div', `alert alert-${variant} mb-4 note-alert`);
     const ul = document.createElement('ul'); ul.className = 'mb-0 ps-3';
     alertBox.appendChild(ul);
 
-    if (mode === 'ADMIN') {
-      ul.setAttribute('contenteditable','true');
-      // 一個預設項目，示範可套粗體
-      if (!ul.children.length) {
-        const li = document.createElement('li');
-        li.innerHTML = '<strong>最新提醒：</strong> 114年度高普考，報名時程與詳細簡章，請至 考試簡章 查詢。';
-        ul.appendChild(li);
-      }
-    }
+    // 初始：不要自動產生項目；預設隱藏黃框（等使用者「新增項目」或 setJSON 注入才顯示）
+    alertBox.style.display = 'none';
 
     if (mode !== 'ADMIN') tools.style.display = 'none';
-
     host.appendChild(tools);
     host.appendChild(alertBox);
 
-    // --- 小工具 ---
+    // 小工具
     function normalizeLinks(scope){
       scope.querySelectorAll('a').forEach(a=>{
         a.target = '_blank';
@@ -89,8 +77,19 @@
       const sel = window.getSelection();
       return sel && sel.rangeCount>0 && within(sel.anchorNode, ul);
     }
+    function updateVisibility(){
+      const hasItems = ul.querySelectorAll('li').length > 0;
+      alertBox.style.display = hasItems ? '' : 'none';
+    }
+    function ensureEditable(){
+      if (host.getAttribute('data-mode')==='ADMIN') {
+        ul.setAttribute('contenteditable','true');
+      } else {
+        ul.removeAttribute('contenteditable');
+      }
+    }
 
-    // --- 事件（只在 ADMIN 下有效）---
+    // 事件（ADMIN）
     host.addEventListener('click', (e)=>{
       if (host.getAttribute('data-mode')!=='ADMIN') return;
 
@@ -112,15 +111,20 @@
         return;
       }
       if (e.target.classList.contains('note-add')){
+        // 首次新增：顯示 alert 並建立第一個 li
         const li = document.createElement('li');
         li.innerHTML = '新項目';
         ul.appendChild(li);
+        ensureEditable();
+        normalizeLinks(ul);
+        updateVisibility();
         placeCaretEnd(li);
         return;
       }
       if (e.target.classList.contains('note-del')){
         const lis = ul.querySelectorAll('li');
         if (lis.length) lis[lis.length-1].remove();
+        updateVisibility();
         return;
       }
     });
@@ -129,7 +133,7 @@
       if (within(e.target, ul)) normalizeLinks(ul);
     });
 
-    // --- 模式切換 ---
+    // 模式切換
     function lockAsUser(scope){
       (scope||host).querySelectorAll('.note-admin').forEach(n=> n.style.display='none');
       ul.removeAttribute('contenteditable');
@@ -142,7 +146,7 @@
     }
     if (mode==='USER') lockAsUser();
 
-    // --- 公開 API ---
+    // 公開 API
     function getJSON(){
       const items = Array.from(ul.querySelectorAll('li'))
         .map(li => li.innerHTML.trim())
@@ -152,34 +156,40 @@
     function setJSON(data={}){
       const vv = String(data.variant || variant || 'warning');
       alertBox.className = `alert alert-${vv} mb-4 note-alert`;
+
       ul.innerHTML='';
       (data.itemsHTML||[]).forEach(html=>{
         const li = document.createElement('li');
         li.innerHTML = t(html);
         ul.appendChild(li);
       });
-      if (!ul.children.length && host.getAttribute('data-mode')==='ADMIN'){
-        const li = document.createElement('li'); li.innerHTML='';
-        ul.appendChild(li);
-      }
+
       normalizeLinks(ul);
+      ensureEditable();
+      updateVisibility(); // ※ 這行確保「無項目」時整塊黃框消失
     }
     function setMode(next){
       const v = String(next||'USER').toUpperCase()==='ADMIN' ? 'ADMIN' : 'USER';
       if (v==='ADMIN') unlockAsAdmin(); else lockAsUser();
+      ensureEditable();
+      updateVisibility();
     }
 
     const api = { getJSON, setJSON, setMode };
     host._tap_note = api;
+
     return api;
   }
 
-  // 自動掛載：<div data-tap-plugin="note" data-variant="warning"></div>
+  // 自動掛載
   function autoload(){
     document.querySelectorAll('[data-tap-plugin="note"]').forEach(node=>{
       if (node._tap_note) return;
-      const variant = node.dataset.variant || 'warning';
-      mount(node, { variant });
+      const api = mount(node, { variant: node.dataset.variant || 'warning' });
+      // 若你有用 FreeTop 的 JSON 注入機制，這行會自動吃：
+      if (window.FreeTop && typeof FreeTop.applyInitialJSON === 'function') {
+        FreeTop.applyInitialJSON(node, api);
+      }
     });
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', autoload);
